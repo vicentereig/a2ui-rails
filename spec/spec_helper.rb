@@ -11,6 +11,7 @@ require 'dspy/openai'
 
 # Add lib to load path and require A2UI (prevents double-loading)
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'a2ui/types'
 require 'a2ui/signatures'
 require 'a2ui/modules'
 
