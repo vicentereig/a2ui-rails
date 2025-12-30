@@ -53,15 +53,13 @@ RSpec.describe 'A2UI Union Types' do
     it 'accepts ObjectValue with nested entries' do
       value = A2UI::ObjectValue.new(
         key: 'config',
-        entries: [
-          A2UI::StringValue.new(key: 'theme', string: 'dark'),
-          A2UI::BooleanValue.new(key: 'enabled', boolean: true)
-        ]
+        entries: { 'theme' => 'dark', 'enabled' => true }
       )
 
       expect(value.key).to eq('config')
       expect(value.entries.size).to eq(2)
-      expect(value.entries.first).to be_a(A2UI::StringValue)
+      expect(value.entries['theme']).to eq('dark')
+      expect(value.entries['enabled']).to be true
     end
   end
 
@@ -111,12 +109,12 @@ RSpec.describe 'A2UI Union Types' do
         value: A2UI::PathReference.new(path: '/user/email'),
         input_type: A2UI::InputType::Email,
         label: 'Email Address',
-        required: true
+        is_required: true
       )
 
       expect(component.value.path).to eq('/user/email')
       expect(component.input_type).to eq(A2UI::InputType::Email)
-      expect(component.required).to be true
+      expect(component.is_required).to be true
     end
 
     it 'creates RowComponent with ExplicitChildren' do

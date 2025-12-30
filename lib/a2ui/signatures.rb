@@ -153,7 +153,7 @@ module A2UI
 
   class ObjectValue < T::Struct
     const :key, String
-    const :entries, T::Array[DataValue], default: [], description: 'Nested key-value pairs'
+    const :entries, T::Hash[String, T.untyped], default: {}, description: 'Nested key-value pairs as JSON-like hash'
   end
 
   DataValue = T.type_alias { T.any(StringValue, NumberValue, BooleanValue, ObjectValue) }
@@ -210,7 +210,7 @@ module A2UI
     const :input_type, InputType, default: InputType::Text
     const :label, String, default: ''
     const :placeholder, String, default: ''
-    const :required, T::Boolean, default: false
+    const :is_required, T::Boolean, default: false, description: 'Whether the field is required'
   end
 
   class CheckBoxComponent < T::Struct

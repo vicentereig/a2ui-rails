@@ -3,12 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe A2UI::SurfaceManager do
-  before(:all) do
-    DSPy.configure do |c|
-      c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV.fetch('OPENAI_API_KEY', 'test-key'))
-    end
-  end
-
   describe A2UI::Surface do
     subject(:surface) { A2UI::Surface.new('test-surface') }
 
@@ -62,10 +56,7 @@ RSpec.describe A2UI::SurfaceManager do
           entries: [
             A2UI::ObjectValue.new(
               key: 'settings',
-              entries: [
-                A2UI::BooleanValue.new(key: 'dark_mode', boolean: true),
-                A2UI::StringValue.new(key: 'theme', string: 'ocean')
-              ]
+              entries: { 'dark_mode' => true, 'theme' => 'ocean' }
             )
           ]
         )
@@ -92,6 +83,12 @@ RSpec.describe A2UI::SurfaceManager do
   end
 
   describe 'full workflow', :vcr do
+    before(:all) do
+      DSPy.configure do |c|
+        c.lm = DSPy::LM.new('openai/gpt-4o-mini', api_key: ENV.fetch('OPENAI_API_KEY', 'test-key'))
+      end
+    end
+
     subject(:manager) { A2UI::SurfaceManager.new }
 
     it 'creates and retrieves a surface' do

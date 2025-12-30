@@ -56,7 +56,7 @@ module A2UI
 
       sig { returns(T::Boolean) }
       def required?
-        @component.required
+        @component.is_required
       end
 
       sig { returns(T::Hash[Symbol, String]) }

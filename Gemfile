@@ -32,6 +32,8 @@ group :development, :test do
   gem 'debug'
   gem 'sorbet'
   gem 'tapioca'
+  gem 'dspy-openai' # For testing
+  gem 'dotenv-rails'
 end
 
 group :development do

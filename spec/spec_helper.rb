@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'dotenv'
+Dotenv.load('.env')
+
 require 'vcr'
 require 'webmock/rspec'
 require 'dspy'
+require 'dspy/openai'
 
-# Load A2UI
-require_relative '../lib/a2ui/signatures'
-require_relative '../lib/a2ui/modules'
+# Add lib to load path and require A2UI (prevents double-loading)
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'a2ui/signatures'
+require 'a2ui/modules'
 
 VCR.configure do |config|
   config.cassette_library_dir = 'spec/fixtures/vcr_cassettes'

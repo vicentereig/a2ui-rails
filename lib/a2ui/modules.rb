@@ -19,17 +19,13 @@ module A2UI
     end
 
     sig do
-      params(
-        request: String,
-        surface_id: String,
-        available_data: String
-      ).returns(T.untyped)
+      params(input_values: T.untyped).returns(T.untyped)
     end
-    def forward(request:, surface_id:, available_data: '{}')
+    def forward(**input_values)
       @predictor.call(
-        request: request,
-        surface_id: surface_id,
-        available_data: available_data
+        request: input_values.fetch(:request),
+        surface_id: input_values.fetch(:surface_id),
+        available_data: input_values.fetch(:available_data, '{}')
       )
     end
   end
@@ -48,19 +44,14 @@ module A2UI
     end
 
     sig do
-      params(
-        request: String,
-        surface_id: String,
-        current_components: T::Array[Component],
-        current_data: String
-      ).returns(T.untyped)
+      params(input_values: T.untyped).returns(T.untyped)
     end
-    def forward(request:, surface_id:, current_components: [], current_data: '{}')
+    def forward(**input_values)
       @predictor.call(
-        request: request,
-        surface_id: surface_id,
-        current_components: current_components,
-        current_data: current_data
+        request: input_values.fetch(:request),
+        surface_id: input_values.fetch(:surface_id),
+        current_components: input_values.fetch(:current_components, []),
+        current_data: input_values.fetch(:current_data, '{}')
       )
     end
   end
@@ -79,17 +70,13 @@ module A2UI
     end
 
     sig do
-      params(
-        action: UserAction,
-        current_data: String,
-        business_rules: String
-      ).returns(T.untyped)
+      params(input_values: T.untyped).returns(T.untyped)
     end
-    def forward(action:, current_data: '{}', business_rules: '')
+    def forward(**input_values)
       @predictor.call(
-        action: action,
-        current_data: current_data,
-        business_rules: business_rules
+        action: input_values.fetch(:action),
+        current_data: input_values.fetch(:current_data, '{}'),
+        business_rules: input_values.fetch(:business_rules, '')
       )
     end
   end
@@ -107,9 +94,12 @@ module A2UI
       @predictor = DSPy::Predict.new(ValidateData)
     end
 
-    sig { params(data: String, rules: String).returns(T.untyped) }
-    def forward(data:, rules:)
-      @predictor.call(data: data, rules: rules)
+    sig { params(input_values: T.untyped).returns(T.untyped) }
+    def forward(**input_values)
+      @predictor.call(
+        data: input_values.fetch(:data),
+        rules: input_values.fetch(:rules)
+      )
     end
   end
 
@@ -127,17 +117,13 @@ module A2UI
     end
 
     sig do
-      params(
-        text: String,
-        target_path: String,
-        expected_schema: String
-      ).returns(T.untyped)
+      params(input_values: T.untyped).returns(T.untyped)
     end
-    def forward(text:, target_path:, expected_schema: '')
+    def forward(**input_values)
       @predictor.call(
-        text: text,
-        target_path: target_path,
-        expected_schema: expected_schema
+        text: input_values.fetch(:text),
+        target_path: input_values.fetch(:target_path),
+        expected_schema: input_values.fetch(:expected_schema, '')
       )
     end
   end
@@ -156,17 +142,13 @@ module A2UI
     end
 
     sig do
-      params(
-        components: T::Array[Component],
-        root_id: String,
-        screen: ScreenSize
-      ).returns(T.untyped)
+      params(input_values: T.untyped).returns(T.untyped)
     end
-    def forward(components:, root_id:, screen:)
+    def forward(**input_values)
       @predictor.call(
-        components: components,
-        root_id: root_id,
-        screen: screen
+        components: input_values.fetch(:components),
+        root_id: input_values.fetch(:root_id),
+        screen: input_values.fetch(:screen)
       )
     end
   end
@@ -230,7 +212,7 @@ module A2UI
                 when StringValue then entry.string
                 when NumberValue then entry.number
                 when BooleanValue then entry.boolean
-                when ObjectValue then entries_to_hash(entry.entries)
+                when ObjectValue then entry.entries # Already a hash
                 end
         [entry.key, value]
       end
