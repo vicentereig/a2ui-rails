@@ -1,0 +1,56 @@
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Ruby
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Bundler
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+# Rails
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/storage/*
+!/storage/.keep
+/public/assets
+.byebug_history
+
+# Node
+/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Sorbet
+/sorbet/rbi/gems/
+/sorbet/rbi/todo.rbi
+
+# VCR cassettes with sensitive data
+# (keep structure, ignore if contains secrets)
+
+# Reference repos
+vendor/a2ui-reference/
+vendor/turbo-reference/

@@ -1,0 +1,8 @@
+<button
+  id="<%= component_id %>"
+  class="<%= css_class %>"
+  <%= 'disabled' if disabled? %>
+  <% stimulus_attrs.each do |key, value| %>
+  data-<%= key.to_s.dasherize %>="<%= value %>"
+  <% end %>
+><%= label %></button>

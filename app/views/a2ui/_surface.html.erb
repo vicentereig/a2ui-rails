@@ -1,0 +1,13 @@
+<%# Renders a complete A2UI surface %>
+<turbo-frame id="<%= surface.id %>" data-controller="a2ui-data" data-a2ui-data-surface-value="<%= surface.id %>" data-a2ui-data-model-value="<%= surface.to_json %>">
+  <%= turbo_stream_from "a2ui:#{surface.id}" %>
+
+  <% if surface.root_id && (root = surface.components[surface.root_id]) %>
+    <%= render A2UI::Components::Renderer.for(
+      root,
+      surface_id: surface.id,
+      components_lookup: surface.components,
+      data: surface.data
+    ) %>
+  <% end %>
+</turbo-frame>

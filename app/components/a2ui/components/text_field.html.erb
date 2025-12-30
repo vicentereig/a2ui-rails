@@ -1,0 +1,33 @@
+<div id="<%= component_id %>" class="space-y-1">
+  <% if label.present? %>
+    <label for="<%= component_id %>-input" class="block text-sm font-medium text-gray-700">
+      <%= label %><% if required? %><span class="text-red-500">*</span><% end %>
+    </label>
+  <% end %>
+
+  <% if textarea? %>
+    <textarea
+      id="<%= component_id %>-input"
+      name="<%= field_name %>"
+      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      placeholder="<%= placeholder %>"
+      <%= 'required' if required? %>
+      <% stimulus_attrs.each do |key, value| %>
+      data-<%= key.to_s.dasherize %>="<%= value %>"
+      <% end %>
+    ><%= current_value %></textarea>
+  <% else %>
+    <input
+      type="<%= input_type %>"
+      id="<%= component_id %>-input"
+      name="<%= field_name %>"
+      value="<%= current_value %>"
+      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+      placeholder="<%= placeholder %>"
+      <%= 'required' if required? %>
+      <% stimulus_attrs.each do |key, value| %>
+      data-<%= key.to_s.dasherize %>="<%= value %>"
+      <% end %>
+    >
+  <% end %>
+</div>

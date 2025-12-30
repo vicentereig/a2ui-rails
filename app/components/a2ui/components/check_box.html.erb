@@ -1,0 +1,15 @@
+<div id="<%= component_id %>" class="flex items-center">
+  <input
+    type="checkbox"
+    id="<%= component_id %>-input"
+    name="<%= field_name %>"
+    <%= 'checked' if checked? %>
+    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+    <% stimulus_attrs.each do |key, value| %>
+    data-<%= key.to_s.dasherize %>="<%= value %>"
+    <% end %>
+  >
+  <% if label.present? %>
+    <label for="<%= component_id %>-input" class="ml-2 text-sm text-gray-700"><%= label %></label>
+  <% end %>
+</div>
