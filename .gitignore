@@ -54,3 +54,4 @@
 # Reference repos
 vendor/a2ui-reference/
 vendor/turbo-reference/
+*.gem
