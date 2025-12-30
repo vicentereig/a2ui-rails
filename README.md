@@ -18,6 +18,77 @@ This port maps A2UI concepts to Rails + Turbo:
 | Component catalog | ViewComponent library |
 | JSON adjacency list | Rendered HTML fragments |
 
+## DSPy Pipeline
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           A2UI DSPy Pipelines                               │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ CREATE SURFACE                                                       │   │
+│  │                                                                      │   │
+│  │   "Create a booking form"  ───▶  GenerateUI (ChainOfThought)        │   │
+│  │         + surface_id                      │                          │   │
+│  │         + available_data           ┌──────┴──────┐                   │   │
+│  │                                    ▼             ▼                   │   │
+│  │                              root_id      components[]               │   │
+│  │                              "form-1"     [Column, TextField,        │   │
+│  │                                            TextField, Button]        │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ UPDATE SURFACE                                                       │   │
+│  │                                                                      │   │
+│  │   "Add phone field"        ───▶  UpdateUI (ChainOfThought)          │   │
+│  │         + current_components              │                          │   │
+│  │         + current_data             ┌──────┴──────┐                   │   │
+│  │                                    ▼             ▼                   │   │
+│  │                              streams[]    new_components[]           │   │
+│  │                              [{action:    [TextFieldComponent]       │   │
+│  │                                "after",                              │   │
+│  │                                target:                               │   │
+│  │                                "email"}]                             │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │ HANDLE ACTION                                                        │   │
+│  │                                                                      │   │
+│  │   UserAction{name,context} ───▶  HandleAction (ChainOfThought)      │   │
+│  │         + business_rules                  │                          │   │
+│  │         + current_data            ┌───────┼───────┐                  │   │
+│  │                                   ▼       ▼       ▼                  │   │
+│  │                            response   streams  data_updates          │   │
+│  │                            _type      []       [{path: "/booking",   │   │
+│  │                            :update_ui          entries: [...]}]      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### How It Works
+
+**Signals (Inputs):**
+- `request` — Natural language describing what to build/change
+- `available_data` / `current_data` — JSON data model the UI binds to
+- `current_components` — Existing component tree for incremental updates
+- `business_rules` — Domain constraints for action handling
+
+**Decisions (LLM Reasoning via ChainOfThought):**
+1. **Component Selection** — Which component types fit the request?
+2. **Layout Structure** — How to arrange components (Row vs Column, nesting)?
+3. **Data Binding** — Which JSON Pointer paths connect to which fields?
+4. **Action Mapping** — What context to capture when buttons are clicked?
+5. **Stream Operations** — For updates: append, replace, or remove?
+
+**Outputs (Structured):**
+- `components[]` — Flat adjacency list of typed component structs
+- `root_id` — Entry point for rendering the tree
+- `streams[]` — Turbo Stream operations (action + target + content)
+- `data_updates[]` — Mutations to apply to the data model
+
+The LLM never generates code—only typed data structures that map to trusted ViewComponents.
+
 ## Installation
 
 Add to your Gemfile:
@@ -278,11 +349,16 @@ bundle exec rspec
 bundle exec srb tc
 ```
 
+## Next Steps
+
+- [ ] **Add LayoutEvidenceSteps** — Track layout decisions (why Column vs Row? why this nesting?) as structured reasoning evidence for debugging and optimization
+- [ ] **Build a demo app** — Interactive playground showing surface creation, updates, and action handling in real-time
+
 ## Roadmap
 
 - [ ] More components (Select, Slider, Tabs, Modal)
 - [ ] Data-driven children (repeat templates from array)
-- [ ] Optimizers for prompt tuning
+- [ ] Optimizers for prompt tuning (MIPROv2 for signature optimization)
 - [ ] Rails generator for scaffolding
 - [ ] JavaScript package for standalone use
 
