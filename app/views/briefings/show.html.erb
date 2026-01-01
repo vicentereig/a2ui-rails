@@ -1,5 +1,5 @@
 <div class="briefing-container">
-  <div class="max-w-xl mx-auto">
+  <div class="briefing-wrapper">
     <div id="briefing-container"
          data-controller="briefing"
          data-briefing-user-id-value="<%= @user_id %>"
@@ -20,10 +20,18 @@
 
       <!-- Main Content -->
       <div id="content-state" class="briefing-card">
+        <!-- Token Display (top-right caption) -->
+        <div id="token-display" class="token-display hidden">
+          <span class="token-model">...</span>
+          <span class="token-separator">·</span>
+          <span class="token-count">0</span>
+          <span class="token-label">tokens</span>
+        </div>
+
         <!-- Header -->
         <header class="briefing-header">
           <h1 id="greeting" class="briefing-greeting">Daily Briefing</h1>
-          <p class="briefing-date"><%= Date.parse(@date).strftime('%A, %B %-d') %></p>
+          <p class="briefing-date"><%= Date.parse(@date).strftime('%A, %B %-d, %Y') %></p>
         </header>
 
         <!-- Status (single consolidated block) -->

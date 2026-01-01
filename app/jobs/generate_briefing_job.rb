@@ -66,15 +66,28 @@ class GenerateBriefingJob < ApplicationJob
         "performance_context:\n#{contexts[:performance_context]}"
       )
 
-      # Generate briefing via DSPy
-      generator = Briefing::DailyBriefingGenerator.new
-      result = generator.call(
-        user_name: fetch_user_name(user_id),
-        date: date,
-        health_context: contexts[:health_context],
-        activity_context: contexts[:activity_context],
-        performance_context: contexts[:performance_context]
-      )
+      # Generate briefing via DSPy with token tracking
+      token_usage = { input_tokens: 0, output_tokens: 0, model: nil }
+      subscription_id = DSPy.events.subscribe('llm.generate') do |_, attrs|
+        token_usage[:input_tokens] += attrs[:input_tokens] || 0
+        token_usage[:output_tokens] += attrs[:output_tokens] || 0
+        token_usage[:model] ||= attrs[:model]
+        # Broadcast incremental token updates
+        BriefingChannel.broadcast_token_usage(user_id, token_usage)
+      end
+
+      begin
+        generator = Briefing::DailyBriefingGenerator.new
+        result = generator.call(
+          user_name: fetch_user_name(user_id),
+          date: date,
+          health_context: contexts[:health_context],
+          activity_context: contexts[:activity_context],
+          performance_context: contexts[:performance_context]
+        )
+      ensure
+        DSPy.events.unsubscribe(subscription_id) if subscription_id
+      end
 
       # Broadcast status (single consolidated block)
       BriefingChannel.broadcast_status(user_id, result.status)
@@ -138,7 +151,7 @@ class GenerateBriefingJob < ApplicationJob
       # Performance queries (4 parallel)
       if available[:performance_metrics]
         barrier.async { results[:performance_metrics] = performance_query.latest }
-        barrier.async { results[:training_load] = performance_query.training_load_status }
+        barrier.async { results[:training_load] = performance_query.training_status_summary }
         barrier.async { results[:vo2max_trend] = performance_query.vo2max_trend }
         barrier.async { results[:race_predictions] = performance_query.race_predictions }
       end

@@ -76,6 +76,16 @@
   background: var(--color-bg);
   min-height: 100vh;
   padding: var(--space-2xl) var(--space-xl);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Card wrapper - 1/3 viewport width with reasonable limits */
+.briefing-wrapper {
+  width: 33vw;
+  min-width: 340px;
+  max-width: 480px;
 }
 
 /* ============================================
@@ -87,6 +97,55 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card);
   padding: var(--space-xl) var(--space-xl) var(--space-lg);
+  position: relative;
+}
+
+/* ============================================
+   Token Display - Top Right Caption
+   ============================================ */
+.token-display {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.6875rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-subtle);
+  background: var(--color-surface-inset);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  cursor: default;
+  transition: color 0.15s ease;
+}
+
+.token-display:hover {
+  color: var(--color-text-muted);
+}
+
+.token-model {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  max-width: 10ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.token-separator {
+  color: var(--color-text-subtle);
+}
+
+.token-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.token-label {
+  color: var(--color-text-subtle);
 }
 
 /* ============================================
@@ -421,6 +480,12 @@
 @media (max-width: 640px) {
   .briefing-container {
     padding: var(--space-lg) var(--space-md);
+  }
+
+  .briefing-wrapper {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
   }
 
   .briefing-card {

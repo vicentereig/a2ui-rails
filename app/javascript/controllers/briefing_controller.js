@@ -38,6 +38,14 @@ export default class extends Controller {
     document.getElementById('status-container').innerHTML = ''
     document.getElementById('suggestions-container').innerHTML = ''
 
+    // Reset token display
+    const tokenDisplay = document.getElementById('token-display')
+    if (tokenDisplay) {
+      tokenDisplay.classList.remove('hidden')
+      tokenDisplay.querySelector('.token-model').textContent = '...'
+      tokenDisplay.querySelector('.token-count').textContent = '0'
+    }
+
     // Request briefing via ActionCable
     this.subscription.perform('request_briefing', { date: this.dateValue })
   }
@@ -79,6 +87,35 @@ export default class extends Controller {
         document.getElementById('error-message').textContent = data.message
         document.getElementById('action-bar').classList.remove('hidden')
         break
+
+      case 'token_usage':
+        this.updateTokenDisplay(data)
+        break
     }
+  }
+
+  updateTokenDisplay(data) {
+    const tokenDisplay = document.getElementById('token-display')
+    if (!tokenDisplay) return
+
+    tokenDisplay.classList.remove('hidden')
+
+    // Format model name (remove provider prefix for display)
+    const modelName = data.model ? data.model.split('/').pop() : '...'
+    tokenDisplay.querySelector('.token-model').textContent = modelName
+
+    // Format token count
+    const total = data.total_tokens || 0
+    tokenDisplay.querySelector('.token-count').textContent = this.formatTokenCount(total)
+
+    // Update tooltip with detailed breakdown
+    tokenDisplay.title = `Input: ${data.input_tokens || 0} | Output: ${data.output_tokens || 0}`
+  }
+
+  formatTokenCount(count) {
+    if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'k'
+    }
+    return count.toString()
   }
 }

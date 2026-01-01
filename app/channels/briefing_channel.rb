@@ -88,6 +88,16 @@ class BriefingChannel < ApplicationCable::Channel
       })
     end
 
+    def broadcast_token_usage(user_id, token_usage)
+      ActionCable.server.broadcast(stream_name(user_id), {
+        type: 'token_usage',
+        model: token_usage[:model],
+        input_tokens: token_usage[:input_tokens],
+        output_tokens: token_usage[:output_tokens],
+        total_tokens: token_usage[:input_tokens] + token_usage[:output_tokens]
+      })
+    end
+
     def stream_name(user_id)
       "briefing:#{user_id}"
     end

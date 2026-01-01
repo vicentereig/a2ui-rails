@@ -60,12 +60,15 @@ RSpec.describe GenerateBriefingJob, type: :job do
   let(:mock_vo2max_trend) { nil }
   let(:mock_race_predictions) { nil }
 
-  let(:mock_insight) do
-    Briefing::InsightBlock.new(
-      icon: '😴',
-      headline: 'Sleep Recovery',
-      narrative: 'You slept well last night.',
-      sentiment: Briefing::Sentiment::Positive
+  let(:mock_status) do
+    Briefing::StatusSummary.new(
+      headline: 'Ready to perform',
+      summary: 'Your recovery metrics look good.',
+      sentiment: Briefing::Sentiment::Positive,
+      metrics: [
+        Briefing::MetricItem.new(label: 'Sleep', value: '7.5h'),
+        Briefing::MetricItem.new(label: 'HRV', value: '52ms')
+      ]
     )
   end
 
@@ -80,7 +83,7 @@ RSpec.describe GenerateBriefingJob, type: :job do
   let(:mock_briefing_output) do
     double('BriefingOutput',
       greeting: 'Good morning',
-      insights: [mock_insight],
+      status: mock_status,
       suggestions: [mock_suggestion]
     )
   end
@@ -112,7 +115,7 @@ RSpec.describe GenerateBriefingJob, type: :job do
     allow(mock_activities_query).to receive(:week_stats).and_return(mock_week_stats)
 
     allow(mock_performance_query).to receive(:latest).and_return(mock_performance)
-    allow(mock_performance_query).to receive(:training_load_status).and_return(mock_training_load)
+    allow(mock_performance_query).to receive(:training_status_summary).and_return(mock_training_load)
     allow(mock_performance_query).to receive(:vo2max_trend).and_return(mock_vo2max_trend)
     allow(mock_performance_query).to receive(:race_predictions).and_return(mock_race_predictions)
 
@@ -123,9 +126,9 @@ RSpec.describe GenerateBriefingJob, type: :job do
 
   describe '#perform' do
     context 'with valid Garmin data' do
-      it 'broadcasts insights to the user channel' do
-        expect(BriefingChannel).to receive(:broadcast_insight)
-          .with(user_id, mock_insight)
+      it 'broadcasts status to the user channel' do
+        expect(BriefingChannel).to receive(:broadcast_status)
+          .with(user_id, mock_status)
 
         allow(BriefingChannel).to receive(:broadcast_suggestion)
         allow(BriefingChannel).to receive(:broadcast_complete)
@@ -137,14 +140,14 @@ RSpec.describe GenerateBriefingJob, type: :job do
         expect(BriefingChannel).to receive(:broadcast_suggestion)
           .with(user_id, mock_suggestion)
 
-        allow(BriefingChannel).to receive(:broadcast_insight)
+        allow(BriefingChannel).to receive(:broadcast_status)
         allow(BriefingChannel).to receive(:broadcast_complete)
 
         described_class.new.perform(user_id: user_id, date: date)
       end
 
       it 'broadcasts completion when done' do
-        allow(BriefingChannel).to receive(:broadcast_insight)
+        allow(BriefingChannel).to receive(:broadcast_status)
         allow(BriefingChannel).to receive(:broadcast_suggestion)
 
         expect(BriefingChannel).to receive(:broadcast_complete)
@@ -154,7 +157,7 @@ RSpec.describe GenerateBriefingJob, type: :job do
       end
 
       it 'calls the DSPy generator with correct context' do
-        allow(BriefingChannel).to receive(:broadcast_insight)
+        allow(BriefingChannel).to receive(:broadcast_status)
         allow(BriefingChannel).to receive(:broadcast_suggestion)
         allow(BriefingChannel).to receive(:broadcast_complete)
 

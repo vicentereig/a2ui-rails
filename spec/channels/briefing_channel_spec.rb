@@ -74,21 +74,21 @@ RSpec.describe BriefingChannel, type: :channel do
     end
   end
 
-  describe '.broadcast_insight' do
-    it 'broadcasts an insight block to the user stream' do
-      insight = Briefing::InsightBlock.new(
-        icon: '😴',
-        headline: 'Sleep Recovery',
-        narrative: 'You slept well.',
-        sentiment: Briefing::Sentiment::Positive
+  describe '.broadcast_status' do
+    it 'broadcasts a status block to the user stream' do
+      status = Briefing::StatusSummary.new(
+        headline: 'Ready to perform',
+        summary: 'Your recovery metrics look good.',
+        sentiment: Briefing::Sentiment::Positive,
+        metrics: []
       )
 
       expect {
-        described_class.broadcast_insight(user_id, insight)
+        described_class.broadcast_status(user_id, status)
       }.to have_broadcasted_to("briefing:#{user_id}")
         .with(hash_including(
-          type: 'insight',
-          html: /Sleep Recovery/
+          type: 'status',
+          html: /Ready to perform/
         ))
     end
   end
@@ -128,6 +128,27 @@ RSpec.describe BriefingChannel, type: :channel do
         .with(hash_including(
           type: 'error',
           message: 'Something went wrong'
+        ))
+    end
+  end
+
+  describe '.broadcast_token_usage' do
+    it 'broadcasts token usage with model and counts' do
+      token_usage = {
+        model: 'anthropic/claude-haiku-4-5-20251001',
+        input_tokens: 1500,
+        output_tokens: 500
+      }
+
+      expect {
+        described_class.broadcast_token_usage(user_id, token_usage)
+      }.to have_broadcasted_to("briefing:#{user_id}")
+        .with(hash_including(
+          type: 'token_usage',
+          model: 'anthropic/claude-haiku-4-5-20251001',
+          input_tokens: 1500,
+          output_tokens: 500,
+          total_tokens: 2000
         ))
     end
   end
