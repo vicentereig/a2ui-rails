@@ -1,0 +1,22 @@
+<div id="<%= component_id %>" class="space-y-1">
+  <% if label.present? %>
+    <label for="<%= component_id %>-select" class="block text-sm font-medium text-gray-700">
+      <%= label %>
+    </label>
+  <% end %>
+
+  <select
+    id="<%= component_id %>-select"
+    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+    <% stimulus_attrs.each do |key, value| %>
+    data-<%= key.to_s.dasherize %>="<%= value %>"
+    <% end %>
+  >
+    <% if placeholder.present? %>
+      <option value="" disabled <%= 'selected' if current_value.blank? %>><%= placeholder %></option>
+    <% end %>
+    <% options.each do |opt| %>
+      <option value="<%= opt['value'] %>" <%= 'selected' if opt['value'] == current_value %>><%= opt['label'] %></option>
+    <% end %>
+  </select>
+</div>

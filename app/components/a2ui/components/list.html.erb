@@ -1,0 +1,5 @@
+<div id="<%= component_id %>" class="flex <%= orientation_class %>">
+  <% child_ids.each do |child_id| %>
+    <%= renderer.render_by_id(child_id) %>
+  <% end %>
+</div>

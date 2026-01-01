@@ -1,0 +1,23 @@
+<div id="<%= component_id %>" class="space-y-1">
+  <% if label.present? %>
+    <div class="flex justify-between">
+      <label for="<%= component_id %>-slider" class="block text-sm font-medium text-gray-700">
+        <%= label %>
+      </label>
+      <span id="<%= component_id %>-value" class="text-sm text-gray-500"><%= current_value %></span>
+    </div>
+  <% end %>
+
+  <input
+    type="range"
+    id="<%= component_id %>-slider"
+    min="<%= min %>"
+    max="<%= max %>"
+    step="<%= step %>"
+    value="<%= current_value %>"
+    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+    <% stimulus_attrs.each do |key, value| %>
+    data-<%= key.to_s.dasherize %>="<%= value %>"
+    <% end %>
+  >
+</div>

@@ -33,6 +33,17 @@ module A2UI
           CheckBox.new(component: component, surface_id: surface_id, data: data)
         when A2UI::DividerComponent
           Divider.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::SelectComponent
+          Select.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::SliderComponent
+          Slider.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::IconComponent
+          Icon.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::ImageComponent
+          Image.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::ListComponent
+          renderer = new(surface_id: surface_id, components_lookup: components_lookup, data: data)
+          List.new(component: component, surface_id: surface_id, data: data, renderer: renderer)
         else
           Unsupported.new(component: component, surface_id: surface_id, data: data)
         end
@@ -54,6 +65,33 @@ module A2UI
           surface_id: surface.id,
           components_lookup: surface.components,
           data: surface.data
+        )
+      end
+
+      # Instance-based API for rendering child components
+      sig do
+        params(
+          surface_id: String,
+          components_lookup: T::Hash[String, A2UI::Component],
+          data: T::Hash[String, T.untyped]
+        ).void
+      end
+      def initialize(surface_id:, components_lookup:, data: {})
+        @surface_id = surface_id
+        @components_lookup = components_lookup
+        @data = data
+      end
+
+      sig { params(id: String).returns(T.nilable(ViewComponent::Base)) }
+      def render_by_id(id)
+        component = @components_lookup[id]
+        return nil unless component
+
+        self.class.for(
+          component,
+          surface_id: @surface_id,
+          components_lookup: @components_lookup,
+          data: @data
         )
       end
     end
