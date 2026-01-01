@@ -1,0 +1,68 @@
+{
+  "name": "@a2ui/core",
+  "version": "0.1.0",
+  "description": "A2UI - AI-generated UI components for the web",
+  "type": "module",
+  "main": "dist/a2ui.js",
+  "module": "dist/a2ui.esm.js",
+  "types": "dist/a2ui.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/a2ui.esm.js",
+      "require": "./dist/a2ui.js",
+      "types": "./dist/a2ui.d.ts"
+    },
+    "./components": {
+      "import": "./dist/components.esm.js",
+      "require": "./dist/components.js"
+    },
+    "./stimulus": {
+      "import": "./dist/stimulus.esm.js",
+      "require": "./dist/stimulus.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest"
+  },
+  "keywords": [
+    "a2ui",
+    "ui",
+    "ai",
+    "components",
+    "stimulus",
+    "turbo"
+  ],
+  "author": "Vicente Reig",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vicentereig/a2ui-rails.git",
+    "directory": "packages/a2ui-js"
+  },
+  "peerDependencies": {
+    "@hotwired/stimulus": "^3.0.0",
+    "@hotwired/turbo": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@hotwired/stimulus": {
+      "optional": true
+    },
+    "@hotwired/turbo": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

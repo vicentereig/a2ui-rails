@@ -1,0 +1,18 @@
+<div class="<%= file_name %>-container">
+  <h1><%= class_name %></h1>
+
+  <%%= turbo_frame_tag @surface_id do %>
+    <%% if @surface %>
+      <%%= render partial: 'a2ui/surface', locals: { surface: @surface } %>
+    <%% else %>
+      <div class="<%= file_name %>-empty-state">
+        <p>No surface generated yet.</p>
+        <%%= button_to 'Generate Surface',
+                      generate_<%= file_name %>_path(params[:id]),
+                      method: :post,
+                      class: 'btn btn-primary',
+                      data: { turbo_frame: @surface_id } %>
+      </div>
+    <%% end %>
+  <%% end %>
+</div>

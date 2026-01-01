@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe <%= plural_class_name %>Controller, type: :controller do
+  describe 'GET #show' do
+    it 'returns http success' do
+      get :show, params: { id: 'test' }
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'sets the surface_id' do
+      get :show, params: { id: 'test' }
+      expect(assigns(:surface_id)).to eq('<%= file_name %>_test')
+    end
+  end
+
+  describe 'POST #generate' do
+    it 'creates a new surface', :vcr do
+      post :generate, params: { id: 'test' }
+      expect(assigns(:surface)).to be_present
+    end
+
+    it 'redirects to show on html format', :vcr do
+      post :generate, params: { id: 'test' }
+      expect(response).to redirect_to(<%= file_name %>_path('test'))
+    end
+  end
+end

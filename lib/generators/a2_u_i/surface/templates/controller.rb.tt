@@ -1,0 +1,51 @@
+# frozen_string_literal: true
+
+class <%= plural_class_name %>Controller < ApplicationController
+  before_action :set_surface_manager
+
+  def show
+    @surface_id = "<%= file_name %>_#{params[:id]}"
+    @surface = @manager.get(@surface_id)
+  end
+
+  def generate
+    surface_id = "<%= file_name %>_#{params[:id]}"
+
+    # Create or update the surface
+    @surface = @manager.create(
+      surface_id: surface_id,
+      request: <%= file_name %>_request,
+      data: initial_data.to_json
+    )
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          surface_id,
+          partial: 'a2ui/surface',
+          locals: { surface: @surface }
+        )
+      end
+      format.html { redirect_to <%= file_name %>_path(params[:id]) }
+    end
+  end
+
+  private
+
+  def set_surface_manager
+    @manager = A2UI::SurfaceManager.for(scope: session.id.to_s)
+  end
+
+  # Define what UI to generate
+  def <%= file_name %>_request
+    'Create a simple card with a title and description'
+  end
+
+  # Initial data for the surface
+  def initial_data
+    {
+      title: '<%= class_name %>',
+      description: 'This is your new A2UI surface.'
+    }
+  end
+end

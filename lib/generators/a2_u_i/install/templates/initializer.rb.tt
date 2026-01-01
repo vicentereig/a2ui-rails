@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+A2UI.configure do |config|
+  # The default language model for UI generation
+  # config.default_model = 'anthropic/claude-sonnet-4-20250514'
+
+  # Cache store for surface state (defaults to Rails.cache)
+  # config.cache_store = Rails.cache
+
+  # Enable debug mode for verbose logging
+  # config.debug = Rails.env.development?
+
+  # Prefix for component CSS classes
+  # config.component_prefix = 'a2ui'
+end
