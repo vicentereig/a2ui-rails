@@ -7,11 +7,11 @@
   "properties": {
     "greeting": {
       "type": "string",
-      "description": "Brief personalized greeting"
+      "description": "Warm personalized greeting"
     },
     "insights": {
       "type": "array",
-      "description": "Health/fitness insights (numbers go in metrics array)",
+      "description": "Meaningful health/fitness insights (numbers go in metrics array)",
       "items": { "$ref": "#/$defs/InsightBlock" }
     },
     "suggestions": {
@@ -64,11 +64,11 @@
         },
         "headline": {
           "type": "string",
-          "description": "Punchy headline"
+          "description": "Compelling headline that captures attention"
         },
         "narrative": {
           "type": "string",
-          "description": "Succinct explanation of the insight"
+          "description": "Clear explanation connecting data to meaning"
         },
         "sentiment": { "$ref": "#/$defs/Sentiment" },
         "metrics": {
@@ -85,11 +85,11 @@
       "properties": {
         "title": {
           "type": "string",
-          "description": "Brief action-oriented title"
+          "description": "Direct action-oriented title"
         },
         "body": {
           "type": "string",
-          "description": "Concise actionable advice"
+          "description": "Specific actionable advice with clear next steps"
         },
         "icon": {
           "type": "string",

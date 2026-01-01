@@ -39,16 +39,16 @@ module Briefing
   # An insight block with narrative and optional metrics
   class InsightBlock < T::Struct
     const :icon, String, description: 'Single emoji icon for the insight category'
-    const :headline, String, description: 'Punchy headline'
-    const :narrative, String, description: 'Succinct explanation of the insight'
+    const :headline, String, description: 'Compelling headline that captures attention'
+    const :narrative, String, description: 'Clear explanation connecting data to meaning'
     const :sentiment, Sentiment, description: 'Overall sentiment of the insight'
     const :metrics, T::Array[MetricItem], default: [], description: 'Key metrics to display inline'
   end
 
   # A suggestion or recommendation
   class Suggestion < T::Struct
-    const :title, String, description: 'Brief action-oriented title'
-    const :body, String, description: 'Concise actionable advice'
+    const :title, String, description: 'Direct action-oriented title'
+    const :body, String, description: 'Specific actionable advice with clear next steps'
     const :icon, String, default: '💡', description: 'Single emoji icon'
     const :suggestion_type, SuggestionType, description: 'Category of suggestion'
   end

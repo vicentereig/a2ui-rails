@@ -48,8 +48,8 @@ This document describes the input and output schema for the AI-generated daily h
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `greeting` | String | Yes | Brief personalized greeting |
-| `insights` | InsightBlock[] | Yes | Health/fitness insights |
+| `greeting` | String | Yes | Warm personalized greeting |
+| `insights` | InsightBlock[] | Yes | Meaningful health/fitness insights |
 | `suggestions` | Suggestion[] | Yes | Actionable suggestions |
 
 ### InsightBlock
@@ -59,8 +59,8 @@ Represents a single insight about the user's health or fitness.
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
 | `icon` | String | Yes | - | Single emoji icon for the category |
-| `headline` | String | Yes | - | Punchy headline |
-| `narrative` | String | Yes | - | Succinct explanation |
+| `headline` | String | Yes | - | Compelling headline that captures attention |
+| `narrative` | String | Yes | - | Clear explanation connecting data to meaning |
 | `sentiment` | Sentiment | Yes | - | Overall sentiment |
 | `metrics` | MetricItem[] | No | `[]` | Key metrics to display inline |
 
@@ -80,8 +80,8 @@ An actionable recommendation for the user.
 
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
-| `title` | String | Yes | - | Brief action-oriented title |
-| `body` | String | Yes | - | Concise actionable advice |
+| `title` | String | Yes | - | Direct action-oriented title |
+| `body` | String | Yes | - | Specific actionable advice with clear next steps |
 | `icon` | String | No | `"💡"` | Single emoji icon |
 | `suggestion_type` | SuggestionType | Yes | - | Category of suggestion |
 

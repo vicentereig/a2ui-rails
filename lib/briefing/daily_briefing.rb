@@ -15,8 +15,8 @@ module Briefing
     end
 
     output do
-      const :greeting, String, description: 'Brief personalized greeting'
-      const :insights, T::Array[InsightBlock], description: 'Health/fitness insights (put numbers in metrics array, not narrative)'
+      const :greeting, String, description: 'Warm personalized greeting'
+      const :insights, T::Array[InsightBlock], description: 'Meaningful health/fitness insights (put numbers in metrics array, not narrative)'
       const :suggestions, T::Array[Suggestion]
     end
   end
