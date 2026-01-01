@@ -1,12 +1,7 @@
 <article class="insight-block" data-component="insight-block" data-sentiment="<%= sentiment %>">
-  <div class="flex gap-3">
-    <span class="insight-icon"><%= icon %></span>
-    <div class="flex-1 min-w-0">
-      <h3 class="insight-headline"><%= headline %></h3>
-      <% if metrics? %>
-        <%= render Briefing::MetricInlineComponent.new(metrics: metrics) %>
-      <% end %>
-      <p class="insight-narrative"><%= narrative %></p>
-    </div>
-  </div>
+  <h3 class="insight-headline"><%= headline %></h3>
+  <% if metrics? %>
+    <%= render Briefing::MetricInlineComponent.new(metrics: metrics) %>
+  <% end %>
+  <p class="insight-narrative"><%= narrative %></p>
 </article>

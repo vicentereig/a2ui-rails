@@ -30,14 +30,12 @@ export default class extends Controller {
     // Show loading state
     document.getElementById('loading-state').classList.remove('hidden')
     document.getElementById('content-state').classList.add('hidden')
-    document.getElementById('generate-section').classList.add('hidden')
     document.getElementById('error-state').classList.add('hidden')
     document.getElementById('warning-state').classList.add('hidden')
-    document.getElementById('complete-state').classList.add('hidden')
     document.getElementById('suggestions-section').classList.add('hidden')
 
     // Clear previous results
-    document.getElementById('insights-container').innerHTML = ''
+    document.getElementById('status-container').innerHTML = ''
     document.getElementById('suggestions-container').innerHTML = ''
 
     // Request briefing via ActionCable
@@ -51,14 +49,14 @@ export default class extends Controller {
         document.getElementById('content-state').classList.add('hidden')
         break
 
-      case 'insight':
+      case 'status':
         document.getElementById('loading-state').classList.add('hidden')
         document.getElementById('content-state').classList.remove('hidden')
-        document.getElementById('insights-container').insertAdjacentHTML('beforeend', data.html)
+        document.getElementById('action-bar').classList.add('hidden')
+        document.getElementById('status-container').innerHTML = data.html
         break
 
       case 'suggestion':
-        // Show suggestions section when first suggestion arrives
         document.getElementById('suggestions-section').classList.remove('hidden')
         document.getElementById('suggestions-container').insertAdjacentHTML('beforeend', data.html)
         break
@@ -66,8 +64,7 @@ export default class extends Controller {
       case 'complete':
         document.getElementById('loading-state').classList.add('hidden')
         document.getElementById('content-state').classList.remove('hidden')
-        document.getElementById('complete-state').classList.remove('hidden')
-        document.getElementById('generate-section').classList.remove('hidden')
+        document.getElementById('action-bar').classList.remove('hidden')
         break
 
       case 'warning':
@@ -80,7 +77,7 @@ export default class extends Controller {
         document.getElementById('content-state').classList.remove('hidden')
         document.getElementById('error-state').classList.remove('hidden')
         document.getElementById('error-message').textContent = data.message
-        document.getElementById('generate-section').classList.remove('hidden')
+        document.getElementById('action-bar').classList.remove('hidden')
         break
     }
   }

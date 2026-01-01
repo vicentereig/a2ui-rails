@@ -8,12 +8,6 @@ RSpec.describe Briefing::InsightBlockComponent, type: :component do
   let(:headline) { 'Ready for intensity' }
   let(:narrative) { 'Body battery recharged to 91 overnight. HRV stable at 52ms.' }
 
-  it 'renders the icon' do
-    render_inline(described_class.new(icon: icon, headline: headline, narrative: narrative))
-
-    expect(page).to have_text('🔋')
-  end
-
   it 'renders the headline' do
     render_inline(described_class.new(icon: icon, headline: headline, narrative: narrative))
 

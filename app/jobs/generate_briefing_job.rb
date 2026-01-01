@@ -76,10 +76,8 @@ class GenerateBriefingJob < ApplicationJob
         performance_context: contexts[:performance_context]
       )
 
-      # Broadcast insights
-      result.insights.each do |insight|
-        BriefingChannel.broadcast_insight(user_id, insight)
-      end
+      # Broadcast status (single consolidated block)
+      BriefingChannel.broadcast_status(user_id, result.status)
 
       # Broadcast suggestions
       result.suggestions.each do |suggestion|

@@ -20,17 +20,10 @@ RSpec.describe Briefing::SuggestionComponent, type: :component do
     expect(page).to have_text('Your body can handle the load')
   end
 
-  it 'renders the lightbulb icon by default' do
+  it 'renders accent marker' do
     render_inline(described_class.new(title: title, body: body))
 
-    expect(page).to have_text('💡')
-  end
-
-  it 'supports custom icons' do
-    render_inline(described_class.new(title: title, body: body, icon: '🏃'))
-
-    expect(page).to have_text('🏃')
-    expect(page).not_to have_text('💡')
+    expect(page).to have_css('.suggestion-marker')
   end
 
   it 'supports different suggestion types' do

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Briefing
-  # Sentiment for insight blocks
+  # Sentiment for status
   class Sentiment < T::Enum
     enums do
       Positive = new('positive')
@@ -29,34 +29,41 @@ module Briefing
     end
   end
 
-  # A single metric item (e.g., "7.5 hours", "52 ms HRV")
+  # A single metric item
   class MetricItem < T::Struct
-    const :label, String, description: 'Short label for the metric (e.g., "Sleep", "HRV", "Body Battery")'
-    const :value, String, description: 'Value with unit (e.g., "7.5h", "52ms", "85%")'
+    const :label, String, description: 'Short label (e.g., "Sleep", "HRV")'
+    const :value, String, description: 'Value with unit (e.g., "7.5h", "52ms")'
     const :trend, T.nilable(TrendDirection), default: nil
   end
 
-  # An insight block with narrative and optional metrics
-  class InsightBlock < T::Struct
-    const :icon, String, description: 'Single emoji icon for the insight category'
-    const :headline, String, description: 'Compelling headline that captures attention'
-    const :narrative, String, description: 'Clear explanation connecting data to meaning'
-    const :sentiment, Sentiment, description: 'Overall sentiment of the insight'
-    const :metrics, T::Array[MetricItem], default: [], description: 'Key metrics to display inline'
+  # Consolidated status summary - one block for all insights
+  class StatusSummary < T::Struct
+    const :headline, String, description: 'Pithy headline (3-5 words)'
+    const :metrics, T::Array[MetricItem], default: [], description: 'Top 3 metrics to display'
+    const :summary, String, description: 'One sentence interpreting all data holistically'
+    const :sentiment, Sentiment, description: 'Overall sentiment'
   end
 
   # A suggestion or recommendation
   class Suggestion < T::Struct
     const :title, String, description: 'Direct action-oriented title'
-    const :body, String, description: 'Specific actionable advice with clear next steps'
-    const :icon, String, default: '💡', description: 'Single emoji icon'
+    const :body, String, description: 'Specific actionable advice'
     const :suggestion_type, SuggestionType, description: 'Category of suggestion'
+  end
+
+  # Legacy InsightBlock for backward compatibility
+  class InsightBlock < T::Struct
+    const :icon, String, description: 'Single emoji icon for the insight category'
+    const :headline, String, description: 'Compelling headline that captures attention'
+    const :narrative, String, description: 'Succinct explanation connecting data to meaning'
+    const :sentiment, Sentiment, description: 'Overall sentiment of the insight'
+    const :metrics, T::Array[MetricItem], default: [], description: 'Key metrics to display inline'
   end
 
   # The complete briefing output
   class BriefingOutput < T::Struct
     const :greeting, String, description: 'Personalized greeting for the user'
-    const :insights, T::Array[InsightBlock], default: [], description: 'Array of insight blocks'
+    const :status, StatusSummary, description: 'Consolidated status summary'
     const :suggestions, T::Array[Suggestion], default: [], description: 'Array of suggestions'
   end
 end

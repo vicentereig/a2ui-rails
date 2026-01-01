@@ -31,8 +31,8 @@ class BriefingChannel < ApplicationCable::Channel
   end
 
   class << self
-    def broadcast_insight(user_id, insight)
-      metrics = insight.metrics.map do |m|
+    def broadcast_status(user_id, status)
+      metrics = status.metrics.map do |m|
         {
           label: m.label,
           value: m.value,
@@ -40,17 +40,16 @@ class BriefingChannel < ApplicationCable::Channel
         }
       end
 
-      component = Briefing::InsightBlockComponent.new(
-        icon: insight.icon,
-        headline: insight.headline,
-        narrative: insight.narrative,
-        sentiment: insight.sentiment.serialize.to_sym,
+      component = Briefing::StatusSummaryComponent.new(
+        headline: status.headline,
+        summary: status.summary,
+        sentiment: status.sentiment.serialize.to_sym,
         metrics: metrics
       )
       html = render_component(component)
 
       ActionCable.server.broadcast(stream_name(user_id), {
-        type: 'insight',
+        type: 'status',
         html: html
       })
     end
@@ -59,7 +58,6 @@ class BriefingChannel < ApplicationCable::Channel
       component = Briefing::SuggestionComponent.new(
         title: suggestion.title,
         body: suggestion.body,
-        icon: suggestion.icon,
         suggestion_type: suggestion.suggestion_type.serialize.to_sym
       )
       html = render_component(component)

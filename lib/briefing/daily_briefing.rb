@@ -4,20 +4,20 @@
 module Briefing
   # Signature for generating a daily health briefing
   class DailyBriefing < DSPy::Signature
-    description 'Generate a concise daily health briefing from health metrics.'
+    description 'Generate a concise daily health briefing from metrics.'
 
     input do
-      const :user_name, String, description: 'Name of the user for personalization'
-      const :date, String, description: 'Date of the briefing (YYYY-MM-DD)'
-      const :health_context, String, description: 'Summary of sleep, HRV, stress, and recovery data'
-      const :activity_context, String, description: 'Summary of recent activities and training'
-      const :performance_context, String, description: 'Summary of fitness metrics and training status'
+      const :user_name, String, description: 'Name of the user'
+      const :date, String, description: 'Date (YYYY-MM-DD)'
+      const :health_context, String, description: 'Sleep, HRV, stress, recovery data'
+      const :activity_context, String, description: 'Recent activities and training'
+      const :performance_context, String, description: 'Fitness metrics and training status'
     end
 
     output do
-      const :greeting, String, description: 'Warm personalized greeting'
-      const :insights, T::Array[InsightBlock], description: 'Meaningful health/fitness insights (put numbers in metrics array, not narrative)'
-      const :suggestions, T::Array[Suggestion]
+      const :greeting, String, description: 'Brief personalized greeting'
+      const :status, StatusSummary, description: 'Single consolidated status block'
+      const :suggestions, T::Array[Suggestion], description: 'Top 2-3 actionable suggestions'
     end
   end
 
