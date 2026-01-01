@@ -13,6 +13,7 @@ module Garmin
 
       sig { params(date: Date).returns(T.nilable(Garmin::DailyHealth)) }
       def for_date(date)
+        return nil unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -28,6 +29,7 @@ module Garmin
       sig { params(days: Integer).returns(T::Array[Garmin::DailyHealth]) }
       def recent(days: 7)
         days = days.to_i
+        return [] unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -41,6 +43,7 @@ module Garmin
       sig { params(days: Integer).returns(SleepTrend) }
       def sleep_trend(days: 7)
         days = days.to_i
+        return SleepTrend.new(avg_sleep_score: 0.0, avg_sleep_hours: 0.0, trend_direction: :stable, consecutive_good_nights: 0) unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         rows = @connection.query(<<~SQL)
           SELECT
@@ -93,6 +96,7 @@ module Garmin
         raise "No health data for #{date}" unless current
 
         baseline_days = baseline_days.to_i
+        return BaselineComparison.new(sleep_vs_baseline: 0.0, steps_vs_baseline: 0.0, stress_vs_baseline: 0.0) unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         # Get baseline averages
         baseline = @connection.query(<<~SQL)
@@ -159,6 +163,7 @@ module Garmin
       sig { params(days: Integer).returns(Integer) }
       def calculate_consecutive_good_nights(days)
         days = days.to_i
+        return 0 unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         rows = @connection.query(<<~SQL)
           SELECT sleep_score FROM #{table}
@@ -181,6 +186,7 @@ module Garmin
       sig { params(days: Integer).returns(Symbol) }
       def calculate_trend_direction(days)
         days = days.to_i
+        return :stable unless @connection.dataset_available?('daily_health')
         table = @connection.table_sql('daily_health')
         rows = @connection.query(<<~SQL)
           SELECT sleep_score, date FROM #{table}

@@ -45,6 +45,8 @@ module Garmin
       @connected = T.let(false, T::Boolean)
       @mode = T.let(nil, T.nilable(Symbol))
       @data_path = T.let(nil, T.nilable(String))
+      @legacy_db_path = T.let(nil, T.nilable(String))
+      @legacy_attached = T.let(false, T::Boolean)
       @db = T.let(nil, T.nilable(DuckDB::Database))
       @conn = T.let(nil, T.nilable(DuckDB::Connection))
 
@@ -90,12 +92,26 @@ module Garmin
       return dataset if db?
 
       base = T.must(@data_path)
-      path = if dataset == 'profiles'
-               File.join(base, 'profiles.parquet')
-             else
-               File.join(base, dataset, '*.parquet')
-             end
+      path = dataset_path(base, dataset)
+      return "'#{path}'" if File.exist?(path) || Dir.glob(path).any?
+
+      if @legacy_db_path
+        attach_legacy! unless @legacy_attached
+        return "legacy.#{dataset}"
+      end
+
       "'#{path}'"
+    end
+
+    sig { params(dataset: String).returns(T::Boolean) }
+    def dataset_available?(dataset)
+      return true if db?
+
+      base = T.must(@data_path)
+      path = dataset_path(base, dataset)
+      return true if File.exist?(path) || Dir.glob(path).any?
+
+      !@legacy_db_path.nil?
     end
 
     sig { params(value: String).returns(String) }
@@ -134,6 +150,8 @@ module Garmin
         @connected = true
         @mode = :parquet
         @data_path = @path
+        legacy_path = File.join(@path, 'garmin.duckdb')
+        @legacy_db_path = File.exist?(legacy_path) ? legacy_path : nil
       else
         unless File.exist?(@path)
           raise ConnectionError, "Database not found: #{@path}"
@@ -148,6 +166,24 @@ module Garmin
       end
     rescue DuckDB::Error => e
       raise ConnectionError, "Failed to connect: #{e.message}"
+    end
+
+    sig { params(base: String, dataset: String).returns(String) }
+    def dataset_path(base, dataset)
+      if dataset == 'profiles'
+        File.join(base, 'profiles.parquet')
+      else
+        File.join(base, dataset, '*.parquet')
+      end
+    end
+
+    sig { void }
+    def attach_legacy!
+      return unless @legacy_db_path
+      return if @legacy_attached
+
+      @conn.query("ATTACH '#{quote_string(@legacy_db_path)}' AS legacy")
+      @legacy_attached = true
     end
   end
 end

@@ -13,6 +13,7 @@ module Garmin
 
       sig { returns(T.nilable(PerformanceMetrics)) }
       def latest
+        return nil unless @connection.dataset_available?('performance_metrics')
         table = @connection.table_sql('performance_metrics')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -27,6 +28,7 @@ module Garmin
 
       sig { params(date: Date).returns(T.nilable(PerformanceMetrics)) }
       def for_date(date)
+        return nil unless @connection.dataset_available?('performance_metrics')
         table = @connection.table_sql('performance_metrics')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -57,6 +59,7 @@ module Garmin
       sig { params(days: Integer).returns(VO2MaxTrend) }
       def vo2max_trend(days: 30)
         days = days.to_i
+        return VO2MaxTrend.new(current: 0.0, change_30d: 0.0, direction: :stable) unless @connection.dataset_available?('performance_metrics')
         table = @connection.table_sql('performance_metrics')
         rows = @connection.query(<<~SQL)
           SELECT vo2max, date FROM #{table}
