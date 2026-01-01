@@ -31,25 +31,25 @@ module Briefing
 
   # A single metric item (e.g., "7.5 hours", "52 ms HRV")
   class MetricItem < T::Struct
-    const :label, String, description: 'The numeric or text value (e.g., "7.5", "52")'
-    const :value, String, description: 'The unit or description (e.g., "hours", "ms HRV")'
+    const :label, String, description: 'Short label for the metric (e.g., "Sleep", "HRV", "Body Battery")'
+    const :value, String, description: 'Value with unit (e.g., "7.5h", "52ms", "85%")'
     const :trend, T.nilable(TrendDirection), default: nil
   end
 
   # An insight block with narrative and optional metrics
   class InsightBlock < T::Struct
-    const :icon, String, description: 'Emoji icon representing the insight category'
-    const :headline, String, description: 'Short headline summarizing the insight'
-    const :narrative, String, description: 'Coach-style narrative explanation'
+    const :icon, String, description: 'Single emoji icon for the insight category'
+    const :headline, String, description: 'Short headline, max 5 words'
+    const :narrative, String, description: 'One concise sentence explaining the insight'
     const :sentiment, Sentiment, description: 'Overall sentiment of the insight'
-    const :metrics, T::Array[MetricItem], default: [], description: 'Optional inline metrics'
+    const :metrics, T::Array[MetricItem], default: [], description: 'Key metrics to display inline (2-4 items)'
   end
 
   # A suggestion or recommendation
   class Suggestion < T::Struct
-    const :title, String, description: 'Short title for the suggestion'
-    const :body, String, description: 'Detailed suggestion text'
-    const :icon, String, default: '💡', description: 'Emoji icon for the suggestion'
+    const :title, String, description: 'Action-oriented title, max 4 words'
+    const :body, String, description: 'One sentence with specific actionable advice'
+    const :icon, String, default: '💡', description: 'Single emoji icon'
     const :suggestion_type, SuggestionType, description: 'Category of suggestion'
   end
 

@@ -2,6 +2,9 @@
   <span class="text-xl flex-shrink-0"><%= icon %></span>
   <div class="flex-1 min-w-0">
     <h3 class="font-medium text-gray-900"><%= headline %></h3>
-    <p class="text-sm text-gray-600 mt-0.5"><%= narrative %></p>
+    <% if metrics? %>
+      <%= render Briefing::MetricInlineComponent.new(metrics: metrics, show_labels: true) %>
+    <% end %>
+    <p class="text-sm text-gray-600 mt-1"><%= narrative %></p>
   </div>
 </div>

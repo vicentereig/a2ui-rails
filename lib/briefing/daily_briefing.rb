@@ -4,7 +4,7 @@
 module Briefing
   # Signature for generating a daily health briefing
   class DailyBriefing < DSPy::Signature
-    description 'Generate a personalized daily health and fitness briefing from Garmin data.'
+    description 'Generate a concise daily health briefing. Keep all text SHORT: headlines max 5 words, narratives max 1 sentence, suggestions max 1 sentence. Use metrics array to show key numbers instead of mentioning them in narrative.'
 
     input do
       const :user_name, String, description: 'Name of the user for personalization'
