@@ -142,6 +142,53 @@ RSpec.describe 'A2UI Union Types' do
       expect(component.children).to be_a(A2UI::DataDrivenChildren)
       expect(component.children.path).to eq('/todos')
     end
+
+    it 'creates TabsComponent with TabItems' do
+      component = A2UI::TabsComponent.new(
+        id: 'settings-tabs',
+        tabs: [
+          A2UI::TabItem.new(label: 'General', child_id: 'general-panel'),
+          A2UI::TabItem.new(label: 'Privacy', child_id: 'privacy-panel'),
+          A2UI::TabItem.new(label: 'Advanced', child_id: 'advanced-panel')
+        ],
+        active_index: 1
+      )
+
+      expect(component.id).to eq('settings-tabs')
+      expect(component.tabs.size).to eq(3)
+      expect(component.tabs.first.label).to eq('General')
+      expect(component.tabs.first.child_id).to eq('general-panel')
+      expect(component.active_index).to eq(1)
+    end
+
+    it 'creates ModalComponent with defaults' do
+      component = A2UI::ModalComponent.new(
+        id: 'confirm-modal',
+        child_id: 'confirm-content',
+        title: 'Confirm Action'
+      )
+
+      expect(component.id).to eq('confirm-modal')
+      expect(component.child_id).to eq('confirm-content')
+      expect(component.title).to eq('Confirm Action')
+      expect(component.is_open).to be false
+      expect(component.size).to eq(A2UI::ModalSize::Medium)
+      expect(component.dismissible).to be true
+    end
+
+    it 'creates ModalComponent with custom size and open state' do
+      component = A2UI::ModalComponent.new(
+        id: 'fullscreen-modal',
+        child_id: 'video-player',
+        is_open: true,
+        size: A2UI::ModalSize::FullScreen,
+        dismissible: false
+      )
+
+      expect(component.is_open).to be true
+      expect(component.size).to eq(A2UI::ModalSize::FullScreen)
+      expect(component.dismissible).to be false
+    end
   end
 
   describe 'enum serialization' do
@@ -158,6 +205,13 @@ RSpec.describe 'A2UI Union Types' do
     it 'serializes ActionResponseType' do
       expect(A2UI::ActionResponseType::UpdateUI.serialize).to eq('update_ui')
       expect(A2UI::ActionResponseType::Navigate.serialize).to eq('navigate')
+    end
+
+    it 'serializes ModalSize' do
+      expect(A2UI::ModalSize::Small.serialize).to eq('small')
+      expect(A2UI::ModalSize::Medium.serialize).to eq('medium')
+      expect(A2UI::ModalSize::Large.serialize).to eq('large')
+      expect(A2UI::ModalSize::FullScreen.serialize).to eq('fullscreen')
     end
   end
 end

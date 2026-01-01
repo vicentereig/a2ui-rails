@@ -13,6 +13,7 @@ require_relative 'types/orientation'
 require_relative 'types/stream_action'
 require_relative 'types/action_response_type'
 require_relative 'types/screen_size'
+require_relative 'types/modal_size'
 
 # Value types
 require_relative 'types/literal_value'
@@ -64,6 +65,9 @@ require_relative 'types/column_component'
 require_relative 'types/card_component'
 require_relative 'types/list_component'
 require_relative 'types/divider_component'
+require_relative 'types/tab_item'
+require_relative 'types/tabs_component'
+require_relative 'types/modal_component'
 
 module A2UI
   # Component union type - all possible component types
@@ -81,7 +85,9 @@ module A2UI
       ColumnComponent,
       CardComponent,
       ListComponent,
-      DividerComponent
+      DividerComponent,
+      TabsComponent,
+      ModalComponent
     )
   end
 end
