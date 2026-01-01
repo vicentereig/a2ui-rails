@@ -3,7 +3,10 @@
     <div id="briefing-container"
          data-controller="briefing"
          data-briefing-user-id-value="<%= @user_id %>"
-         data-briefing-date-value="<%= @date %>">
+         data-briefing-date-value="<%= @date.iso8601 %>"
+         data-briefing-prev-date-value="<%= @prev_date %>"
+         data-briefing-next-date-value="<%= @next_date %>"
+         data-briefing-can-go-next-value="<%= @can_go_next %>">
 
       <!-- Loading State -->
       <div id="loading-state" class="hidden">
@@ -28,10 +31,24 @@
           <span class="token-label">tokens</span>
         </div>
 
-        <!-- Header -->
+        <!-- Header with Navigation -->
         <header class="briefing-header">
-          <h1 id="greeting" class="briefing-greeting">Daily Briefing</h1>
-          <p class="briefing-date"><%= Date.parse(@date).strftime('%A, %B %-d, %Y') %></p>
+          <div class="briefing-nav">
+            <button class="nav-btn" data-action="click->briefing#prevDay" title="Previous day">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <div class="briefing-title-group">
+              <h1 id="greeting" class="briefing-greeting">Daily Briefing</h1>
+              <p id="briefing-date" class="briefing-date"><%= @date.strftime('%A, %B %-d, %Y') %></p>
+            </div>
+            <button class="nav-btn" data-action="click->briefing#nextDay" id="next-btn" <%= 'disabled' unless @can_go_next %> title="Next day">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
         </header>
 
         <!-- Status (single consolidated block) -->

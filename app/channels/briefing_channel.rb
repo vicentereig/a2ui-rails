@@ -19,7 +19,22 @@ class BriefingChannel < ApplicationCable::Channel
 
   def request_briefing(data = {})
     user_id = params[:user_id]
-    date = data['date'] || Time.zone.today.iso8601
+    date_str = data['date'] || Time.zone.today.iso8601
+    force_regenerate = data['force'] == true
+
+    # Check for cached briefing
+    unless force_regenerate
+      cached = BriefingRecord.find_by(
+        user_id: user_id,
+        date: Date.parse(date_str),
+        briefing_type: 'daily'
+      )
+
+      if cached&.generated?
+        self.class.broadcast_cached(user_id, cached)
+        return
+      end
+    end
 
     # Broadcast loading state
     ActionCable.server.broadcast(stream_name(user_id), {
@@ -27,7 +42,7 @@ class BriefingChannel < ApplicationCable::Channel
     })
 
     # Enqueue the background job
-    GenerateBriefingJob.perform_later(user_id: user_id, date: date)
+    GenerateBriefingJob.perform_later(user_id: user_id, date: date_str)
   end
 
   class << self
@@ -96,6 +111,59 @@ class BriefingChannel < ApplicationCable::Channel
         output_tokens: token_usage[:output_tokens],
         total_tokens: token_usage[:input_tokens] + token_usage[:output_tokens]
       })
+    end
+
+    def broadcast_cached(user_id, briefing_record)
+      output = briefing_record.output.deep_symbolize_keys
+
+      # Broadcast token usage first
+      broadcast_token_usage(user_id, {
+        model: briefing_record.model,
+        input_tokens: briefing_record.input_tokens || 0,
+        output_tokens: briefing_record.output_tokens || 0
+      })
+
+      # Broadcast status from cached output
+      status = output[:status]
+      metrics = (status[:metrics] || []).map do |m|
+        {
+          label: m[:label],
+          value: m[:value],
+          trend: m[:trend]&.to_sym
+        }
+      end
+
+      component = Briefing::StatusSummaryComponent.new(
+        headline: status[:headline],
+        summary: status[:summary],
+        sentiment: status[:sentiment].to_sym,
+        metrics: metrics
+      )
+      html = render_component(component)
+
+      ActionCable.server.broadcast(stream_name(user_id), {
+        type: 'status',
+        html: html,
+        cached: true
+      })
+
+      # Broadcast suggestions
+      (output[:suggestions] || []).each do |suggestion|
+        component = Briefing::SuggestionComponent.new(
+          title: suggestion[:title],
+          body: suggestion[:body],
+          suggestion_type: suggestion[:suggestion_type].to_sym
+        )
+        html = render_component(component)
+
+        ActionCable.server.broadcast(stream_name(user_id), {
+          type: 'suggestion',
+          html: html
+        })
+      end
+
+      # Signal completion
+      broadcast_complete(user_id)
     end
 
     def stream_name(user_id)
