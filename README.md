@@ -107,6 +107,18 @@ gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
 # gem 'dspy-gemini'    # Gemini
 ```
 
+### Quick Setup with Generators
+
+```bash
+# Install A2UI (creates initializer, routes, CSS)
+rails generate a2_u_i:install
+
+# Create a new surface
+rails generate a2_u_i:surface Dashboard
+```
+
+### Manual Setup
+
 Copy the `lib/a2ui/` and `app/` directories to your Rails app.
 
 Configure DSPy in an initializer:
@@ -118,12 +130,13 @@ DSPy.configure do |c|
 end
 ```
 
-Add the inflection for proper constant loading:
+Configure A2UI (optional):
 
 ```ruby
-# config/initializers/inflections.rb
-ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.acronym 'A2UI'
+# config/initializers/a2ui.rb
+A2UI.configure do |config|
+  config.default_model = 'anthropic/claude-sonnet-4-20250514'
+  config.debug = Rails.env.development?
 end
 ```
 
@@ -260,11 +273,18 @@ Each component type maps to a ViewComponent:
 | `TextComponent` | `A2UI::Components::Text` | Display text with semantic hints |
 | `ButtonComponent` | `A2UI::Components::Button` | Trigger actions |
 | `TextFieldComponent` | `A2UI::Components::TextField` | Text input with data binding |
+| `CheckBoxComponent` | `A2UI::Components::CheckBox` | Boolean input |
+| `SelectComponent` | `A2UI::Components::Select` | Dropdown select |
+| `SliderComponent` | `A2UI::Components::Slider` | Range slider input |
 | `RowComponent` | `A2UI::Components::Row` | Horizontal flex layout |
 | `ColumnComponent` | `A2UI::Components::Column` | Vertical flex layout |
 | `CardComponent` | `A2UI::Components::Card` | Container with elevation |
-| `CheckBoxComponent` | `A2UI::Components::CheckBox` | Boolean input |
+| `ListComponent` | `A2UI::Components::List` | List with data-driven children |
 | `DividerComponent` | `A2UI::Components::Divider` | Visual separator |
+| `TabsComponent` | `A2UI::Components::Tabs` | Tabbed content |
+| `ModalComponent` | `A2UI::Components::Modal` | Modal dialogs |
+| `ImageComponent` | `A2UI::Components::Image` | Images with fit modes |
+| `IconComponent` | `A2UI::Components::Icon` | Icon display |
 
 ### Data Binding
 
@@ -353,18 +373,44 @@ bundle exec rspec
 bundle exec srb tc
 ```
 
-## Next Steps
+## JavaScript Package
 
-- [ ] **Add LayoutEvidenceSteps** — Track layout decisions (why Column vs Row? why this nesting?) as structured reasoning evidence for debugging and optimization
-- [ ] **Build a demo app** — Interactive playground showing surface creation, updates, and action handling in real-time
+For standalone use without Rails, see the `@a2ui/core` package:
+
+```bash
+npm install @a2ui/core
+```
+
+```typescript
+import { renderSurface, type Surface } from '@a2ui/core';
+
+const surface: Surface = {
+  id: 'my-surface',
+  root_id: 'card-1',
+  components: { /* ... */ },
+  data: {}
+};
+
+document.getElementById('app').innerHTML = renderSurface(surface);
+```
+
+See [packages/a2ui-js/README.md](packages/a2ui-js/README.md) for full documentation.
+
+## Completed Features
+
+- ✅ **15 Component Types** — Text, Button, TextField, CheckBox, Select, Slider, Row, Column, Card, List, Divider, Tabs, Modal, Image, Icon
+- ✅ **Data-driven Children** — Repeat templates from arrays with `DataDrivenChildren`
+- ✅ **Evidence Spans** — Track LLM reasoning for health predictions and UI decisions
+- ✅ **Signal Modeling** — Detect significant changes in Garmin data and user activity
+- ✅ **Rails Engine** — Mountable engine with configuration
+- ✅ **Generators** — `a2_u_i:install` and `a2_u_i:surface`
+- ✅ **JavaScript Package** — Standalone renderer for browser use
 
 ## Roadmap
 
-- [ ] More components (Select, Slider, Tabs, Modal)
-- [ ] Data-driven children (repeat templates from array)
 - [ ] Optimizers for prompt tuning (MIPROv2 for signature optimization)
-- [ ] Rails generator for scaffolding
-- [ ] JavaScript package for standalone use
+- [ ] Interactive A2UI playground demo app
+- [ ] Publish to RubyGems and npm
 
 ## License
 
