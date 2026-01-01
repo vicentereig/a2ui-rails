@@ -46,8 +46,8 @@ module Briefing
 
   # A suggestion or recommendation
   class Suggestion < T::Struct
-    const :title, String, description: 'Direct action-oriented title'
-    const :body, String, description: 'Specific actionable advice'
+    const :title, String, description: 'Pithy action title (3-5 words)'
+    const :body, String, description: 'One sentence with specific action'
     const :suggestion_type, SuggestionType, description: 'Category of suggestion'
   end
 

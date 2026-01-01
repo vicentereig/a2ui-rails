@@ -17,7 +17,7 @@ module Briefing
     output do
       const :greeting, String, description: 'Brief personalized greeting'
       const :status, StatusSummary, description: 'Single consolidated status block'
-      const :suggestions, T::Array[Suggestion], description: 'Top 2-3 actionable suggestions'
+      const :suggestions, T::Array[Suggestion], description: 'Top 2 most actionable suggestions'
     end
   end
 
