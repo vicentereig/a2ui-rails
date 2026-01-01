@@ -2,6 +2,23 @@
 # frozen_string_literal: true
 
 module Briefing
+  # Data source category for evidence tracking
+  class DataSource < T::Enum
+    enums do
+      Health = new('health')
+      Activity = new('activity')
+      Performance = new('performance')
+    end
+  end
+
+  # Evidence span - tracks which data influenced a decision
+  class EvidenceSpan < T::Struct
+    const :source, DataSource, description: 'Data source category (health, activity, performance)'
+    const :metric, String, description: 'Specific metric referenced (e.g., "HRV", "Sleep duration")'
+    const :value, String, description: 'The actual value observed (e.g., "52ms", "5.2h")'
+    const :influence, String, description: 'How this data influenced the insight (1 sentence)'
+  end
+
   # Sentiment for status
   class Sentiment < T::Enum
     enums do
@@ -42,6 +59,7 @@ module Briefing
     const :metrics, T::Array[MetricItem], default: [], description: 'Top 3 metrics to display'
     const :summary, String, description: 'One sentence interpreting all data holistically'
     const :sentiment, Sentiment, description: 'Overall sentiment'
+    const :evidence, T::Array[EvidenceSpan], default: [], description: 'Data points that influenced this status'
   end
 
   # A suggestion or recommendation
@@ -49,6 +67,7 @@ module Briefing
     const :title, String, description: 'Pithy action title (3-5 words)'
     const :body, String, description: 'One sentence with specific action'
     const :suggestion_type, SuggestionType, description: 'Category of suggestion'
+    const :evidence, T::Array[EvidenceSpan], default: [], description: 'Data points that led to this suggestion'
   end
 
   # Legacy InsightBlock for backward compatibility

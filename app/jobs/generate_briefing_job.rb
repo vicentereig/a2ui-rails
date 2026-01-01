@@ -172,16 +172,29 @@ class GenerateBriefingJob < ApplicationJob
             value: m.value,
             trend: m.trend&.serialize
           }
-        end
+        end,
+        evidence: serialize_evidence(result.status.evidence)
       },
       suggestions: result.suggestions.map do |s|
         {
           title: s.title,
           body: s.body,
-          suggestion_type: s.suggestion_type.serialize
+          suggestion_type: s.suggestion_type.serialize,
+          evidence: serialize_evidence(s.evidence)
         }
       end
     }
+  end
+
+  def serialize_evidence(evidence_spans)
+    evidence_spans.map do |e|
+      {
+        source: e.source.serialize,
+        metric: e.metric,
+        value: e.value,
+        influence: e.influence
+      }
+    end
   end
 
   def fetch_garmin_data_async(connection, available, parsed_date)
