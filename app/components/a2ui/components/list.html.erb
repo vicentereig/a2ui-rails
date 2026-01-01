@@ -1,5 +1,11 @@
 <div id="<%= component_id %>" class="flex <%= orientation_class %>">
-  <% child_ids.each do |child_id| %>
-    <%= renderer.render_by_id(child_id) %>
+  <% if data_driven? %>
+    <% data_driven_items.each_with_index do |item, index| %>
+      <%= render renderer.render_template(template_id, item_data: item, index: index) %>
+    <% end %>
+  <% else %>
+    <% child_ids.each do |child_id| %>
+      <%= render renderer.render_by_id(child_id) %>
+    <% end %>
   <% end %>
 </div>

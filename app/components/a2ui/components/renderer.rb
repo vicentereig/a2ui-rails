@@ -94,6 +94,25 @@ module A2UI
           data: @data
         )
       end
+
+      # Render a template component with scoped item data
+      # Used for data-driven children where each item needs its own data context
+      sig { params(id: String, item_data: T::Hash[String, T.untyped], index: Integer).returns(T.nilable(ViewComponent::Base)) }
+      def render_template(id, item_data:, index:)
+        component = @components_lookup[id]
+        return nil unless component
+
+        # Merge the item data at root level for path resolution
+        # Paths in the template like "/name" will resolve to item_data["name"]
+        scoped_data = item_data.merge('_index' => index)
+
+        self.class.for(
+          component,
+          surface_id: @surface_id,
+          components_lookup: @components_lookup,
+          data: scoped_data
+        )
+      end
     end
   end
 end
