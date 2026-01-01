@@ -78,10 +78,10 @@ RSpec.describe 'Briefing Types' do
       metric = Briefing::MetricItem.new(
         label: '52',
         value: 'ms HRV',
-        trend: :up
+        trend: Briefing::TrendDirection::Up
       )
 
-      expect(metric.trend).to eq(:up)
+      expect(metric.trend).to eq(Briefing::TrendDirection::Up)
     end
   end
 

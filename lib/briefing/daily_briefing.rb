@@ -4,7 +4,7 @@
 module Briefing
   # Signature for generating a daily health briefing
   class DailyBriefing < DSPy::Signature
-    description 'Generate a concise daily health briefing. Keep all text SHORT: headlines max 5 words, narratives max 1 sentence, suggestions max 1 sentence. Use metrics array to show key numbers instead of mentioning them in narrative.'
+    description 'Generate a concise daily health briefing from health metrics.'
 
     input do
       const :user_name, String, description: 'Name of the user for personalization'
@@ -15,9 +15,9 @@ module Briefing
     end
 
     output do
-      const :greeting, String, description: 'Personalized greeting for the user'
-      const :insights, T::Array[InsightBlock], description: 'Array of insight blocks about health/fitness'
-      const :suggestions, T::Array[Suggestion], description: 'Array of actionable suggestions'
+      const :greeting, String, description: 'Brief personalized greeting'
+      const :insights, T::Array[InsightBlock], description: 'Health/fitness insights (put numbers in metrics array, not narrative)'
+      const :suggestions, T::Array[Suggestion]
     end
   end
 

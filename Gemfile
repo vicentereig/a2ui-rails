@@ -32,6 +32,9 @@ gem 'sorbet-runtime'
 # Data access
 gem 'duckdb'
 
+# Concurrent I/O
+gem 'async'
+
 group :development, :test do
   gem 'rspec-rails'
   gem 'vcr'

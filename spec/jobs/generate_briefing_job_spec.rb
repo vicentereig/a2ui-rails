@@ -93,6 +93,12 @@ RSpec.describe GenerateBriefingJob, type: :job do
     allow(File).to receive(:exist?).and_call_original
     allow(File).to receive(:exist?).with(anything).and_return(true)
 
+    # Stub connection methods for async data fetching
+    allow(mock_connection).to receive(:dataset_available?).with('daily_health').and_return(true)
+    allow(mock_connection).to receive(:dataset_available?).with('activities').and_return(true)
+    allow(mock_connection).to receive(:dataset_available?).with('performance_metrics').and_return(true)
+    allow(mock_connection).to receive(:parquet?).and_return(false)
+
     # Stub queries
     allow(Garmin::Queries::DailyHealth).to receive(:new).and_return(mock_health_query)
     allow(Garmin::Queries::Activities).to receive(:new).and_return(mock_activities_query)

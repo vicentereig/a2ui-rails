@@ -461,6 +461,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  async
   bootsnap
   capybara
   debug
