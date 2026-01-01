@@ -9,4 +9,5 @@ end
 
 require_relative 'briefing/types'
 require_relative 'briefing/daily_briefing'
+require_relative 'briefing/weekly_briefing'
 require_relative 'briefing/context_builder'
