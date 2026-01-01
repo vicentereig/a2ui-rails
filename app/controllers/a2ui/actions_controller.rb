@@ -2,16 +2,14 @@
 # frozen_string_literal: true
 
 module A2UI
-  class ActionsController < ApplicationController
+  class ActionsController < A2UI::ApplicationController
     extend T::Sig
-
-    before_action :set_surface_manager
 
     # POST /a2ui/actions
     # Handle user actions from components
     sig { void }
     def create
-      return head :not_found unless @manager.get(params[:surface_id])
+      return head :not_found unless surface_manager.get(params[:surface_id])
 
       action = UserAction.new(
         name: params.require(:action_name),
@@ -20,7 +18,7 @@ module A2UI
         context: params[:context]&.to_unsafe_h || {}
       )
 
-      result = @manager.handle_action(
+      result = surface_manager.handle_action(
         action: action,
         business_rules: params[:business_rules] || ''
       )
@@ -32,16 +30,6 @@ module A2UI
     end
 
     private
-
-    sig { void }
-    def set_surface_manager
-      @manager = T.let(SurfaceManager.for(scope: surface_scope), SurfaceManager)
-    end
-
-    sig { returns(String) }
-    def surface_scope
-      session.id.to_s
-    end
 
     sig { params(result: T.untyped).void }
     def render_turbo_response(result)
@@ -60,7 +48,7 @@ module A2UI
 
     sig { params(result: T.untyped).returns(T::Array[T.untyped]) }
     def build_turbo_streams(result)
-      surface = @manager.get(params[:surface_id])
+      surface = surface_manager.get(params[:surface_id])
       return [] unless surface
 
       # Apply data updates

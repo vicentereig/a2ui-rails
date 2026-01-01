@@ -11,3 +11,4 @@ end
 require_relative 'garmin/connection'
 require_relative 'garmin/models'
 require_relative 'garmin/queries'
+require_relative 'garmin/signals'

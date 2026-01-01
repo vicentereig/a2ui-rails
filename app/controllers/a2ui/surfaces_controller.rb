@@ -2,16 +2,14 @@
 # frozen_string_literal: true
 
 module A2UI
-  class SurfacesController < ApplicationController
+  class SurfacesController < A2UI::ApplicationController
     extend T::Sig
-
-    before_action :set_surface_manager
 
     # POST /a2ui/surfaces
     # Create a new surface from natural language
     sig { void }
     def create
-      surface = @manager.create(
+      surface = surface_manager.create(
         surface_id: params.require(:surface_id),
         request: params.require(:request),
         data: params[:data] || '{}'
@@ -32,7 +30,7 @@ module A2UI
     # GET /a2ui/surfaces/:id
     sig { void }
     def show
-      surface = @manager.get(params[:id])
+      surface = surface_manager.get(params[:id])
 
       if surface
         respond_to do |format|
@@ -48,10 +46,10 @@ module A2UI
     # Update an existing surface
     sig { void }
     def update
-      surface = @manager.get(params[:id])
+      surface = surface_manager.get(params[:id])
       return head :not_found unless surface
 
-      result = @manager.update(
+      result = surface_manager.update(
         surface_id: params[:id],
         request: params.require(:request)
       )
@@ -71,7 +69,7 @@ module A2UI
     # DELETE /a2ui/surfaces/:id
     sig { void }
     def destroy
-      @manager.delete(params[:id])
+      surface_manager.delete(params[:id])
 
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.remove(params[:id]) }
@@ -80,16 +78,6 @@ module A2UI
     end
 
     private
-
-    sig { void }
-    def set_surface_manager
-      @manager = T.let(SurfaceManager.for(scope: surface_scope), SurfaceManager)
-    end
-
-    sig { returns(String) }
-    def surface_scope
-      session.id.to_s
-    end
 
     sig { params(surface: Surface).returns(T::Hash[Symbol, T.untyped]) }
     def surface_json(surface)
@@ -136,7 +124,7 @@ module A2UI
     sig { params(stream_op: StreamOp, components: T::Array[Component]).returns(String) }
     def render_components(stream_op, components)
       lookup = components.to_h { |c| [c.id, c] }
-      surface = @manager.get(params[:id]) || Surface.new(params[:id])
+      surface = surface_manager.get(params[:id]) || Surface.new(params[:id])
 
       stream_op.component_ids.map do |id|
         component = lookup[id]
