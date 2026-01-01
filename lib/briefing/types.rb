@@ -33,7 +33,7 @@ module Briefing
   class MetricItem < T::Struct
     const :label, String, description: 'The numeric or text value (e.g., "7.5", "52")'
     const :value, String, description: 'The unit or description (e.g., "hours", "ms HRV")'
-    const :trend, T.nilable(Symbol), default: nil # :up, :down, :stable
+    const :trend, T.nilable(TrendDirection), default: nil
   end
 
   # An insight block with narrative and optional metrics
