@@ -33,6 +33,8 @@ module Garmin
     const :steps, T.nilable(Integer)
     const :step_goal, T.nilable(Integer)
     const :total_calories, T.nilable(Integer)
+    const :active_calories, T.nilable(Integer)
+    const :bmr_calories, T.nilable(Integer)
     const :resting_hr, T.nilable(Integer)
     const :sleep_seconds, T.nilable(Integer)
     const :deep_sleep_seconds, T.nilable(Integer)
@@ -46,6 +48,12 @@ module Garmin
     const :hrv_weekly_avg, T.nilable(Integer)
     const :hrv_last_night, T.nilable(Integer)
     const :hrv_status, T.nilable(String)
+    const :avg_respiration, T.nilable(Float)
+    const :avg_spo2, T.nilable(Integer)
+    const :lowest_spo2, T.nilable(Integer)
+    const :hydration_ml, T.nilable(Integer)
+    const :moderate_intensity_min, T.nilable(Integer)
+    const :vigorous_intensity_min, T.nilable(Integer)
   end
 
   # Sleep trend analysis
@@ -78,28 +86,23 @@ module Garmin
     const :vo2max, T.nilable(Float)
     const :fitness_age, T.nilable(Integer)
     const :training_readiness, T.nilable(Integer)
-    const :training_readiness_level, T.nilable(String)
     const :training_status, T.nilable(String)
-    const :acute_load, T.nilable(Float)
-    const :chronic_load, T.nilable(Float)
-    const :load_ratio, T.nilable(Float)
-    const :load_ratio_status, T.nilable(String)
-    const :load_focus, T.nilable(String)
     const :lactate_threshold_hr, T.nilable(Integer)
+    const :lactate_threshold_pace, T.nilable(Float)
     const :race_5k_sec, T.nilable(Integer)
     const :race_10k_sec, T.nilable(Integer)
     const :race_half_sec, T.nilable(Integer)
     const :race_marathon_sec, T.nilable(Integer)
+    const :endurance_score, T.nilable(Integer)
+    const :hill_score, T.nilable(Integer)
   end
 
-  # Training load status
-  class TrainingLoadStatus < T::Struct
-    const :acute_load, Float
-    const :chronic_load, Float
-    const :ratio, Float
-    const :status, String
-    const :focus, String
+  # Training status summary
+  class TrainingStatusSummary < T::Struct
     const :training_status, String
+    const :training_readiness, Integer
+    const :endurance_score, T.nilable(Integer)
+    const :hill_score, T.nilable(Integer)
   end
 
   # VO2 max trend

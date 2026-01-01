@@ -203,29 +203,24 @@ RSpec.describe Briefing::ContextBuilder do
         vo2max: 52.0,
         fitness_age: 25,
         training_readiness: 78,
-        training_readiness_level: 'OPTIMAL',
         training_status: 'PRODUCTIVE',
-        acute_load: 450.0,
-        chronic_load: 410.0,
-        load_ratio: 1.1,
-        load_ratio_status: 'OPTIMAL',
-        load_focus: 'HIGH_AEROBIC',
         lactate_threshold_hr: 165,
+        lactate_threshold_pace: 4.5,
         race_5k_sec: 1185,
         race_10k_sec: 2490,
         race_half_sec: 5580,
-        race_marathon_sec: 11_700
+        race_marathon_sec: 11_700,
+        endurance_score: 82,
+        hill_score: 75
       )
     end
 
     let(:training_load) do
-      Garmin::TrainingLoadStatus.new(
-        acute_load: 450.0,
-        chronic_load: 410.0,
-        ratio: 1.1,
-        status: 'OPTIMAL',
-        focus: 'HIGH_AEROBIC',
-        training_status: 'PRODUCTIVE'
+      Garmin::TrainingStatusSummary.new(
+        training_status: 'PRODUCTIVE',
+        training_readiness: 78,
+        endurance_score: 82,
+        hill_score: 75
       )
     end
 
@@ -269,7 +264,7 @@ RSpec.describe Briefing::ContextBuilder do
       context = builder.build_performance_context
 
       expect(context).to include('PRODUCTIVE')
-      expect(context).to include('OPTIMAL')
+      expect(context).to include('78')
     end
 
     it 'includes race predictions when available' do

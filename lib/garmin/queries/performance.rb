@@ -39,18 +39,16 @@ module Garmin
         row_to_metrics(rows.first)
       end
 
-      sig { returns(T.nilable(TrainingLoadStatus)) }
-      def training_load_status
+      sig { returns(T.nilable(TrainingStatusSummary)) }
+      def training_status_summary
         metrics = latest
         return nil unless metrics
 
-        TrainingLoadStatus.new(
-          acute_load: metrics.acute_load || 0.0,
-          chronic_load: metrics.chronic_load || 0.0,
-          ratio: metrics.load_ratio || 0.0,
-          status: metrics.load_ratio_status || 'UNKNOWN',
-          focus: metrics.load_focus || 'UNKNOWN',
-          training_status: metrics.training_status || 'UNKNOWN'
+        TrainingStatusSummary.new(
+          training_status: metrics.training_status || 'UNKNOWN',
+          training_readiness: metrics.training_readiness || 0,
+          endurance_score: metrics.endurance_score,
+          hill_score: metrics.hill_score
         )
       end
 
@@ -105,7 +103,17 @@ module Garmin
         raise "No performance data for #{date}" unless metrics
 
         score = metrics.training_readiness || 0
-        level = metrics.training_readiness_level || 'UNKNOWN'
+
+        # Derive level from score (Garmin uses 0-100 scale)
+        level = if score >= 70
+                  'HIGH'
+                elsif score >= 40
+                  'MODERATE'
+                elsif score > 0
+                  'LOW'
+                else
+                  'UNKNOWN'
+                end
 
         recommendation = case level
                          when 'HIGH' then 'Great day for a hard workout or race.'
@@ -137,18 +145,15 @@ module Garmin
           vo2max: row['vo2max']&.to_f,
           fitness_age: row['fitness_age']&.to_i,
           training_readiness: row['training_readiness']&.to_i,
-          training_readiness_level: row['training_readiness_level'],
           training_status: row['training_status'],
-          acute_load: row['acute_load']&.to_f,
-          chronic_load: row['chronic_load']&.to_f,
-          load_ratio: row['load_ratio']&.to_f,
-          load_ratio_status: row['load_ratio_status'],
-          load_focus: row['load_focus'],
           lactate_threshold_hr: row['lactate_threshold_hr']&.to_i,
+          lactate_threshold_pace: row['lactate_threshold_pace']&.to_f,
           race_5k_sec: row['race_5k_sec']&.to_i,
           race_10k_sec: row['race_10k_sec']&.to_i,
           race_half_sec: row['race_half_sec']&.to_i,
-          race_marathon_sec: row['race_marathon_sec']&.to_i
+          race_marathon_sec: row['race_marathon_sec']&.to_i,
+          endurance_score: row['endurance_score']&.to_i,
+          hill_score: row['hill_score']&.to_i
         )
       end
 

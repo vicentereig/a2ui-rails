@@ -8,7 +8,7 @@ RSpec.describe Garmin::Queries::Performance do
   let(:queries) { described_class.new(connection) }
 
   before do
-    # Set up test schema matching garmin-cli
+    # Set up test schema matching garmin-cli Parquet format
     connection.execute(<<~SQL)
       CREATE TABLE performance_metrics (
         id BIGINT PRIMARY KEY,
@@ -17,18 +17,15 @@ RSpec.describe Garmin::Queries::Performance do
         vo2max DOUBLE,
         fitness_age INTEGER,
         training_readiness INTEGER,
-        training_readiness_level TEXT,
         training_status TEXT,
-        acute_load DOUBLE,
-        chronic_load DOUBLE,
-        load_ratio DOUBLE,
-        load_ratio_status TEXT,
-        load_focus TEXT,
         lactate_threshold_hr INTEGER,
+        lactate_threshold_pace DOUBLE,
         race_5k_sec INTEGER,
         race_10k_sec INTEGER,
         race_half_sec INTEGER,
         race_marathon_sec INTEGER,
+        endurance_score INTEGER,
+        hill_score INTEGER,
         raw_json JSON
       )
     SQL
@@ -36,10 +33,10 @@ RSpec.describe Garmin::Queries::Performance do
     # Insert test data
     connection.execute(<<~SQL)
       INSERT INTO performance_metrics VALUES
-        (1, 1, '2024-12-30', 48.5, 32, 67, 'MODERATE', 'PRODUCTIVE', 487, 412, 1.18, 'OPTIMAL', 'AEROBIC_BASE', 162, 1380, 2880, 6300, 13200, '{}'),
-        (2, 1, '2024-12-29', 48.3, 32, 72, 'HIGH', 'PRODUCTIVE', 465, 408, 1.14, 'OPTIMAL', 'AEROBIC_BASE', 162, 1385, 2890, 6320, 13250, '{}'),
-        (3, 1, '2024-12-28', 48.2, 33, 58, 'LOW', 'STRAINED', 520, 405, 1.28, 'HIGH', 'ANAEROBIC_SHORTAGE', 161, 1390, 2900, 6350, 13300, '{}'),
-        (4, 1, '2024-12-20', 47.8, 33, 75, 'HIGH', 'PRODUCTIVE', 380, 395, 0.96, 'OPTIMAL', 'BALANCED', 160, 1410, 2940, 6420, 13450, '{}')
+        (1, 1, '2024-12-30', 48.5, 32, 67, 'PRODUCTIVE', 162, 4.5, 1380, 2880, 6300, 13200, 78, 65, '{}'),
+        (2, 1, '2024-12-29', 48.3, 32, 72, 'PRODUCTIVE', 162, 4.5, 1385, 2890, 6320, 13250, 77, 64, '{}'),
+        (3, 1, '2024-12-28', 48.2, 33, 38, 'STRAINED', 161, 4.6, 1390, 2900, 6350, 13300, 75, 62, '{}'),
+        (4, 1, '2024-12-20', 47.8, 33, 75, 'PRODUCTIVE', 160, 4.7, 1410, 2940, 6420, 13450, 74, 60, '{}')
     SQL
   end
 
@@ -49,8 +46,9 @@ RSpec.describe Garmin::Queries::Performance do
 
       expect(metrics.vo2max).to eq(48.5)
       expect(metrics.training_status).to eq('PRODUCTIVE')
-      expect(metrics.acute_load).to eq(487)
-      expect(metrics.chronic_load).to eq(412)
+      expect(metrics.endurance_score).to eq(78)
+      expect(metrics.hill_score).to eq(65)
+      expect(metrics.lactate_threshold_pace).to eq(4.5)
     end
 
     it 'returns nil for date with no data' do
@@ -59,16 +57,14 @@ RSpec.describe Garmin::Queries::Performance do
     end
   end
 
-  describe '#training_load_status' do
-    it 'returns current training load analysis' do
-      status = queries.training_load_status
+  describe '#training_status_summary' do
+    it 'returns current training status' do
+      status = queries.training_status_summary
 
-      expect(status.acute_load).to eq(487)
-      expect(status.chronic_load).to eq(412)
-      expect(status.ratio).to be_within(0.01).of(1.18)
-      expect(status.status).to eq('OPTIMAL')
-      expect(status.focus).to eq('AEROBIC_BASE')
       expect(status.training_status).to eq('PRODUCTIVE')
+      expect(status.training_readiness).to eq(67)
+      expect(status.endurance_score).to eq(78)
+      expect(status.hill_score).to eq(65)
     end
   end
 
@@ -94,12 +90,28 @@ RSpec.describe Garmin::Queries::Performance do
   end
 
   describe '#training_readiness' do
-    it 'returns training readiness assessment' do
+    it 'returns training readiness assessment with HIGH level' do
+      readiness = queries.training_readiness(Date.parse('2024-12-29'))
+
+      expect(readiness.score).to eq(72)
+      expect(readiness.level).to eq('HIGH')
+      expect(readiness.recommendation).to include('hard workout')
+    end
+
+    it 'returns training readiness assessment with MODERATE level' do
       readiness = queries.training_readiness(Date.parse('2024-12-30'))
 
       expect(readiness.score).to eq(67)
       expect(readiness.level).to eq('MODERATE')
-      expect(readiness.recommendation).to be_a(String)
+      expect(readiness.recommendation).to include('moderate effort')
+    end
+
+    it 'returns training readiness assessment with LOW level' do
+      readiness = queries.training_readiness(Date.parse('2024-12-28'))
+
+      expect(readiness.score).to eq(38)
+      expect(readiness.level).to eq('LOW')
+      expect(readiness.recommendation).to include('recovery')
     end
   end
 end

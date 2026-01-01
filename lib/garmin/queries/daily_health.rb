@@ -140,6 +140,8 @@ module Garmin
           steps: row['steps']&.to_i,
           step_goal: row['step_goal']&.to_i,
           total_calories: row['total_calories']&.to_i,
+          active_calories: row['active_calories']&.to_i,
+          bmr_calories: row['bmr_calories']&.to_i,
           resting_hr: row['resting_hr']&.to_i,
           sleep_seconds: row['sleep_seconds']&.to_i,
           deep_sleep_seconds: row['deep_sleep_seconds']&.to_i,
@@ -152,7 +154,13 @@ module Garmin
           body_battery_end: row['body_battery_end']&.to_i,
           hrv_weekly_avg: row['hrv_weekly_avg']&.to_i,
           hrv_last_night: row['hrv_last_night']&.to_i,
-          hrv_status: row['hrv_status']
+          hrv_status: row['hrv_status'],
+          avg_respiration: row['avg_respiration']&.to_f,
+          avg_spo2: row['avg_spo2']&.to_i,
+          lowest_spo2: row['lowest_spo2']&.to_i,
+          hydration_ml: row['hydration_ml']&.to_i,
+          moderate_intensity_min: row['moderate_intensity_min']&.to_i,
+          vigorous_intensity_min: row['vigorous_intensity_min']&.to_i
         )
       end
 

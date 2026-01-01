@@ -14,7 +14,7 @@ module Briefing
         recent_activities: T.nilable(T::Array[Garmin::Activity]),
         week_stats: T.nilable(Garmin::ActivityStats),
         performance_metrics: T.nilable(Garmin::PerformanceMetrics),
-        training_load: T.nilable(Garmin::TrainingLoadStatus),
+        training_load: T.nilable(Garmin::TrainingStatusSummary),
         vo2max_trend: T.nilable(Garmin::VO2MaxTrend),
         race_predictions: T.nilable(Garmin::RacePredictions)
       ).void
@@ -205,12 +205,14 @@ module Briefing
 
       status = @performance_metrics.training_status
       readiness = @performance_metrics.training_readiness
-      load_status = @training_load&.status || @performance_metrics.load_ratio_status
+      endurance = @performance_metrics.endurance_score
+      hill = @performance_metrics.hill_score
 
       parts = []
       parts << "Training Status: #{status}" if status
       parts << "Training Readiness: #{readiness}" if readiness
-      parts << "Load: #{load_status}" if load_status
+      parts << "Endurance Score: #{endurance}" if endurance
+      parts << "Hill Score: #{hill}" if hill
 
       parts.empty? ? nil : parts.join("\n")
     end
