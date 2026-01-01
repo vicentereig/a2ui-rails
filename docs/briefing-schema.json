@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DailyBriefingOutput",
+  "description": "Schema for AI-generated health briefing output",
+  "type": "object",
+  "required": ["greeting", "insights", "suggestions"],
+  "properties": {
+    "greeting": {
+      "type": "string",
+      "description": "Brief personalized greeting"
+    },
+    "insights": {
+      "type": "array",
+      "description": "Health/fitness insights (numbers go in metrics array)",
+      "items": { "$ref": "#/$defs/InsightBlock" }
+    },
+    "suggestions": {
+      "type": "array",
+      "description": "Actionable suggestions",
+      "items": { "$ref": "#/$defs/Suggestion" }
+    }
+  },
+  "$defs": {
+    "Sentiment": {
+      "type": "string",
+      "enum": ["positive", "neutral", "warning"],
+      "description": "Overall sentiment of the insight"
+    },
+    "SuggestionType": {
+      "type": "string",
+      "enum": ["general", "recovery", "intensity"],
+      "description": "Category of suggestion"
+    },
+    "TrendDirection": {
+      "type": "string",
+      "enum": ["up", "down", "stable"],
+      "description": "Trend direction for metrics"
+    },
+    "MetricItem": {
+      "type": "object",
+      "required": ["label", "value"],
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "Short label (e.g., Sleep, HRV, Body Battery)"
+        },
+        "value": {
+          "type": "string",
+          "description": "Value with unit (e.g., 7.5h, 52ms, 85%)"
+        },
+        "trend": {
+          "$ref": "#/$defs/TrendDirection",
+          "description": "Optional trend direction"
+        }
+      }
+    },
+    "InsightBlock": {
+      "type": "object",
+      "required": ["icon", "headline", "narrative", "sentiment"],
+      "properties": {
+        "icon": {
+          "type": "string",
+          "description": "Single emoji icon for the insight category"
+        },
+        "headline": {
+          "type": "string",
+          "description": "Punchy headline"
+        },
+        "narrative": {
+          "type": "string",
+          "description": "Succinct explanation of the insight"
+        },
+        "sentiment": { "$ref": "#/$defs/Sentiment" },
+        "metrics": {
+          "type": "array",
+          "default": [],
+          "description": "Key metrics to display inline",
+          "items": { "$ref": "#/$defs/MetricItem" }
+        }
+      }
+    },
+    "Suggestion": {
+      "type": "object",
+      "required": ["title", "body", "suggestion_type"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Brief action-oriented title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Concise actionable advice"
+        },
+        "icon": {
+          "type": "string",
+          "default": "💡",
+          "description": "Single emoji icon"
+        },
+        "suggestion_type": { "$ref": "#/$defs/SuggestionType" }
+      }
+    }
+  }
+}
