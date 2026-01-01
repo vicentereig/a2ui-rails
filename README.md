@@ -4,6 +4,10 @@ A Ruby port of [Google's A2UI](https://github.com/google/A2UI) (Agent-to-User In
 
 > **Status**: Early development. APIs will change.
 
+![Daily Briefing Demo](docs/images/daily-briefing.png)
+
+*AI-generated health briefing from Garmin data using DSPy.rb signatures*
+
 ## What is A2UI?
 
 A2UI lets AI agents generate rich, interactive UIs by shipping **data and UI descriptions together** as structured output, rather than executable code. The client maintains a catalog of trusted components that the agent references by type.

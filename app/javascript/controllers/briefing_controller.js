@@ -31,12 +31,12 @@ export default class extends Controller {
     document.getElementById('loading-state').classList.remove('hidden')
     document.getElementById('generate-section').classList.add('hidden')
     document.getElementById('error-state').classList.add('hidden')
+    document.getElementById('warning-state').classList.add('hidden')
     document.getElementById('complete-state').classList.add('hidden')
 
     // Clear previous results
     document.getElementById('insights-container').innerHTML = ''
     document.getElementById('suggestions-container').innerHTML = ''
-    document.getElementById('greeting').classList.add('hidden')
 
     // Request briefing via ActionCable
     this.subscription.perform('request_briefing', { date: this.dateValue })
@@ -61,6 +61,11 @@ export default class extends Controller {
         document.getElementById('loading-state').classList.add('hidden')
         document.getElementById('complete-state').classList.remove('hidden')
         document.getElementById('generate-section').classList.remove('hidden')
+        break
+
+      case 'warning':
+        document.getElementById('warning-state').classList.remove('hidden')
+        document.getElementById('warning-message').textContent = data.message
         break
 
       case 'error':

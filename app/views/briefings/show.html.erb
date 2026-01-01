@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-gray-100 py-8">
-  <div class="max-w-2xl mx-auto px-4">
+  <div class="max-w-5xl mx-auto px-4">
     <!-- Briefing Container -->
     <div id="briefing-container"
          data-controller="briefing"
@@ -22,24 +22,35 @@
         </div>
       </div>
 
-      <!-- Greeting -->
-      <div id="greeting" class="hidden mb-6">
-        <p id="greeting-text" class="text-xl text-gray-700"></p>
+      <!-- Two Column Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column: Insights -->
+        <div>
+          <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">Insights</h2>
+          <div id="insights-container" class="bg-white rounded-xl p-4 shadow-sm space-y-2 divide-y divide-gray-100"></div>
+        </div>
+
+        <!-- Right Column: Suggestions -->
+        <div>
+          <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">Suggestions</h2>
+          <div id="suggestions-container" class="space-y-3"></div>
+        </div>
       </div>
-
-      <!-- Insights Container -->
-      <div id="insights-container" class="space-y-4 mb-6"></div>
-
-      <!-- Suggestions Container -->
-      <div id="suggestions-container" class="space-y-4"></div>
 
       <!-- Generate Button -->
       <div id="generate-section" class="mt-8">
         <button id="generate-btn"
                 data-action="click->briefing#generate"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
           Generate Briefing
         </button>
+      </div>
+
+      <!-- Warning State -->
+      <div id="warning-state" class="hidden mt-6">
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <p id="warning-message" class="text-amber-800"></p>
+        </div>
       </div>
 
       <!-- Error State -->
@@ -50,10 +61,8 @@
       </div>
 
       <!-- Complete State -->
-      <div id="complete-state" class="hidden mt-6">
-        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-          <p class="text-green-700">Briefing complete!</p>
-        </div>
+      <div id="complete-state" class="hidden mt-6 text-center">
+        <p class="text-sm text-gray-500">Briefing complete</p>
       </div>
     </div>
   </div>
