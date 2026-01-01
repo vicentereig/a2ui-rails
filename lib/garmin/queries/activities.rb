@@ -14,7 +14,6 @@ module Garmin
       sig { params(limit: Integer).returns(T::Array[Activity]) }
       def recent(limit: 10)
         limit = limit.to_i
-        return [] unless @connection.dataset_available?('activities')
         table = @connection.table_sql('activities')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -27,7 +26,6 @@ module Garmin
 
       sig { params(type: String).returns(T::Array[Activity]) }
       def by_type(type)
-        return [] unless @connection.dataset_available?('activities')
         table = @connection.table_sql('activities')
         type = @connection.quote_string(type)
         rows = @connection.query(<<~SQL)
@@ -41,7 +39,6 @@ module Garmin
 
       sig { params(from: Date, to: Date).returns(T::Array[Activity]) }
       def in_date_range(from:, to:)
-        return [] unless @connection.dataset_available?('activities')
         table = @connection.table_sql('activities')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -55,7 +52,6 @@ module Garmin
 
       sig { params(id: Integer).returns(T.nilable(Activity)) }
       def find(id)
-        return nil unless @connection.dataset_available?('activities')
         table = @connection.table_sql('activities')
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
@@ -70,7 +66,6 @@ module Garmin
 
       sig { params(date: Date).returns(T.nilable(ActivityStats)) }
       def week_stats(date)
-        return nil unless @connection.dataset_available?('activities')
         from = date - 6
         to = date
         table = @connection.table_sql('activities')
@@ -107,14 +102,6 @@ module Garmin
 
       sig { params(from: Date, to: Date, activity_type: String).returns(ActivityStats) }
       def stats_for_period(from:, to:, activity_type:)
-        unless @connection.dataset_available?('activities')
-          return ActivityStats.new(
-            total_distance_m: 0.0,
-            total_duration_sec: 0.0,
-            activity_count: 0,
-            avg_pace_per_km: 0.0
-          )
-        end
         table = @connection.table_sql('activities')
         activity_type = @connection.quote_string(activity_type)
         rows = @connection.query(<<~SQL)
