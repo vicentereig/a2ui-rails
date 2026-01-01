@@ -23,7 +23,7 @@ module Briefing
     end
 
     def formatted_date
-      @date.strftime('%A, %B %-d')
+      @date.strftime('%A, %B %-d, %Y')
     end
   end
 end
