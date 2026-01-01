@@ -656,4 +656,149 @@ http_interactions:
       string: !binary |-
         eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC0yMDI1MDUxNCIsImlkIjoibXNnXzAxRXVYQWZ4WDNvVjNEOXY5eWNEU1I1VCIsInR5cGUiOiJtZXNzYWdlIiwicm9sZSI6ImFzc2lzdGFudCIsImNvbnRlbnQiOlt7InR5cGUiOiJ0b29sX3VzZSIsImlkIjoidG9vbHVfMDE1NVR3M0x3MmV0eFNUdkxjaFMxRm5DIiwibmFtZSI6Impzb25fb3V0cHV0IiwiaW5wdXQiOnsiZ3JlZXRpbmciOiJHb29kIG1vcm5pbmcsIFZpY2VudGUhIEhlcmUncyB5b3VyIGhlYWx0aCBicmllZmluZyBmb3IgRGVjZW1iZXIgMzFzdCwgMjAyNC4iLCJpbnNpZ2h0cyI6W3siX3R5cGUiOiJJbnNpZ2h0QmxvY2siLCJpY29uIjoi8J+YtCIsImhlYWRsaW5lIjoiU29saWQgUmVjb3ZlcnkgRm91bmRhdGlvbiIsIm5hcnJhdGl2ZSI6IllvdXIgNy41LWhvdXIgc2xlZXAgd2l0aCBhbiA4NS8xMDAgc2NvcmUgcHJvdmlkZXMgZXhjZWxsZW50IHJlY292ZXJ5IHN1cHBvcnQuIEhSViBhdCA1Mm1zIHNob3dzIHlvdXIgYm9keSBpcyBoYW5kbGluZyB0cmFpbmluZyBzdHJlc3Mgd2VsbCBhbmQgcmVhZHkgZm9yIGFjdGl2aXR5LiIsInNlbnRpbWVudCI6InBvc2l0aXZlIiwibWV0cmljcyI6W3siX3R5cGUiOiJNZXRyaWNJdGVtIiwibGFiZWwiOiJTbGVlcCIsInZhbHVlIjoiNy41aCIsInRyZW5kIjpudWxsfSx7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiSFJWIiwidmFsdWUiOiI1Mm1zIiwidHJlbmQiOiJzdGFibGUifSx7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiU2xlZXAgU2NvcmUiLCJ2YWx1ZSI6Ijg1LzEwMCIsInRyZW5kIjpudWxsfV19LHsiX3R5cGUiOiJJbnNpZ2h0QmxvY2siLCJpY29uIjoi8J+PgyIsImhlYWRsaW5lIjoiVHJhaW5pbmcgU3RhdHVzIEV4Y2VsbGVudCIsIm5hcnJhdGl2ZSI6IllvdXIgdHJhaW5pbmcgcmVhZGluZXNzIG9mIDc4IGluZGljYXRlcyBvcHRpbWFsIGNvbmRpdGlvbnMgZm9yIGFjdGl2aXR5LiBXaXRoIGEgcHJvZHVjdGl2ZSB0cmFpbmluZyBzdGF0dXMgYW5kIGJhbGFuY2VkIGxvYWQgcmF0aW8gb2YgMS4xLCB5b3UncmUgaW4gdGhlIHN3ZWV0IHNwb3QgZm9yIHBlcmZvcm1hbmNlIGdhaW5zLiIsInNlbnRpbWVudCI6InBvc2l0aXZlIiwibWV0cmljcyI6W3siX3R5cGUiOiJNZXRyaWNJdGVtIiwibGFiZWwiOiJSZWFkaW5lc3MiLCJ2YWx1ZSI6Ijc4IiwidHJlbmQiOm51bGx9LHsiX3R5cGUiOiJNZXRyaWNJdGVtIiwibGFiZWwiOiJWTzIgTWF4IiwidmFsdWUiOiI1MiBtbC9rZy9taW4iLCJ0cmVuZCI6bnVsbH0seyJfdHlwZSI6Ik1ldHJpY0l0ZW0iLCJsYWJlbCI6IkxvYWQgUmF0aW8iLCJ2YWx1ZSI6IjEuMSIsInRyZW5kIjoic3RhYmxlIn1dfSx7Il90eXBlIjoiSW5zaWdodEJsb2NrIiwiaWNvbiI6IvCflIsiLCJoZWFkbGluZSI6IkVuZXJneSBNYW5hZ2VtZW50IE5lZWRlZCIsIm5hcnJhdGl2ZSI6IllvdXIgQm9keSBCYXR0ZXJ5IGRyb3BwZWQgZnJvbSA3NSB0byA0NSwgaW5kaWNhdGluZyBtb2RlcmF0ZSBlbmVyZ3kgZGVwbGV0aW9uLiBXaGlsZSBzdHJlc3MgcmVtYWlucyBsb3cgYXQgMjgsIGNvbnNpZGVyIGxpZ2h0ZXIgYWN0aXZpdHkgdG9kYXkgdG8gbWFpbnRhaW4geW91ciBleGNlbGxlbnQgdHJhaW5pbmcgbW9tZW50dW0uIiwic2VudGltZW50IjoibmV1dHJhbCIsIm1ldHJpY3MiOlt7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiQm9keSBCYXR0ZXJ5IiwidmFsdWUiOiI0NSIsInRyZW5kIjoiZG93biJ9LHsiX3R5cGUiOiJNZXRyaWNJdGVtIiwibGFiZWwiOiJTdHJlc3MiLCJ2YWx1ZSI6IjI4IiwidHJlbmQiOiJzdGFibGUifSx7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiU3RlcHMiLCJ2YWx1ZSI6IjgsMjM0IiwidHJlbmQiOm51bGx9XX1dLCJzdWdnZXN0aW9ucyI6W3siX3R5cGUiOiJTdWdnZXN0aW9uIiwidGl0bGUiOiJBY3RpdmUgUmVjb3ZlcnkgU2Vzc2lvbiIsImJvZHkiOiJXaXRoIHlvdXIgQm9keSBCYXR0ZXJ5IGF0IDQ1IGJ1dCBleGNlbGxlbnQgcmVhZGluZXNzIHNjb3JlcywgdHJ5IGEgbGlnaHQgMzAtNDAgbWludXRlIGVhc3kgcnVuIG9yIHdhbGsgdG8gbWFpbnRhaW4gZml0bmVzcyB3aGlsZSBhbGxvd2luZyBjb250aW51ZWQgcmVjb3ZlcnkuIiwiaWNvbiI6IvCfmrYiLCJzdWdnZXN0aW9uX3R5cGUiOiJyZWNvdmVyeSJ9LHsiX3R5cGUiOiJTdWdnZXN0aW9uIiwidGl0bGUiOiJDb21wbGV0ZSBZb3VyIFN0ZXAgR29hbCIsImJvZHkiOiJZb3UncmUgMSw3NjYgc3RlcHMgYXdheSBmcm9tIHlvdXIgMTAsMDAwIGRhaWx5IHRhcmdldC4gQSBicmlzayAxNS0yMCBtaW51dGUgd2FsayB3aWxsIGNsb3NlIHRoZSBnYXAgYW5kIHN1cHBvcnQgYWN0aXZlIHJlY292ZXJ5LiIsImljb24iOiLwn5GfIiwic3VnZ2VzdGlvbl90eXBlIjoiZ2VuZXJhbCJ9LHsiX3R5cGUiOiJTdWdnZXN0aW9uIiwidGl0bGUiOiJQbGFuIFRvbW9ycm93J3MgV29ya291dCIsImJvZHkiOiJZb3VyIHRyYWluaW5nIHN0YXR1cyBpcyBwcm9kdWN0aXZlIGFuZCByZWFkaW5lc3MgaXMgb3B0aW1hbC4gQ29uc2lkZXIgYSBxdWFsaXR5IHNlc3Npb24gdG9tb3Jyb3cgLSBwZXJoYXBzIGludGVydmFscyBvciBhIHRlbXBvIHJ1biB0byBidWlsZCBvbiB5b3VyIHJlY2VudCAxMGttIHBlcmZvcm1hbmNlLiIsImljb24iOiLwn5OFIiwic3VnZ2VzdGlvbl90eXBlIjoiaW50ZW5zaXR5In1dLCJyZWFzb25pbmciOiJWaWNlbnRlIHNob3dzIGV4Y2VsbGVudCByZWNvdmVyeSBtZXRyaWNzIHdpdGggZ29vZCBzbGVlcCBxdWFsaXR5IGFuZCBzdGFibGUgSFJWLCBpbmRpY2F0aW5nIGhpcyBib2R5IGlzIGhhbmRsaW5nIHRyYWluaW5nIHdlbGwuIEhpcyB0cmFpbmluZyByZWFkaW5lc3Mgb2YgNzggYW5kIHByb2R1Y3RpdmUgc3RhdHVzIHN1Z2dlc3QgaGUncyBpbiBhbiBvcHRpbWFsIHN0YXRlIGZvciBwZXJmb3JtYW5jZSBnYWlucy4gSG93ZXZlciwgdGhlIEJvZHkgQmF0dGVyeSBkcm9wIGZyb20gNzUgdG8gNDUgc3VnZ2VzdHMgc29tZSBlbmVyZ3kgZGVwbGV0aW9uIHRoYXQgd2FycmFudHMgYXR0ZW50aW9uLiBUaGUgY29tYmluYXRpb24gb2YgaGlnaCByZWFkaW5lc3MgYnV0IG1vZGVyYXRlIGVuZXJneSBkZXBsZXRpb24gc3VnZ2VzdHMgYWN0aXZlIHJlY292ZXJ5IHJhdGhlciB0aGFuIGNvbXBsZXRlIHJlc3QuIEhpcyByZWNlbnQgdHJhaW5pbmcgbG9hZCAoMyBydW5zLCAyOGttKSB3aXRoIGEgMS4xIGxvYWQgcmF0aW8gc2hvd3MgZ29vZCB0cmFpbmluZyBiYWxhbmNlLiBUaGUgc3VnZ2VzdGlvbnMgZm9jdXMgb24gbWFpbnRhaW5pbmcgbW9tZW50dW0gd2hpbGUgcmVzcGVjdGluZyB0aGUgZW5lcmd5IGRlcGxldGlvbiBzaWduYWwuIn19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTUwNywiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjExNzQsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIn19
   recorded_at: Thu, 01 Jan 2026 18:51:37 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"user_name\": \"Vicente\",\n  \"date\": \"2024-12-31\",\n  \"health_context\":
+        \"Sleep: 7.5 hours, score 85/100 (good)\\nHRV: 52ms (balanced, within baseline)\\nResting
+        HR: 48 bpm (normal)\\nBody Battery: Started at 75, now at 45\\nStress: Average
+        28 (low)\\nSteps: 8,234 / 10,000 goal\\n\",\n  \"activity_context\": \"Yesterday:
+        Rest day, no recorded activities\\nWeek total: 3 runs, 28km, 3:15 total time\\nRecent:
+        10km tempo run 2 days ago (4:45/km pace)\\n\",\n  \"performance_context\":
+        \"VO2 Max: 52 ml/kg/min (excellent for age)\\nTraining Readiness: 78 (optimal)\\nTraining
+        Status: Productive\\nAcute/Chronic Load Ratio: 1.1 (optimal range)\\nLoad
+        Focus: High aerobic\\nRace predictions: 5K: 19:45, 10K: 41:30\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"greeting":{"type":"string"},"status":{"type":"object","properties":{"_type":{"type":"string","const":"StatusSummary"},"headline":{"type":"string","description":"Pithy
+        headline (3-5 words)"},"metrics":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"MetricItem"},"label":{"type":"string","description":"Short
+        label (e.g., \"Sleep\", \"HRV\")"},"value":{"type":"string","description":"Value
+        with unit (e.g., \"7.5h\", \"52ms\")"},"trend":{"type":["string","null"],"enum":["up","down","stable"]}},"required":["_type","label","value"],"description":"Briefing::MetricItem
+        struct"},"description":"Top 3 metrics to display"},"summary":{"type":"string","description":"One
+        sentence interpreting all data holistically"},"sentiment":{"type":"string","enum":["positive","neutral","warning"],"description":"Overall
+        sentiment"}},"required":["_type","headline","metrics","summary","sentiment"],"description":"Briefing::StatusSummary
+        struct"},"suggestions":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Suggestion"},"title":{"type":"string","description":"Pithy
+        action title (3-5 words)"},"body":{"type":"string","description":"One sentence
+        with specific action"},"suggestion_type":{"type":"string","enum":["general","recovery","intensity"],"description":"Category
+        of suggestion"}},"required":["_type","title","body","suggestion_type"],"description":"Briefing::Suggestion
+        struct"}},"reasoning":{"type":"string"}},"required":["greeting","status","suggestions","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"user_name\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Name of the user\"\n    },\n    \"date\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Date (YYYY-MM-DD)\"\n    },\n    \"health_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Sleep, HRV, stress, recovery data\"\n    },\n    \"activity_context\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Recent activities
+        and training\"\n    },\n    \"performance_context\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Fitness metrics and training status\"\n    }\n  },\n  \"required\": [\n    \"user_name\",\n    \"date\",\n    \"health_context\",\n    \"activity_context\",\n    \"performance_context\"\n  ]\n}\n```\n\nYour
+        objective is: Generate a concise daily health briefing from metrics. Think
+        step by step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3607'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 01 Jan 2026 21:35:40 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-01-01T21:35:31Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-01-01T21:35:41Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-01-01T21:35:30Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-01-01T21:35:31Z'
+      Request-Id:
+      - req_011CWhNqxvLg7sBNBnnYZp5i
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '10672'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b752594e82c069b-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01GhR8GGzM1N1UTS8hLYbizk","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_013L7MgM26wepJVWU72Rf8AR","name":"json_output","input":{"greeting":"Good
+        morning, Vicente! Ready to close out 2024 strong?","reasoning":"Vicente shows
+        excellent overall health metrics with good sleep quality (85/100), balanced
+        HRV at 52ms, and low stress levels. His training readiness is optimal at 78,
+        indicating he''s well-recovered from his recent 10km tempo run. Body Battery
+        dropped from 75 to 45, which is normal daily depletion. His training status
+        is productive with optimal load ratios, suggesting effective training adaptation.
+        The rest day yesterday was well-timed. Only minor concern is being slightly
+        behind on daily step goal.","status":{"_type":"StatusSummary","headline":"Optimal
+        Training Readiness","sentiment":"positive","summary":"Excellent recovery metrics
+        and training readiness indicate you''re primed for effective training today.","metrics":[{"_type":"MetricItem","label":"Sleep","value":"7.5h
+        (85/100)","trend":"stable"},{"_type":"MetricItem","label":"HRV","value":"52ms","trend":"stable"},{"_type":"MetricItem","label":"Training
+        Readiness","value":"78/100","trend":"up"}]},"suggestions":[{"_type":"Suggestion","title":"Resume
+        Training Today","body":"Your optimal readiness score and balanced recovery
+        metrics suggest you''re ready for a quality training session.","suggestion_type":"intensity"},{"_type":"Suggestion","title":"Increase
+        Daily Movement","body":"Add a 15-minute walk to reach your 10,000 step goal
+        and maintain active recovery.","suggestion_type":"general"},{"_type":"Suggestion","title":"Maintain
+        Sleep Routine","body":"Your 7.5-hour sleep with 85/100 score is supporting
+        excellent recovery - keep this consistent.","suggestion_type":"recovery"}]}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1437,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":601,"service_tier":"standard"}}'
+  recorded_at: Thu, 01 Jan 2026 21:35:40 GMT
 recorded_with: VCR 6.4.0

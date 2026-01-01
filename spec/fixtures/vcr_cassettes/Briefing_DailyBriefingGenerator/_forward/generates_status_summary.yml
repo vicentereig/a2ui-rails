@@ -1,0 +1,148 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"user_name\": \"Vicente\",\n  \"date\": \"2024-12-31\",\n  \"health_context\":
+        \"Sleep: 7.5 hours, score 85/100 (good)\\nHRV: 52ms (balanced, within baseline)\\nResting
+        HR: 48 bpm (normal)\\nBody Battery: Started at 75, now at 45\\nStress: Average
+        28 (low)\\nSteps: 8,234 / 10,000 goal\\n\",\n  \"activity_context\": \"Yesterday:
+        Rest day, no recorded activities\\nWeek total: 3 runs, 28km, 3:15 total time\\nRecent:
+        10km tempo run 2 days ago (4:45/km pace)\\n\",\n  \"performance_context\":
+        \"VO2 Max: 52 ml/kg/min (excellent for age)\\nTraining Readiness: 78 (optimal)\\nTraining
+        Status: Productive\\nAcute/Chronic Load Ratio: 1.1 (optimal range)\\nLoad
+        Focus: High aerobic\\nRace predictions: 5K: 19:45, 10K: 41:30\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"greeting":{"type":"string"},"status":{"type":"object","properties":{"_type":{"type":"string","const":"StatusSummary"},"headline":{"type":"string","description":"Pithy
+        headline (3-5 words)"},"metrics":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"MetricItem"},"label":{"type":"string","description":"Short
+        label (e.g., \"Sleep\", \"HRV\")"},"value":{"type":"string","description":"Value
+        with unit (e.g., \"7.5h\", \"52ms\")"},"trend":{"type":["string","null"],"enum":["up","down","stable"]}},"required":["_type","label","value"],"description":"Briefing::MetricItem
+        struct"},"description":"Top 3 metrics to display"},"summary":{"type":"string","description":"One
+        sentence interpreting all data holistically"},"sentiment":{"type":"string","enum":["positive","neutral","warning"],"description":"Overall
+        sentiment"}},"required":["_type","headline","metrics","summary","sentiment"],"description":"Briefing::StatusSummary
+        struct"},"suggestions":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Suggestion"},"title":{"type":"string","description":"Pithy
+        action title (3-5 words)"},"body":{"type":"string","description":"One sentence
+        with specific action"},"suggestion_type":{"type":"string","enum":["general","recovery","intensity"],"description":"Category
+        of suggestion"}},"required":["_type","title","body","suggestion_type"],"description":"Briefing::Suggestion
+        struct"}},"reasoning":{"type":"string"}},"required":["greeting","status","suggestions","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"user_name\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Name of the user\"\n    },\n    \"date\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Date (YYYY-MM-DD)\"\n    },\n    \"health_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Sleep, HRV, stress, recovery data\"\n    },\n    \"activity_context\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Recent activities
+        and training\"\n    },\n    \"performance_context\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Fitness metrics and training status\"\n    }\n  },\n  \"required\": [\n    \"user_name\",\n    \"date\",\n    \"health_context\",\n    \"activity_context\",\n    \"performance_context\"\n  ]\n}\n```\n\nYour
+        objective is: Generate a concise daily health briefing from metrics. Think
+        step by step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3607'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 01 Jan 2026 21:40:55 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-01-01T21:40:46Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-01-01T21:40:56Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-01-01T21:40:45Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-01-01T21:40:46Z'
+      Request-Id:
+      - req_011CWhPFCgDCRCFp2Z3D1ri9
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '10414'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b752d45edd9dd37-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01BSe9i5kVgZacYhz1BbxwgG","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01KwvmgJvFJ9XNFssG2LSTYm","name":"json_output","input":{"greeting":"Good
+        morning, Vicente! Ready to close out 2024 strong?","reasoning":"Vicente shows
+        excellent overall health metrics with good sleep quality (85/100), balanced
+        HRV at 52ms, and low stress levels. His training readiness is optimal at 78,
+        indicating he''s well-recovered from his recent 10km tempo run. Body Battery
+        dropped from 75 to 45, which is normal daily depletion. His training status
+        is productive with optimal load ratios, suggesting effective training adaptation.
+        The rest day yesterday was well-timed. Only minor concern is being slightly
+        behind on daily step goal.","status":{"_type":"StatusSummary","headline":"Optimal
+        Training Readiness","sentiment":"positive","summary":"Excellent recovery metrics
+        and training readiness indicate you''re primed for effective training today.","metrics":[{"_type":"MetricItem","label":"Sleep","value":"7.5h
+        (85/100)","trend":"stable"},{"_type":"MetricItem","label":"HRV","value":"52ms","trend":"stable"},{"_type":"MetricItem","label":"Training
+        Readiness","value":"78/100","trend":"up"}]},"suggestions":[{"_type":"Suggestion","title":"Resume
+        Training Today","body":"Your optimal readiness score and balanced recovery
+        metrics suggest you''re ready for a quality training session.","suggestion_type":"intensity"},{"_type":"Suggestion","title":"Increase
+        Daily Movement","body":"Add a 15-minute walk to reach your 10,000 step goal
+        and maintain active recovery.","suggestion_type":"general"},{"_type":"Suggestion","title":"Maintain
+        Sleep Routine","body":"Your 7.5-hour sleep with 85/100 score is supporting
+        excellent recovery - keep this consistent.","suggestion_type":"recovery"}]}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":1437,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":601,"service_tier":"standard"}}'
+  recorded_at: Thu, 01 Jan 2026 21:40:55 GMT
+recorded_with: VCR 6.4.0

@@ -21,7 +21,7 @@ RSpec.describe Briefing::DailyBriefing do
     it 'defines output fields' do
       output_props = Briefing::DailyBriefing.output_schema.props
       expect(output_props).to include(:greeting)
-      expect(output_props).to include(:insights)
+      expect(output_props).to include(:status)
       expect(output_props).to include(:suggestions)
     end
   end
@@ -80,7 +80,7 @@ RSpec.describe Briefing::DailyBriefingGenerator do
       expect(result.greeting).not_to be_empty
     end
 
-    it 'generates insights array' do
+    it 'generates status summary' do
       result = generator.call(
         user_name: user_name,
         date: date,
@@ -89,9 +89,9 @@ RSpec.describe Briefing::DailyBriefingGenerator do
         performance_context: performance_context
       )
 
-      expect(result.insights).to be_an(Array)
-      expect(result.insights).not_to be_empty
-      expect(result.insights.first).to be_a(Briefing::InsightBlock)
+      expect(result.status).to be_a(Briefing::StatusSummary)
+      expect(result.status.headline).not_to be_empty
+      expect(result.status.summary).not_to be_empty
     end
 
     it 'generates suggestions array' do
@@ -108,7 +108,7 @@ RSpec.describe Briefing::DailyBriefingGenerator do
       expect(result.suggestions.first).to be_a(Briefing::Suggestion)
     end
 
-    it 'generates insights with valid sentiments' do
+    it 'generates status with valid sentiment' do
       result = generator.call(
         user_name: user_name,
         date: date,
@@ -117,9 +117,7 @@ RSpec.describe Briefing::DailyBriefingGenerator do
         performance_context: performance_context
       )
 
-      result.insights.each do |insight|
-        expect(insight.sentiment).to be_a(Briefing::Sentiment)
-      end
+      expect(result.status.sentiment).to be_a(Briefing::Sentiment)
     end
 
     it 'generates suggestions with valid types' do

@@ -90,39 +90,30 @@ RSpec.describe 'Briefing Types' do
       suggestion = Briefing::Suggestion.new(
         title: 'Today',
         body: 'Good day for tempo or intervals.',
-        icon: '🏃',
         suggestion_type: Briefing::SuggestionType::Intensity
       )
 
       expect(suggestion.title).to eq('Today')
       expect(suggestion.body).to eq('Good day for tempo or intervals.')
-      expect(suggestion.icon).to eq('🏃')
       expect(suggestion.suggestion_type).to eq(Briefing::SuggestionType::Intensity)
-    end
-
-    it 'defaults icon to lightbulb' do
-      suggestion = Briefing::Suggestion.new(
-        title: 'Tip',
-        body: 'Remember to hydrate.',
-        suggestion_type: Briefing::SuggestionType::General
-      )
-
-      expect(suggestion.icon).to eq('💡')
     end
   end
 
   describe Briefing::BriefingOutput do
-    it 'contains greeting, insights, and suggestions' do
+    it 'contains greeting, status, and suggestions' do
+      status = Briefing::StatusSummary.new(
+        headline: 'Ready to perform',
+        summary: 'Your recovery metrics look good.',
+        sentiment: Briefing::Sentiment::Positive,
+        metrics: [
+          Briefing::MetricItem.new(label: 'Sleep', value: '7.5h'),
+          Briefing::MetricItem.new(label: 'HRV', value: '52ms')
+        ]
+      )
+
       output = Briefing::BriefingOutput.new(
         greeting: 'Good morning',
-        insights: [
-          Briefing::InsightBlock.new(
-            icon: '😴',
-            headline: 'Sleep',
-            narrative: 'Well rested',
-            sentiment: Briefing::Sentiment::Positive
-          )
-        ],
+        status: status,
         suggestions: [
           Briefing::Suggestion.new(
             title: 'Today',
@@ -133,7 +124,7 @@ RSpec.describe 'Briefing Types' do
       )
 
       expect(output.greeting).to eq('Good morning')
-      expect(output.insights.length).to eq(1)
+      expect(output.status.headline).to eq('Ready to perform')
       expect(output.suggestions.length).to eq(1)
     end
   end
