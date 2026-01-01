@@ -40,8 +40,13 @@ module A2UI
     sig { returns(SurfaceManager) }
     def surface_manager
       # In a real app, this would be scoped to the user/session
-      @manager ||= T.let(SurfaceManager.new, T.nilable(SurfaceManager))
+      @manager ||= T.let(SurfaceManager.for(scope: surface_scope), T.nilable(SurfaceManager))
       T.must(@manager)
+    end
+
+    sig { returns(String) }
+    def surface_scope
+      params[:scope].to_s.empty? ? 'global' : params[:scope].to_s
     end
 
     sig { params(surface_id: String, result: T.untyped, manager: SurfaceManager).void }

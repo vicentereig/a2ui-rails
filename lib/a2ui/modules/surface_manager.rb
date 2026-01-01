@@ -8,14 +8,20 @@ module A2UI
     class << self
       extend T::Sig
 
-      sig { returns(T::Hash[String, Surface]) }
-      def store
-        @store ||= {}
+      sig { params(scope: String).returns(T::Hash[String, Surface]) }
+      def store_for(scope)
+        @stores ||= {}
+        @stores[scope] ||= {}
+      end
+
+      sig { params(scope: String).returns(SurfaceManager) }
+      def for(scope:)
+        new(store: store_for(scope))
       end
     end
 
     sig { params(store: T::Hash[String, Surface]).void }
-    def initialize(store: self.class.store)
+    def initialize(store: self.class.store_for('global'))
       @surfaces = T.let(store, T::Hash[String, Surface])
       @generator = T.let(UIGenerator.new, UIGenerator)
       @updater = T.let(UIUpdater.new, UIUpdater)

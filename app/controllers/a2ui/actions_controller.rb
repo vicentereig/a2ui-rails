@@ -11,6 +11,8 @@ module A2UI
     # Handle user actions from components
     sig { void }
     def create
+      return head :not_found unless @manager.get(params[:surface_id])
+
       action = UserAction.new(
         name: params.require(:action_name),
         surface_id: params.require(:surface_id),
@@ -33,7 +35,12 @@ module A2UI
 
     sig { void }
     def set_surface_manager
-      @manager = T.let(SurfaceManager.new, SurfaceManager)
+      @manager = T.let(SurfaceManager.for(scope: surface_scope), SurfaceManager)
+    end
+
+    sig { returns(String) }
+    def surface_scope
+      session.id.to_s
     end
 
     sig { params(result: T.untyped).void }
