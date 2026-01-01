@@ -54,9 +54,11 @@ module A2UI
       result.components.each { |c| surface.components[c.id] = c }
 
       # Broadcast turbo streams
-      streams_html = result.streams.map do |stream_op|
-        render_stream(stream_op, result.components, surface)
-      end.join("\n")
+      streams = result.streams.map { |stream_op| render_stream(stream_op, result.components, surface) }
+      if result.data_updates.any?
+        streams.unshift(render_data_stream(surface))
+      end
+      streams_html = streams.join("\n")
 
       ActionCable.server.broadcast(
         "a2ui:#{surface_id}",
@@ -91,6 +93,20 @@ module A2UI
 
       <<~TURBO
         <turbo-stream action="#{action}" target="#{stream_op.target}">
+          <template>#{content}</template>
+        </turbo-stream>
+      TURBO
+    end
+
+    sig { params(surface: Surface).returns(String) }
+    def render_data_stream(surface)
+      content = ApplicationController.render(
+        partial: 'a2ui/data',
+        locals: { surface: surface }
+      )
+
+      <<~TURBO
+        <turbo-stream action="replace" target="#{surface.id}-data">
           <template>#{content}</template>
         </turbo-stream>
       TURBO

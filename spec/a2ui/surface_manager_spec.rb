@@ -78,7 +78,7 @@ RSpec.describe A2UI::SurfaceManager do
       ])
 
       json = surface.to_json
-      expect(JSON.parse(json)).to eq({ '/form' => { 'email' => 'test@example.com' } })
+      expect(JSON.parse(json)).to eq({ 'form' => { 'email' => 'test@example.com' } })
     end
   end
 

@@ -33,10 +33,7 @@ module A2UI
 
     sig { void }
     def set_surface_manager
-      @manager = T.let(
-        session[:a2ui_manager] ||= SurfaceManager.new,
-        SurfaceManager
-      )
+      @manager = T.let(SurfaceManager.new, SurfaceManager)
     end
 
     sig { params(result: T.untyped).void }
@@ -66,9 +63,9 @@ module A2UI
       result.components.each { |c| surface.components[c.id] = c }
 
       # Build turbo streams
-      result.streams.map do |stream_op|
-        build_stream(stream_op, result.components, surface)
-      end
+      streams = result.streams.map { |stream_op| build_stream(stream_op, result.components, surface) }
+      streams.unshift(turbo_stream.replace("#{surface.id}-data", render_data(surface))) if result.data_updates.any?
+      streams
     end
 
     sig do
@@ -104,6 +101,11 @@ module A2UI
       when StreamAction::After then turbo_stream.after(stream_op.target, content)
       else turbo_stream.update(stream_op.target, content)
       end
+    end
+
+    sig { params(surface: Surface).returns(String) }
+    def render_data(surface)
+      render_to_string(partial: 'a2ui/data', locals: { surface: surface })
     end
   end
 end

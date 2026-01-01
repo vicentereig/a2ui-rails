@@ -48,14 +48,19 @@ module A2UI
     # Update an existing surface
     sig { void }
     def update
+      surface = @manager.get(params[:id])
+      return head :not_found unless surface
+
       result = @manager.update(
         surface_id: params[:id],
         request: params.require(:request)
       )
 
-      streams = result.streams.map do |stream_op|
-        turbo_stream_for(stream_op, result.components)
-      end
+      surface.apply_data_updates(result.data_updates) if result.data_updates.any?
+      result.components.each { |c| surface.components[c.id] = c }
+
+      streams = result.streams.map { |stream_op| turbo_stream_for(stream_op, result.components) }
+      streams.unshift(turbo_stream.replace("#{surface.id}-data", render_data(surface))) if result.data_updates.any?
 
       respond_to do |format|
         format.turbo_stream { render turbo_stream: streams }
@@ -78,10 +83,7 @@ module A2UI
 
     sig { void }
     def set_surface_manager
-      @manager = T.let(
-        session[:a2ui_manager] ||= SurfaceManager.new,
-        SurfaceManager
-      )
+      @manager = T.let(SurfaceManager.new, SurfaceManager)
     end
 
     sig { params(surface: Surface).returns(T::Hash[Symbol, T.untyped]) }
@@ -129,7 +131,7 @@ module A2UI
     sig { params(stream_op: StreamOp, components: T::Array[Component]).returns(String) }
     def render_components(stream_op, components)
       lookup = components.to_h { |c| [c.id, c] }
-      surface = @manager.get(stream_op.target) || Surface.new(stream_op.target)
+      surface = @manager.get(params[:id]) || Surface.new(params[:id])
 
       stream_op.component_ids.map do |id|
         component = lookup[id]
@@ -144,6 +146,11 @@ module A2UI
           )
         )
       end.join
+    end
+
+    sig { params(surface: Surface).returns(String) }
+    def render_data(surface)
+      render_to_string(partial: 'a2ui/data', locals: { surface: surface })
     end
   end
 end

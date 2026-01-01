@@ -34,13 +34,14 @@ module A2UI
     sig { params(updates: T::Array[DataUpdate]).void }
     def apply_data_updates(updates)
       updates.each do |update|
-        @data[update.path] = entries_to_hash(update.entries)
+        value = entries_to_hash(update.entries)
+        set_path(update.path, value)
       end
     end
 
     sig { params(path: String).returns(T.untyped) }
     def get_data(path)
-      @data[path]
+      resolve_path(path, @data)
     end
 
     sig { returns(String) }
@@ -49,6 +50,32 @@ module A2UI
     end
 
     private
+
+    sig { params(path: String, value: T.untyped).void }
+    def set_path(path, value)
+      if path.nil? || path == '' || path == '/'
+        @data = value.is_a?(Hash) ? value : { 'value' => value }
+        return
+      end
+
+      parts = path.split('/').reject(&:empty?)
+      current = @data
+
+      parts[0...-1].each do |part|
+        current[part] = {} unless current[part].is_a?(Hash)
+        current = current[part]
+      end
+
+      current[parts.last] = value
+    end
+
+    sig { params(path: String, obj: T.untyped).returns(T.untyped) }
+    def resolve_path(path, obj)
+      return obj if path.nil? || path == '' || path == '/'
+
+      parts = path.split('/').reject(&:empty?)
+      parts.reduce(obj) { |current, part| current.is_a?(Hash) ? current[part] : nil }
+    end
 
     sig { params(entries: T::Array[DataValue]).returns(T::Hash[String, T.untyped]) }
     def entries_to_hash(entries)

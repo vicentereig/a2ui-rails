@@ -5,9 +5,18 @@ module A2UI
   class SurfaceManager
     extend T::Sig
 
-    sig { void }
-    def initialize
-      @surfaces = T.let({}, T::Hash[String, Surface])
+    class << self
+      extend T::Sig
+
+      sig { returns(T::Hash[String, Surface]) }
+      def store
+        @store ||= {}
+      end
+    end
+
+    sig { params(store: T::Hash[String, Surface]).void }
+    def initialize(store: self.class.store)
+      @surfaces = T.let(store, T::Hash[String, Surface])
       @generator = T.let(UIGenerator.new, UIGenerator)
       @updater = T.let(UIUpdater.new, UIUpdater)
       @action_handler = T.let(ActionHandler.new, ActionHandler)

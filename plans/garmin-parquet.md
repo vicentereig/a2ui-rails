@@ -66,6 +66,14 @@ ORDER BY date DESC;
 - Medium: Garmin queries use string interpolation into SQL; if args are user-controlled, this is SQL injection risk.
 - Low: `Garmin::Connection#close` doesn’t close underlying DuckDB handles.
 
+## Review Findings Status (2026-01-01)
+- Fixed action dispatch naming + payload mismatch (`a2ui-action#perform`, `action_name`).
+- Fixed data model path storage (nested hashes with JSON-pointer traversal).
+- Removed session-persisted SurfaceManager; now uses shared in-process store.
+- Unified ActionCable/HTTP surface store usage.
+- Data updates now emit Turbo Streams to refresh the data controller element.
+- Stream rendering now uses the current surface id instead of stream target as surface id.
+
 ## Plan (Progress Tracking)
 - [x] Inspect the new `garmin-cli` Parquet layout and schema to confirm required columns for activities, daily health, and performance metrics.
 - [x] Refactor `Garmin::Connection` to target a Parquet base path (env-configurable) and provide DuckDB helpers for parquet glob queries or view creation.
