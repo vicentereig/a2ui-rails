@@ -4,26 +4,33 @@ source 'https://rubygems.org'
 
 ruby '>= 3.3'
 
-# Core
-gem 'dspy', '~> 0.34'
-gem 'sorbet-runtime'
-
-# Provider adapters - users choose one or more:
-# gem 'dspy-openai'    # OpenAI, OpenRouter, Ollama
-# gem 'dspy-anthropic' # Claude
-# gem 'dspy-gemini'    # Gemini
-
-# Rails
+# Rails 8.1
 gem 'rails', '~> 8.0'
-gem 'turbo-rails'
-gem 'stimulus-rails'
-gem 'propshaft'
 gem 'puma'
 gem 'sqlite3'
+gem 'bootsnap', require: false
+
+# Rails 8 defaults
+gem 'solid_queue'
+gem 'solid_cable'
+gem 'mission_control-jobs'
+
+# Asset pipeline
+gem 'propshaft'
+gem 'importmap-rails'
+gem 'turbo-rails'
+gem 'stimulus-rails'
+gem 'tailwindcss-rails'
 
 # View layer
 gem 'view_component'
-gem 'tailwindcss-rails'
+
+# A2UI core
+gem 'dspy', '~> 0.34'
+gem 'sorbet-runtime'
+
+# Data access
+gem 'duckdb'
 
 group :development, :test do
   gem 'rspec-rails'
@@ -32,8 +39,11 @@ group :development, :test do
   gem 'debug'
   gem 'sorbet'
   gem 'tapioca'
-  gem 'dspy-openai' # For testing
+  gem 'dspy-openai'
+  gem 'dspy-anthropic'
   gem 'dotenv-rails'
+  gem 'foreman'
+  gem 'capybara'
 end
 
 group :development do

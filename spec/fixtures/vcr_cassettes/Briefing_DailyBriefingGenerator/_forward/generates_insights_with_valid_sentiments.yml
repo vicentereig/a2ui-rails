@@ -1,0 +1,134 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"user_name\": \"Vicente\",\n  \"date\": \"2024-12-31\",\n  \"health_context\":
+        \"Sleep: 7.5 hours, score 85/100 (good)\\nHRV: 52ms (balanced, within baseline)\\nResting
+        HR: 48 bpm (normal)\\nBody Battery: Started at 75, now at 45\\nStress: Average
+        28 (low)\\nSteps: 8,234 / 10,000 goal\\n\",\n  \"activity_context\": \"Yesterday:
+        Rest day, no recorded activities\\nWeek total: 3 runs, 28km, 3:15 total time\\nRecent:
+        10km tempo run 2 days ago (4:45/km pace)\\n\",\n  \"performance_context\":
+        \"VO2 Max: 52 ml/kg/min (excellent for age)\\nTraining Readiness: 78 (optimal)\\nTraining
+        Status: Productive\\nAcute/Chronic Load Ratio: 1.1 (optimal range)\\nLoad
+        Focus: High aerobic\\nRace predictions: 5K: 19:45, 10K: 41:30\\n\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"greeting":{"type":"string"},"insights":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"InsightBlock"},"icon":{"type":"string","description":"Emoji
+        icon representing the insight category"},"headline":{"type":"string","description":"Short
+        headline summarizing the insight"},"narrative":{"type":"string","description":"Coach-style
+        narrative explanation"},"sentiment":{"type":"string","enum":["positive","neutral","warning"],"description":"Overall
+        sentiment of the insight"},"metrics":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"MetricItem"},"label":{"type":"string","description":"The
+        numeric or text value (e.g., \"7.5\", \"52\")"},"value":{"type":"string","description":"The
+        unit or description (e.g., \"hours\", \"ms HRV\")"},"trend":{"type":["string","null"]}},"required":["_type","label","value"],"description":"Briefing::MetricItem
+        struct"},"description":"Optional inline metrics"}},"required":["_type","icon","headline","narrative","sentiment","metrics"],"description":"Briefing::InsightBlock
+        struct"}},"suggestions":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"Suggestion"},"title":{"type":"string","description":"Short
+        title for the suggestion"},"body":{"type":"string","description":"Detailed
+        suggestion text"},"icon":{"type":"string","description":"Emoji icon for the
+        suggestion"},"suggestion_type":{"type":"string","enum":["general","recovery","intensity"],"description":"Category
+        of suggestion"}},"required":["_type","title","body","icon","suggestion_type"],"description":"Briefing::Suggestion
+        struct"}},"reasoning":{"type":"string"}},"required":["greeting","insights","suggestions","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"user_name\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Name of the user for personalization\"\n    },\n    \"date\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Date of the briefing (YYYY-MM-DD)\"\n    },\n    \"health_context\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary of sleep,
+        HRV, stress, and recovery data\"\n    },\n    \"activity_context\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Summary of recent activities and training\"\n    },\n    \"performance_context\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Summary of fitness
+        metrics and training status\"\n    }\n  },\n  \"required\": [\n    \"user_name\",\n    \"date\",\n    \"health_context\",\n    \"activity_context\",\n    \"performance_context\"\n  ]\n}\n```\n\nYour
+        objective is: Generate a personalized daily health and fitness briefing from
+        Garmin data. Think step by step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '3898'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 31 Dec 2025 13:14:09 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '449000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-31T13:13:51Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-31T13:14:09Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-31T13:13:50Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-31T13:13:51Z'
+      Request-Id:
+      - req_011CWepnGEYJCAVAQDp3XvNu
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '18926'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b6a09592b2a0f71-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJtb2RlbCI6ImNsYXVkZS1zb25uZXQtNC0yMDI1MDUxNCIsImlkIjoibXNnXzAxRnJoeHY4Tm91elV3bUtGSDUxanRqaSIsInR5cGUiOiJtZXNzYWdlIiwicm9sZSI6ImFzc2lzdGFudCIsImNvbnRlbnQiOlt7InR5cGUiOiJ0b29sX3VzZSIsImlkIjoidG9vbHVfMDFUOHczN1VpSEwzeWRCVmdwZmExOGZnIiwibmFtZSI6Impzb25fb3V0cHV0IiwiaW5wdXQiOnsiZ3JlZXRpbmciOiJHb29kIG1vcm5pbmcsIFZpY2VudGUhIEhhcHB5IE5ldyBZZWFyJ3MgRXZlISDwn46JIFlvdXIgYm9keSBpcyBzaG93aW5nIGdyZWF0IGJhbGFuY2UgdG9kYXkgLSBzb2xpZCByZWNvdmVyeSBtZXRyaWNzIGFuZCBleGNlbGxlbnQgdHJhaW5pbmcgcmVhZGluZXNzIHRvIGNsb3NlIG91dCAyMDI0IHN0cm9uZy4iLCJyZWFzb25pbmciOiJWaWNlbnRlIHNob3dzIGV4Y2VsbGVudCBvdmVyYWxsIGhlYWx0aCBtZXRyaWNzIHdpdGggZ29vZCBzbGVlcCBxdWFsaXR5ICg4NS8xMDApLCBiYWxhbmNlZCBIUlYgYXQgNTJtcywgYW5kIGxvdyBzdHJlc3MgbGV2ZWxzLiBIaXMgdHJhaW5pbmcgc3RhdHVzIGlzIHByb2R1Y3RpdmUgd2l0aCBvcHRpbWFsIHJlYWRpbmVzcyBhdCA3OCwgaW5kaWNhdGluZyBoZSdzIHJlY292ZXJlZCB3ZWxsIGZyb20gaGlzIHJlY2VudCB0ZW1wbyBydW4uIEJvZHkgQmF0dGVyeSBoYXMgZHJvcHBlZCB0byA0NSwgd2hpY2ggaXMgbm9ybWFsIGFmdGVyIGFjdGl2aXR5IGFjY3VtdWxhdGlvbi4gSGlzIFZPMiBNYXggb2YgNTIgaXMgZXhjZWxsZW50IGZvciBoaXMgYWdlIGdyb3VwLCBhbmQgaGlzIHRyYWluaW5nIGxvYWQgcmF0aW8gb2YgMS4xIGlzIGluIHRoZSBvcHRpbWFsIHJhbmdlLiBUaGUgcmVzdCBkYXkgeWVzdGVyZGF5IHdhcyB3ZWxsLXRpbWVkIGZvciByZWNvdmVyeS4iLCJpbnNpZ2h0cyI6W3siX3R5cGUiOiJJbnNpZ2h0QmxvY2siLCJpY29uIjoi8J+SpCIsImhlYWRsaW5lIjoiRXhjZWxsZW50IFNsZWVwIEZvdW5kYXRpb24iLCJuYXJyYXRpdmUiOiJZb3VyIDcuNSBob3VycyBvZiBzbGVlcCB3aXRoIGFuIDg1LzEwMCBzY29yZSBzaG93cyB5b3VyIGJvZHkgcmVjb3ZlcmVkIHdlbGwgZnJvbSByZWNlbnQgdHJhaW5pbmcuIFRoaXMgcXVhbGl0eSByZXN0LCBjb21iaW5lZCB3aXRoIHlvdXIgYmFsYW5jZWQgNTJtcyBIUlYsIGluZGljYXRlcyB5b3VyIG5lcnZvdXMgc3lzdGVtIGlzIGhhbmRsaW5nIHlvdXIgdHJhaW5pbmcgbG9hZCBiZWF1dGlmdWxseS4iLCJzZW50aW1lbnQiOiJwb3NpdGl2ZSIsIm1ldHJpY3MiOlt7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiNy41IiwidmFsdWUiOiJob3VycyBzbGVlcCIsInRyZW5kIjpudWxsfSx7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiNTIiLCJ2YWx1ZSI6Im1zIEhSViIsInRyZW5kIjpudWxsfV19LHsiX3R5cGUiOiJJbnNpZ2h0QmxvY2siLCJpY29uIjoi8J+PgyIsImhlYWRsaW5lIjoiVHJhaW5pbmcgU3RhdHVzOiBQcm9kdWN0aXZlIiwibmFycmF0aXZlIjoiWW91ciB0cmFpbmluZyByZWFkaW5lc3Mgb2YgNzggaXMgb3B0aW1hbCwgYW5kIHlvdXIgcHJvZHVjdGl2ZSB0cmFpbmluZyBzdGF0dXMgc2hvd3MgeW91J3JlIGFkYXB0aW5nIHdlbGwgdG8geW91ciBjdXJyZW50IGxvYWQuIFRoYXQgMTBrbSB0ZW1wbyBydW4gYXQgNDo0NS9rbSBwYWNlIHR3byBkYXlzIGFnbyB3YXMgcXVhbGl0eSB3b3JrLCBhbmQgeWVzdGVyZGF5J3MgcmVzdCBkYXkgd2FzIHBlcmZlY3RseSB0aW1lZC4iLCJzZW50aW1lbnQiOiJwb3NpdGl2ZSIsIm1ldHJpY3MiOlt7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiNzgiLCJ2YWx1ZSI6InRyYWluaW5nIHJlYWRpbmVzcyIsInRyZW5kIjpudWxsfSx7Il90eXBlIjoiTWV0cmljSXRlbSIsImxhYmVsIjoiMS4xIiwidmFsdWUiOiJsb2FkIHJhdGlvIiwidHJlbmQiOm51bGx9XX0seyJfdHlwZSI6Ikluc2lnaHRCbG9jayIsImljb24iOiLwn5SLIiwiaGVhZGxpbmUiOiJCb2R5IEJhdHRlcnkgTW9kZXJhdGUiLCJuYXJyYXRpdmUiOiJZb3VyIEJvZHkgQmF0dGVyeSBkcm9wcGVkIGZyb20gNzUgdG8gNDUsIHdoaWNoIGlzIG5vcm1hbCBhZnRlciBhIHdlZWsgb2YgcXVhbGl0eSB0cmFpbmluZy4gV2l0aCB5b3VyIGxvdyBzdHJlc3MgbGV2ZWxzICgyOCkgYW5kIGV4Y2VsbGVudCByZWNvdmVyeSBtZXRyaWNzLCB5b3UncmUgd2VsbC1wb3NpdGlvbmVkIHRvIHJlY2hhcmdlIHRvZGF5LiIsInNlbnRpbWVudCI6Im5ldXRyYWwiLCJtZXRyaWNzIjpbeyJfdHlwZSI6Ik1ldHJpY0l0ZW0iLCJsYWJlbCI6IjQ1IiwidmFsdWUiOiJib2R5IGJhdHRlcnkiLCJ0cmVuZCI6bnVsbH0seyJfdHlwZSI6Ik1ldHJpY0l0ZW0iLCJsYWJlbCI6IjI4IiwidmFsdWUiOiJzdHJlc3MgbGV2ZWwiLCJ0cmVuZCI6bnVsbH1dfV0sInN1Z2dlc3Rpb25zIjpbeyJfdHlwZSI6IlN1Z2dlc3Rpb24iLCJ0aXRsZSI6Ik5ldyBZZWFyJ3MgRXZlIEFjdGl2ZSBSZWNvdmVyeSIsImJvZHkiOiJXaXRoIHlvdXIgZXhjZWxsZW50IHRyYWluaW5nIHJlYWRpbmVzcyAoNzgpIGFuZCBwcm9kdWN0aXZlIHN0YXR1cywgY29uc2lkZXIgYSBsaWdodCAzMC00MCBtaW51dGUgZWFzeSBydW4gb3IgYnJpc2sgd2FsayB0byBmaW5pc2ggMjAyNCBzdHJvbmcuIFlvdXIgYm9keSBpcyByZWFkeSBmb3IgZ2VudGxlIG1vdmVtZW50IHRoYXQgd2lsbCBib29zdCB5b3VyIEJvZHkgQmF0dGVyeSBmb3IgdG9uaWdodCdzIGNlbGVicmF0aW9ucy4iLCJpY29uIjoi8J+OiiIsInN1Z2dlc3Rpb25fdHlwZSI6ImdlbmVyYWwifSx7Il90eXBlIjoiU3VnZ2VzdGlvbiIsInRpdGxlIjoiT3B0aW1pemUgVG9uaWdodCdzIFJlY292ZXJ5IiwiYm9keSI6IlBsYW4gZm9yIHF1YWxpdHkgc2xlZXAgdG9uaWdodCBkZXNwaXRlIE5ldyBZZWFyJ3MgZmVzdGl2aXRpZXMuIFlvdXIgY3VycmVudCA4NS8xMDAgc2xlZXAgc2NvcmUgc2hvd3MgeW91ciBib2R5IHRocml2ZXMgb24gZ29vZCByZXN0LiBDb25zaWRlciBzZXR0aW5nIGEgcmVhc29uYWJsZSBiZWR0aW1lIHRvIG1haW50YWluIHlvdXIgZXhjZWxsZW50IHJlY292ZXJ5IHBhdHRlcm4uIiwiaWNvbiI6IvCfjJkiLCJzdWdnZXN0aW9uX3R5cGUiOiJyZWNvdmVyeSJ9LHsiX3R5cGUiOiJTdWdnZXN0aW9uIiwidGl0bGUiOiIyMDI1IFRyYWluaW5nIE1vbWVudHVtIiwiYm9keSI6IllvdXIgVk8yIE1heCBvZiA1MiBhbmQgcmFjZSBwcmVkaWN0aW9ucyAoMTk6NDUgNUssIDQxOjMwIDEwSykgc2hvdyBleGNlbGxlbnQgZml0bmVzcy4gV2l0aCB5b3VyIG9wdGltYWwgbG9hZCByYXRpbyBvZiAxLjEsIHlvdSdyZSBwZXJmZWN0bHkgcG9zaXRpb25lZCB0byBidWlsZCBvbiB0aGlzIGJhc2UgaW4gdGhlIG5ldyB5ZWFyLiBDb25zaWRlciBzZXR0aW5nIGFtYml0aW91cyBidXQgYWNoaWV2YWJsZSBnb2FscyBmb3IgMjAyNS4iLCJpY29uIjoi8J+OryIsInN1Z2dlc3Rpb25fdHlwZSI6ImludGVuc2l0eSJ9XX19XSwic3RvcF9yZWFzb24iOiJ0b29sX3VzZSIsInN0b3Bfc2VxdWVuY2UiOm51bGwsInVzYWdlIjp7ImlucHV0X3Rva2VucyI6MTQ4OCwiY2FjaGVfY3JlYXRpb25faW5wdXRfdG9rZW5zIjowLCJjYWNoZV9yZWFkX2lucHV0X3Rva2VucyI6MCwiY2FjaGVfY3JlYXRpb24iOnsiZXBoZW1lcmFsXzVtX2lucHV0X3Rva2VucyI6MCwiZXBoZW1lcmFsXzFoX2lucHV0X3Rva2VucyI6MH0sIm91dHB1dF90b2tlbnMiOjExNTAsInNlcnZpY2VfdGllciI6InN0YW5kYXJkIn19
+  recorded_at: Wed, 31 Dec 2025 13:14:09 GMT
+recorded_with: VCR 6.4.0

@@ -939,4 +939,192 @@ http_interactions:
           "system_fingerprint": "fp_3683ee3deb"
         }
   recorded_at: Tue, 30 Dec 2025 22:08:56 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"action\": {\n    \"name\": \"add_guest\",\n    \"surface_id\":
+        \"booking\",\n    \"source_id\": \"add-btn\",\n    \"context\": {}\n  },\n  \"current_data\":
+        \"{\\\"guests\\\": 1}\",\n  \"business_rules\": \"\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"response_type":{"type":"string","enum":["update_ui","navigate","delete_surface","no_op"]},"streams":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"StreamOp"},"action":{"type":"string","enum":["append","prepend","replace","update","remove","before","after"]},"target":{"type":"string","description":"Target
+        element ID"},"component_ids":{"type":"array","items":{"type":"string"},"description":"Components
+        to render"}},"required":["_type","action","target","component_ids"],"description":"A2UI::StreamOp
+        struct"}},"components":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"TextComponent"},"id":{"type":"string"},"content":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Text content"},"usage_hint":{"type":"string","enum":["h1","h2","h3","h4","h5","body","caption"]}},"required":["_type","id","content","usage_hint"],"description":"A2UI::TextComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ImageComponent"},"id":{"type":"string"},"src":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Image URL"},"alt":{"type":"string"},"fit":{"type":"string","enum":["contain","cover","fill","scale_down","none"]}},"required":["_type","id","src","alt","fit"],"description":"A2UI::ImageComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"IconComponent"},"id":{"type":"string"},"name":{"type":"string","description":"Material
+        icon name (e.g., check, close, menu)"},"size":{"type":"integer"}},"required":["_type","id","name","size"],"description":"A2UI::IconComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ButtonComponent"},"id":{"type":"string"},"label":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Button label text"},"action":{"type":"object","properties":{"_type":{"type":"string","const":"Action"},"name":{"type":"string","description":"Action
+        identifier sent to server"},"context":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ContextBinding"},"key":{"type":"string","description":"Key
+        name in the action context"},"path":{"type":"string","description":"JSON Pointer
+        to extract value from"}},"required":["_type","key","path"],"description":"A2UI::ContextBinding
+        struct"}}},"required":["_type","name","context"],"description":"A2UI::Action
+        struct"},"disabled":{"type":"boolean"},"variant":{"type":"string","description":"primary,
+        secondary, or danger"}},"required":["_type","id","label","action","disabled","variant"],"description":"A2UI::ButtonComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"TextFieldComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to bound value in data model"},"input_type":{"type":"string","enum":["text","number","date","longtext","email","tel","url"]},"label":{"type":"string"},"placeholder":{"type":"string"},"is_required":{"type":"boolean","description":"Whether
+        the field is required"}},"required":["_type","id","value","input_type","label","placeholder","is_required"],"description":"A2UI::TextFieldComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CheckBoxComponent"},"id":{"type":"string"},"checked":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to boolean in data model"},"label":{"type":"string"}},"required":["_type","id","checked","label"],"description":"A2UI::CheckBoxComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SliderComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to numeric value"},"min":{"type":"number"},"max":{"type":"number"},"step":{"type":"number"},"label":{"type":"string"}},"required":["_type","id","value","min","max","step","label"],"description":"A2UI::SliderComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SelectComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to selected value"},"options_path":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to array of {value, label} options"},"label":{"type":"string"},"placeholder":{"type":"string"}},"required":["_type","id","value","options_path","label","placeholder"],"description":"A2UI::SelectComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"RowComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::RowComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ColumnComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::ColumnComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CardComponent"},"id":{"type":"string"},"child_id":{"type":"string","description":"ID
+        of the child component"},"title":{"type":"string"},"elevation":{"type":"integer"}},"required":["_type","id","child_id","title","elevation"],"description":"A2UI::CardComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ListComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","children","orientation"],"description":"A2UI::ListComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DividerComponent"},"id":{"type":"string"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","orientation"],"description":"A2UI::DividerComponent
+        struct"}],"description":"Union of multiple types"}},"data_updates":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"DataUpdate"},"path":{"type":"string","description":"JSON
+        Pointer path (e.g., /reservation/guests)"},"entries":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"StringValue"},"key":{"type":"string"},"string":{"type":"string"}},"required":["_type","key","string"],"description":"A2UI::StringValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"NumberValue"},"key":{"type":"string"},"number":{"type":"number"}},"required":["_type","key","number"],"description":"A2UI::NumberValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"BooleanValue"},"key":{"type":"string"},"boolean":{"type":"boolean"}},"required":["_type","key","boolean"],"description":"A2UI::BooleanValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ObjectValue"},"key":{"type":"string"},"entries":{"type":"object","additionalProperties":{"type":"string"},"description":"Nested
+        key-value pairs as JSON-like hash"}},"required":["_type","key","entries"],"description":"A2UI::ObjectValue
+        struct"}],"description":"Union of multiple types"},"description":"Values to
+        set at this path"}},"required":["_type","path","entries"],"description":"A2UI::DataUpdate
+        struct"}},"redirect_url":{"type":"string"},"message":{"type":"string"},"reasoning":{"type":"string"}},"required":["response_type","streams","components","data_updates","redirect_url","message","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"action\": {\n      \"type\": \"object\",\n      \"properties\":
+        {\n        \"_type\": {\n          \"type\": \"string\",\n          \"const\":
+        \"UserAction\"\n        },\n        \"name\": {\n          \"type\": \"string\",\n          \"description\":
+        \"Action name from component\"\n        },\n        \"surface_id\": {\n          \"type\":
+        \"string\"\n        },\n        \"source_id\": {\n          \"type\": \"string\",\n          \"description\":
+        \"Component ID that triggered action\"\n        },\n        \"context\": {\n          \"type\":
+        \"object\",\n          \"additionalProperties\": {\n            \"type\":
+        \"string\"\n          },\n          \"description\": \"Resolved context values\"\n        }\n      },\n      \"required\":
+        [\n        \"_type\",\n        \"name\",\n        \"surface_id\",\n        \"source_id\",\n        \"context\"\n      ],\n      \"description\":
+        \"A2UI::UserAction struct\"\n    },\n    \"current_data\": {\n      \"type\":
+        \"string\",\n      \"description\": \"Surface data as JSON\"\n    },\n    \"business_rules\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Domain constraints\"\n    }\n  },\n  \"required\":
+        [\n    \"action\"\n  ]\n}\n```\n\nYour objective is: Process user action and
+        generate response. Think step by step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '13786'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 31 Dec 2025 13:18:44 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '448000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2025-12-31T13:18:42Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2025-12-31T13:18:45Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2025-12-31T13:18:40Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '538000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2025-12-31T13:18:42Z'
+      Request-Id:
+      - req_011CWeq9eYZRmBfdLbzj56ma
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '4594'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b6a106e4c6f1c3f-EWR
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01GPUAC3exjmc5Wfot5SJX21","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01Xv37cdNWcMwCPysWP5HsLA","name":"json_output","input":{"response_type":"update_ui","streams":[],"components":[],"data_updates":[{"_type":"DataUpdate","path":"/guests","entries":[{"_type":"NumberValue","key":"guests","number":2}]}],"redirect_url":"","message":"Guest
+        added successfully","reasoning":"The user clicked the add guest button. The
+        current data shows 1 guest, so I''m incrementing it to 2 guests. This is a
+        simple data update operation that increases the guest count by 1."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":4757,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":250,"service_tier":"standard"}}'
+  recorded_at: Wed, 31 Dec 2025 13:18:44 GMT
 recorded_with: VCR 6.4.0
