@@ -10,7 +10,7 @@ RSpec.describe Briefing::MetricInlineComponent, type: :component do
     expect(page).to have_text('7h 23m')
   end
 
-  it 'renders multiple metrics with separator' do
+  it 'renders multiple metrics as pills' do
     render_inline(described_class.new(metrics: [
       { label: 'Duration', value: '45:12' },
       { label: 'Pace', value: '8:41/mi' },
@@ -20,7 +20,7 @@ RSpec.describe Briefing::MetricInlineComponent, type: :component do
     expect(page).to have_text('45:12')
     expect(page).to have_text('8:41/mi')
     expect(page).to have_text('148 bpm')
-    expect(page).to have_text('·') # separator
+    expect(page).to have_css('.metric-pill', count: 3)
   end
 
   it 'supports optional labels display' do
@@ -33,10 +33,10 @@ RSpec.describe Briefing::MetricInlineComponent, type: :component do
     expect(page).to have_text('79')
   end
 
-  it 'hides labels by default' do
+  it 'always shows labels in pills' do
     render_inline(described_class.new(metrics: [{ label: 'Score', value: '79' }]))
 
-    expect(page).not_to have_text('Score:')
+    expect(page).to have_text('Score')
     expect(page).to have_text('79')
   end
 

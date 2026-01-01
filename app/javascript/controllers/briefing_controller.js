@@ -29,10 +29,12 @@ export default class extends Controller {
   generate() {
     // Show loading state
     document.getElementById('loading-state').classList.remove('hidden')
+    document.getElementById('content-state').classList.add('hidden')
     document.getElementById('generate-section').classList.add('hidden')
     document.getElementById('error-state').classList.add('hidden')
     document.getElementById('warning-state').classList.add('hidden')
     document.getElementById('complete-state').classList.add('hidden')
+    document.getElementById('suggestions-section').classList.add('hidden')
 
     // Clear previous results
     document.getElementById('insights-container').innerHTML = ''
@@ -46,19 +48,24 @@ export default class extends Controller {
     switch (data.type) {
       case 'loading':
         document.getElementById('loading-state').classList.remove('hidden')
+        document.getElementById('content-state').classList.add('hidden')
         break
 
       case 'insight':
         document.getElementById('loading-state').classList.add('hidden')
+        document.getElementById('content-state').classList.remove('hidden')
         document.getElementById('insights-container').insertAdjacentHTML('beforeend', data.html)
         break
 
       case 'suggestion':
+        // Show suggestions section when first suggestion arrives
+        document.getElementById('suggestions-section').classList.remove('hidden')
         document.getElementById('suggestions-container').insertAdjacentHTML('beforeend', data.html)
         break
 
       case 'complete':
         document.getElementById('loading-state').classList.add('hidden')
+        document.getElementById('content-state').classList.remove('hidden')
         document.getElementById('complete-state').classList.remove('hidden')
         document.getElementById('generate-section').classList.remove('hidden')
         break
@@ -70,6 +77,7 @@ export default class extends Controller {
 
       case 'error':
         document.getElementById('loading-state').classList.add('hidden')
+        document.getElementById('content-state').classList.remove('hidden')
         document.getElementById('error-state').classList.remove('hidden')
         document.getElementById('error-message').textContent = data.message
         document.getElementById('generate-section').classList.remove('hidden')

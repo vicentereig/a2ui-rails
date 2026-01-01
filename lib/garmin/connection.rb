@@ -63,6 +63,19 @@ module Garmin
       @mode == :db
     end
 
+    sig { params(dataset: String).returns(T::Boolean) }
+    def dataset_available?(dataset)
+      return true if db?
+      return false unless @data_path
+
+      path = dataset_path(@data_path, dataset)
+      if dataset == 'profiles'
+        File.exist?(path)
+      else
+        Dir.glob(path).any?
+      end
+    end
+
     sig { params(sql: String).returns(T::Array[T::Hash[String, T.untyped]]) }
     def query(sql)
       raise ConnectionError, 'Not connected' unless @conn

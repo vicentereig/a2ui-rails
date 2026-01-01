@@ -1,18 +1,10 @@
-<div data-component="metric-inline" class="flex items-center gap-2 text-sm text-gray-600">
-  <% metrics.each_with_index do |metric, index| %>
-    <% if index > 0 %>
-      <span class="text-gray-300">·</span>
-    <% end %>
-
-    <span class="inline-flex items-center gap-1" <%= "data-trend=#{metric.trend}" if metric.trend %>>
-      <% if show_labels? %>
-        <span class="text-gray-500"><%= metric.label %>:</span>
-      <% end %>
-      <span class="font-medium text-gray-900"><%= metric.value %></span>
+<div class="metrics-row" data-component="metric-inline">
+  <% metrics.each do |metric| %>
+    <span class="metric-pill" <%= "data-trend=#{metric.trend}" if metric.trend %>>
+      <span class="metric-label"><%= metric.label %></span>
+      <span class="metric-value"><%= metric.value %></span>
       <% if metric.trend %>
-        <span class="<%= metric.trend == :up ? 'text-green-600' : 'text-red-600' %>">
-          <%= trend_indicator(metric.trend) %>
-        </span>
+        <span class="metric-trend" data-direction="<%= metric.trend %>"><%= trend_indicator(metric.trend) %></span>
       <% end %>
     </span>
   <% end %>

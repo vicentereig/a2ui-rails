@@ -42,6 +42,10 @@ conn = DuckDB::Database.open.connect
 conn.query("SELECT * FROM '#{data_path}/activities/*.parquet' LIMIT 1")
 ```
 
+**Storage expectation (current)**:
+- Only Parquet datasets + `sync.db` under `~/Library/Application Support/garmin`.
+- Legacy `garmin.duckdb` is not used or required.
+
 ### Data Model (from garmin-cli)
 
 Key Parquet datasets:
@@ -52,6 +56,19 @@ Key Parquet datasets:
 - `track_points/*.parquet` - GPS time-series (high volume)
 
 All datasets include `raw_json` for unmapped API fields.
+
+### Current Local Inventory (2026-01-01)
+
+Parquet datasets present locally:
+- `daily_health/*.parquet`
+- `performance_metrics/*.parquet`
+- `track_points/*.parquet`
+
+Parquet dataset currently missing:
+- `activities/*.parquet`
+
+Non-parquet file present:
+- `sync.db`
 
 ## Decision: Narrative Briefing, Not Dashboard
 
