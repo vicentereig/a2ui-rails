@@ -11,10 +11,8 @@ module A2UI
       @predictor = DSPy::Predict.new(ParseInput)
     end
 
-    sig do
-      params(input_values: T.untyped).returns(T.untyped)
-    end
-    def forward(**input_values)
+    sig { params(input_values: T.untyped).returns(T.untyped) }
+    def forward_untyped(**input_values)
       @predictor.call(
         text: input_values.fetch(:text),
         target_path: input_values.fetch(:target_path),

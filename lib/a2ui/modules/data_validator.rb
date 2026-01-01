@@ -12,7 +12,7 @@ module A2UI
     end
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
-    def forward(**input_values)
+    def forward_untyped(**input_values)
       @predictor.call(
         data: input_values.fetch(:data),
         rules: input_values.fetch(:rules)

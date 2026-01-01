@@ -11,10 +11,8 @@ module A2UI
       @predictor = DSPy::ChainOfThought.new(HandleAction)
     end
 
-    sig do
-      params(input_values: T.untyped).returns(T.untyped)
-    end
-    def forward(**input_values)
+    sig { params(input_values: T.untyped).returns(T.untyped) }
+    def forward_untyped(**input_values)
       @predictor.call(
         action: input_values.fetch(:action),
         current_data: input_values.fetch(:current_data, '{}'),

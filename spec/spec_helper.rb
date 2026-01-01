@@ -1,8 +1,34 @@
 # frozen_string_literal: true
 
+ENV['DISABLE_BOOTSNAP'] = '1'
+
 require 'bundler/setup'
 require 'dotenv'
 Dotenv.load('.env')
+require 'uri'
+require 'capybara/session/config'
+
+module Capybara
+  class SessionConfig
+    remove_method :app_host= if method_defined?(:app_host=)
+    def app_host=(url)
+      unless url.nil? || url.match?(URI::RFC2396_PARSER.make_regexp)
+        raise ArgumentError, "Capybara.app_host should be set to a url (http://www.example.com). Attempted to set #{url.inspect}."
+      end
+
+      @app_host = url
+    end
+
+    remove_method :default_host= if method_defined?(:default_host=)
+    def default_host=(url)
+      unless url.nil? || url.match?(URI::RFC2396_PARSER.make_regexp)
+        raise ArgumentError, "Capybara.default_host should be set to a url (http://www.example.com). Attempted to set #{url.inspect}."
+      end
+
+      @default_host = url
+    end
+  end
+end
 
 require 'vcr'
 require 'webmock/rspec'

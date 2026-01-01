@@ -11,10 +11,8 @@ module A2UI
       @predictor = DSPy::Predict.new(AdaptLayout)
     end
 
-    sig do
-      params(input_values: T.untyped).returns(T.untyped)
-    end
-    def forward(**input_values)
+    sig { params(input_values: T.untyped).returns(T.untyped) }
+    def forward_untyped(**input_values)
       @predictor.call(
         components: input_values.fetch(:components),
         root_id: input_values.fetch(:root_id),

@@ -11,10 +11,8 @@ module A2UI
       @predictor = DSPy::ChainOfThought.new(GenerateUI)
     end
 
-    sig do
-      params(input_values: T.untyped).returns(T.untyped)
-    end
-    def forward(**input_values)
+    sig { params(input_values: T.untyped).returns(T.untyped) }
+    def forward_untyped(**input_values)
       @predictor.call(
         request: input_values.fetch(:request),
         surface_id: input_values.fetch(:surface_id),
