@@ -89,6 +89,15 @@ class GenerateBriefingJob < ApplicationJob
         DSPy.events.unsubscribe(subscription_id) if subscription_id
       end
 
+      # Save to database
+      save_briefing(
+        user_id: user_id,
+        date: parsed_date,
+        contexts: contexts,
+        result: result,
+        token_usage: token_usage
+      )
+
       # Broadcast status (single consolidated block)
       BriefingChannel.broadcast_status(user_id, result.status)
 
@@ -123,6 +132,56 @@ class GenerateBriefingJob < ApplicationJob
     # For demo, just use a default name
     # In production, this would look up the user's name
     'Runner'
+  end
+
+  def save_briefing(user_id:, date:, contexts:, result:, token_usage:)
+    record = BriefingRecord.find_or_initialize_for(
+      user_id: user_id,
+      date: date,
+      briefing_type: 'daily'
+    )
+
+    record.update!(
+      health_context: contexts[:health_context],
+      activity_context: contexts[:activity_context],
+      performance_context: contexts[:performance_context],
+      output: serialize_output(result),
+      model: token_usage[:model],
+      input_tokens: token_usage[:input_tokens],
+      output_tokens: token_usage[:output_tokens],
+      generated_at: Time.current
+    )
+
+    Rails.logger.info("Saved briefing #{record.id} for #{user_id} on #{date}")
+    record
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error("Failed to save briefing: #{e.message}")
+    nil
+  end
+
+  def serialize_output(result)
+    {
+      greeting: result.greeting,
+      status: {
+        headline: result.status.headline,
+        summary: result.status.summary,
+        sentiment: result.status.sentiment.serialize,
+        metrics: result.status.metrics.map do |m|
+          {
+            label: m.label,
+            value: m.value,
+            trend: m.trend&.serialize
+          }
+        end
+      },
+      suggestions: result.suggestions.map do |s|
+        {
+          title: s.title,
+          body: s.body,
+          suggestion_type: s.suggestion_type.serialize
+        }
+      end
+    }
   end
 
   def fetch_garmin_data_async(connection, available, parsed_date)
