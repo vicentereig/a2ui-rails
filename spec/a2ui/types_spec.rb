@@ -213,5 +213,55 @@ RSpec.describe 'A2UI Union Types' do
       expect(A2UI::ModalSize::Large.serialize).to eq('large')
       expect(A2UI::ModalSize::FullScreen.serialize).to eq('fullscreen')
     end
+
+    it 'serializes UIDecisionType' do
+      expect(A2UI::UIDecisionType::ComponentChoice.serialize).to eq('component_choice')
+      expect(A2UI::UIDecisionType::LayoutStructure.serialize).to eq('layout_structure')
+      expect(A2UI::UIDecisionType::DataBinding.serialize).to eq('data_binding')
+      expect(A2UI::UIDecisionType::Styling.serialize).to eq('styling')
+      expect(A2UI::UIDecisionType::Interaction.serialize).to eq('interaction')
+    end
+  end
+
+  describe A2UI::UIDecisionEvidence do
+    it 'captures component choice reasoning' do
+      evidence = A2UI::UIDecisionEvidence.new(
+        decision_type: A2UI::UIDecisionType::ComponentChoice,
+        component_id: 'booking-card',
+        choice: 'Card',
+        rationale: 'Card provides visual grouping for related booking information with elevation.',
+        alternatives_considered: ['Column', 'Row with border']
+      )
+
+      expect(evidence.decision_type).to eq(A2UI::UIDecisionType::ComponentChoice)
+      expect(evidence.component_id).to eq('booking-card')
+      expect(evidence.choice).to eq('Card')
+      expect(evidence.rationale).to include('visual grouping')
+      expect(evidence.alternatives_considered).to include('Column')
+    end
+
+    it 'captures layout structure reasoning' do
+      evidence = A2UI::UIDecisionEvidence.new(
+        decision_type: A2UI::UIDecisionType::LayoutStructure,
+        choice: 'Column with SpaceBetween distribution',
+        rationale: 'Vertical layout for sequential form fields with consistent spacing.'
+      )
+
+      expect(evidence.decision_type).to eq(A2UI::UIDecisionType::LayoutStructure)
+      expect(evidence.component_id).to be_nil
+      expect(evidence.alternatives_considered).to eq([])
+    end
+
+    it 'captures data binding reasoning' do
+      evidence = A2UI::UIDecisionEvidence.new(
+        decision_type: A2UI::UIDecisionType::DataBinding,
+        component_id: 'user-name-field',
+        choice: 'PathReference to /user/name',
+        rationale: 'Bound to user data for personalization and form pre-fill.'
+      )
+
+      expect(evidence.decision_type).to eq(A2UI::UIDecisionType::DataBinding)
+      expect(evidence.choice).to include('/user/name')
+    end
   end
 end

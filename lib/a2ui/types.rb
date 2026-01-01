@@ -14,6 +14,8 @@ require_relative 'types/stream_action'
 require_relative 'types/action_response_type'
 require_relative 'types/screen_size'
 require_relative 'types/modal_size'
+require_relative 'types/ui_decision_type'
+require_relative 'types/ui_decision_evidence'
 
 # Value types
 require_relative 'types/literal_value'

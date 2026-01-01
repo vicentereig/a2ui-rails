@@ -15,6 +15,7 @@ module A2UI
       const :root_id, String, description: 'Root component ID'
       const :components, T::Array[Component], description: 'Component adjacency list'
       const :initial_data, T::Array[DataUpdate], default: [], description: 'Initial data values'
+      const :decisions, T::Array[UIDecisionEvidence], default: [], description: 'Reasoning behind UI choices'
     end
   end
 end
