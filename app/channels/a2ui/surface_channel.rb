@@ -46,6 +46,9 @@ module A2UI
 
     sig { returns(String) }
     def surface_scope
+      connection_scope = connection.respond_to?(:session_id) ? connection.session_id.to_s : ''
+      return connection_scope unless connection_scope.empty?
+
       params[:scope].to_s.empty? ? 'global' : params[:scope].to_s
     end
 
