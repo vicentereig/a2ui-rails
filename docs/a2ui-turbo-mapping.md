@@ -126,7 +126,7 @@ fetch('/a2ui/actions', {
     'Accept': 'text/vnd.turbo-stream.html'
   },
   body: JSON.stringify({
-    action: 'confirmBooking',
+    action_name: 'confirmBooking',
     surface_id: 'booking',
     source_component_id: 'confirm-btn',
     context: { guests: '3', datetime: '2025-12-16T19:00:00Z' }

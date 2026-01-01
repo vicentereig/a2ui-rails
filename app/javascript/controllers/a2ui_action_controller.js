@@ -12,7 +12,7 @@ import * as Turbo from "@hotwired/turbo"
  *           data-a2ui-action-name-value="confirmBooking"
  *           data-a2ui-action-context-value='[{"key":"reservation","path":"/reservation"}]'
  *           data-a2ui-action-surface-value="booking"
- *           data-action="click->a2ui-action#dispatch">
+ *           data-action="click->a2ui-action#perform">
  *     Confirm
  *   </button>
  */
@@ -36,7 +36,7 @@ export default class extends Controller {
   /**
    * Dispatch action to server
    */
-  async dispatch(event) {
+  async perform(event) {
     if (this.disabledValue) return
 
     event.preventDefault()
@@ -47,7 +47,7 @@ export default class extends Controller {
     try {
       const resolvedContext = this.#resolveContext()
       const payload = {
-        action: this.nameValue,
+        action_name: this.nameValue,
         surface_id: this.surfaceValue,
         source_component_id: this.element.id,
         context: resolvedContext,

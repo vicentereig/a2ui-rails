@@ -19,7 +19,7 @@ Building a demo Rails app to showcase A2UI with real data. Need to choose a doma
 ### Choice: Garmin
 
 **Reasoning**:
-- Already have `garmin-cli` with DuckDB storage
+- Already have `garmin-cli` with Parquet storage + DuckDB query access
 - Rich data: activities, sleep, stress, HRV, training load, VO2 max
 - Time-series nature enables trends and correlations
 - Personal data is more engaging than mock data
@@ -36,21 +36,22 @@ Evaluated two approaches:
 **Choice**: Direct DuckDB for queries, CLI for sync operations.
 
 ```ruby
-# Read from existing garmin-cli database
-db_path = File.expand_path("~/Library/Application Support/garmin/garmin.duckdb")
-conn = DuckDB::Database.open(db_path).connect
+# Query garmin-cli Parquet data via DuckDB
+data_path = File.expand_path("~/Library/Application Support/garmin")
+conn = DuckDB::Database.open.connect
+conn.query("SELECT * FROM '#{data_path}/activities/*.parquet' LIMIT 1")
 ```
 
 ### Data Model (from garmin-cli)
 
-Key tables:
-- `activities` - runs, rides, walks with pace, HR, elevation
-- `daily_health` - steps, sleep, stress, body battery, HRV
-- `performance_metrics` - VO2 max, training load, race predictions
-- `weight_entries` - weight, BMI, body composition
-- `track_points` - GPS time-series (high volume)
+Key Parquet datasets:
+- `activities/*.parquet` - runs, rides, walks with pace, HR, elevation
+- `daily_health/*.parquet` - steps, sleep, stress, body battery, HRV
+- `performance_metrics/*.parquet` - VO2 max, training load, race predictions
+- `weight_entries/*.parquet` - weight, BMI, body composition
+- `track_points/*.parquet` - GPS time-series (high volume)
 
-All tables have `raw_json` column for unmapped API fields.
+All datasets include `raw_json` for unmapped API fields.
 
 ## Decision: Narrative Briefing, Not Dashboard
 
@@ -146,7 +147,7 @@ Request Thread                    Background Job
 ─────────────────                 ──────────────────────
 1. Parse intent (fast)
 2. Return "Analyzing..." card
-3. Enqueue AgentJob ─────────────▶ 4. Query DuckDB
+3. Enqueue AgentJob ─────────────▶ 4. Query DuckDB over Parquet
                                    5. ChainOfThought reasoning
                                    6. Generate components
                                    7. Broadcast via ActionCable
@@ -162,7 +163,7 @@ Client ◀───────────────────────�
 - **ActionCable** for real-time broadcasts
 - **Turbo Streams** for UI updates
 - **SQLite** for app data (surfaces, sessions)
-- **DuckDB** for Garmin data (read-only)
+- **DuckDB** for Garmin Parquet data (read-only)
 
 ## Open Questions
 

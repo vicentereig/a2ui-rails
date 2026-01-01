@@ -59,7 +59,7 @@ module A2UI
           'a2ui-action-name-value': action.name,
           'a2ui-action-context-value': context_json,
           'a2ui-action-surface-value': surface_id,
-          action: 'click->a2ui-action#dispatch'
+          action: 'click->a2ui-action#perform'
         }
       end
     end
