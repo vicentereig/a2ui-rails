@@ -2,10 +2,14 @@
 # frozen_string_literal: true
 
 class BriefingsController < ApplicationController
+  def today
+    redirect_to daily_briefing_path(date_params_for(Date.today))
+  end
+
   def show
-    @user_id = params[:id] || 'demo_user'
+    @user_id = 'demo_user'
     @user_name = 'Vicente'
-    @date = parse_date(params[:date])
+    @date = parse_date_from_params
 
     # Check if briefing exists for this date
     @briefing = BriefingRecord.find_by(
@@ -15,14 +19,14 @@ class BriefingsController < ApplicationController
     )
 
     # Navigation dates
-    @prev_date = (@date - 1.day).iso8601
-    @next_date = (@date + 1.day).iso8601
+    @prev_date = @date - 1.day
+    @next_date = @date + 1.day
     @can_go_next = @date < Date.today
   end
 
   def generate
-    user_id = params[:id] || 'demo_user'
-    date = params[:date] || Date.today.iso8601
+    user_id = 'demo_user'
+    date = parse_date_from_params.iso8601
 
     GenerateBriefingJob.perform_later(user_id: user_id, date: date)
 
@@ -31,11 +35,19 @@ class BriefingsController < ApplicationController
 
   private
 
-  def parse_date(date_param)
-    return Date.today unless date_param.present?
-
-    Date.parse(date_param)
-  rescue ArgumentError
+  def parse_date_from_params
+    Date.new(params[:year].to_i, params[:month].to_i, params[:day].to_i)
+  rescue ArgumentError, TypeError
     Date.today
   end
+
+  def date_params_for(date)
+    {
+      year: date.strftime('%Y'),
+      month: date.strftime('%m'),
+      day: date.strftime('%d')
+    }
+  end
+
+  helper_method :date_params_for
 end

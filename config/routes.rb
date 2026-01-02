@@ -6,15 +6,15 @@ Rails.application.routes.draw do
     resources :actions, only: [:create]
   end
 
-  # Briefing demo
-  resources :briefings, only: [:show] do
-    member do
-      post :generate
-    end
-  end
+  # Briefing routes with date-based URLs
+  get 'briefings/today', to: 'briefings#today', as: :briefings_today
+  get ':year/:month/:day/briefings', to: 'briefings#show', as: :daily_briefing,
+      constraints: { year: /\d{4}/, month: /\d{2}/, day: /\d{2}/ }
+  post ':year/:month/:day/briefings/generate', to: 'briefings#generate', as: :generate_briefing,
+       constraints: { year: /\d{4}/, month: /\d{2}/, day: /\d{2}/ }
 
-  # Root route - redirect to demo briefing
-  root to: redirect('/briefings/demo')
+  # Root route - redirect to today's briefing
+  root to: redirect('/briefings/today')
 
   # Mount ActionCable
   mount ActionCable.server => '/cable'

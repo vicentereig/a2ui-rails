@@ -81,11 +81,11 @@
   align-items: flex-start;
 }
 
-/* Card wrapper - 1/3 viewport width with reasonable limits */
+/* Card wrapper - wider for better readability */
 .briefing-wrapper {
-  width: 33vw;
-  min-width: 340px;
-  max-width: 480px;
+  width: 45vw;
+  min-width: 400px;
+  max-width: 640px;
 }
 
 /* ============================================

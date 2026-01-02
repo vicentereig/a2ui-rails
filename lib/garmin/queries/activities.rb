@@ -11,12 +11,14 @@ module Garmin
         @connection = connection
       end
 
-      sig { params(limit: Integer).returns(T::Array[Activity]) }
-      def recent(limit: 10)
+      sig { params(limit: Integer, as_of: T.nilable(Date)).returns(T::Array[Activity]) }
+      def recent(limit: 10, as_of: nil)
         limit = limit.to_i
         table = @connection.table_sql('activities')
+        date_filter = as_of ? "WHERE DATE(start_time_local) <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
+          #{date_filter}
           ORDER BY start_time_local DESC
           LIMIT #{limit}
         SQL

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { createConsumer } from "@rails/actioncable"
+import { Turbo } from "@hotwired/turbo-rails"
 
 export default class extends Controller {
   static values = {
@@ -49,8 +50,8 @@ export default class extends Controller {
       tokenDisplay.querySelector('.token-count').textContent = '0'
     }
 
-    // Request briefing via ActionCable
-    this.subscription.perform('request_briefing', { date: this.dateValue })
+    // Request briefing via ActionCable (force regeneration on button click)
+    this.subscription.perform('request_briefing', { date: this.dateValue, force: true })
   }
 
   handleMessage(data) {
@@ -132,61 +133,14 @@ export default class extends Controller {
   }
 
   navigateToDate(dateStr) {
-    // Update the current date value
-    this.dateValue = dateStr
-
-    // Update date values for next navigation
-    const date = new Date(dateStr)
-    const prevDate = new Date(date)
-    prevDate.setDate(prevDate.getDate() - 1)
-    const nextDate = new Date(date)
-    nextDate.setDate(nextDate.getDate() + 1)
-
-    this.prevDateValue = this.formatDateISO(prevDate)
-    this.nextDateValue = this.formatDateISO(nextDate)
-
-    // Update can go next (can't go past today)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    this.canGoNextValue = date < today
-
-    // Update next button state
-    const nextBtn = document.getElementById('next-btn')
-    if (nextBtn) {
-      nextBtn.disabled = !this.canGoNextValue
-    }
-
-    // Update displayed date
-    this.updateDisplayedDate(date)
-
-    // Clear current content and request new briefing
-    this.clearContent()
-    this.subscription.perform('request_briefing', { date: dateStr })
+    // Navigate via URL for proper browser history
+    const url = this.buildDateUrl(dateStr)
+    Turbo.visit(url)
   }
 
-  updateDisplayedDate(date) {
-    const dateEl = document.getElementById('briefing-date')
-    if (dateEl) {
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-      dateEl.textContent = date.toLocaleDateString('en-US', options)
-    }
-  }
-
-  clearContent() {
-    document.getElementById('status-container').innerHTML = ''
-    document.getElementById('suggestions-container').innerHTML = ''
-    document.getElementById('suggestions-section').classList.add('hidden')
-    document.getElementById('error-state').classList.add('hidden')
-    document.getElementById('warning-state').classList.add('hidden')
-
-    // Reset token display
-    const tokenDisplay = document.getElementById('token-display')
-    if (tokenDisplay) {
-      tokenDisplay.classList.add('hidden')
-    }
-  }
-
-  formatDateISO(date) {
-    return date.toISOString().split('T')[0]
+  buildDateUrl(dateStr) {
+    // dateStr is in YYYY-MM-DD format
+    const [year, month, day] = dateStr.split('-')
+    return `/${year}/${month}/${day}/briefings`
   }
 }

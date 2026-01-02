@@ -29,26 +29,20 @@ class GenerateWeeklyBriefingJob < ApplicationJob
     # Build summaries from existing dailies
     daily_summaries = Briefing::WeeklyBriefingGenerator.build_daily_summaries(daily_records)
 
-    # Track tokens
-    token_usage = { input_tokens: 0, output_tokens: 0, model: nil }
-    subscription_id = DSPy.events.subscribe('llm.generate') do |_, attrs|
-      token_usage[:input_tokens] += attrs[:input_tokens] || 0
-      token_usage[:output_tokens] += attrs[:output_tokens] || 0
-      token_usage[:model] ||= attrs[:model]
-      BriefingChannel.broadcast_token_usage(user_id, token_usage)
-    end
+    # Generate briefing via DSPy
+    # Token tracking happens inside the module via around callback
+    generator = Briefing::WeeklyBriefingGenerator.new
+    result = generator.call(
+      user_name: fetch_user_name(user_id),
+      week_start: start_date.iso8601,
+      week_end: end_date.iso8601,
+      daily_summaries: daily_summaries
+    )
 
-    begin
-      generator = Briefing::WeeklyBriefingGenerator.new
-      result = generator.call(
-        user_name: fetch_user_name(user_id),
-        week_start: start_date.iso8601,
-        week_end: end_date.iso8601,
-        daily_summaries: daily_summaries
-      )
-    ensure
-      DSPy.events.unsubscribe(subscription_id) if subscription_id
-    end
+    # Get token usage from the module
+    token_usage = generator.token_usage
+    Rails.logger.info("[TokenTracking] Weekly usage: #{token_usage.inspect}")
+    BriefingChannel.broadcast_token_usage(user_id, token_usage)
 
     # Save weekly briefing with parent-child relationships
     save_weekly_briefing(

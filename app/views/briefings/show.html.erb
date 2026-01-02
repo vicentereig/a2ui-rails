@@ -24,12 +24,21 @@
       <!-- Main Content -->
       <div id="content-state" class="briefing-card">
         <!-- Token Display (top-right caption) -->
-        <div id="token-display" class="token-display hidden">
-          <span class="token-model">...</span>
-          <span class="token-separator">·</span>
-          <span class="token-count">0</span>
-          <span class="token-label">tokens</span>
-        </div>
+        <% if @briefing&.generated? %>
+          <div id="token-display" class="token-display">
+            <span class="token-model"><%= @briefing.model&.split('/')&.last || '...' %></span>
+            <span class="token-separator">·</span>
+            <span class="token-count"><%= number_to_human(@briefing.total_tokens, precision: 1, significant: false, units: { thousand: 'k' }) %></span>
+            <span class="token-label">tokens</span>
+          </div>
+        <% else %>
+          <div id="token-display" class="token-display hidden">
+            <span class="token-model">...</span>
+            <span class="token-separator">·</span>
+            <span class="token-count">0</span>
+            <span class="token-label">tokens</span>
+          </div>
+        <% end %>
 
         <!-- Header with Navigation -->
         <header class="briefing-header">
@@ -53,14 +62,33 @@
 
         <!-- Status (single consolidated block) -->
         <section id="status-container">
-          <!-- Status streamed here -->
+          <% if @briefing&.generated? %>
+            <% output = @briefing.output.deep_symbolize_keys %>
+            <% status = output[:status] %>
+            <% metrics = (status[:metrics] || []).map { |m| { label: m[:label], value: m[:value], trend: m[:trend]&.to_sym } } %>
+            <%= render Briefing::StatusSummaryComponent.new(
+              headline: status[:headline],
+              summary: status[:summary],
+              sentiment: status[:sentiment].to_sym,
+              metrics: metrics
+            ) %>
+          <% end %>
         </section>
 
         <!-- Suggestions -->
-        <section id="suggestions-section" class="suggestions-section hidden">
+        <section id="suggestions-section" class="suggestions-section <%= 'hidden' unless @briefing&.generated? && @briefing.output.dig('suggestions')&.any? %>">
           <h2 class="suggestions-header">What to do today</h2>
           <div id="suggestions-container">
-            <!-- Suggestions streamed here -->
+            <% if @briefing&.generated? %>
+              <% output = @briefing.output.deep_symbolize_keys %>
+              <% (output[:suggestions] || []).each do |suggestion| %>
+                <%= render Briefing::SuggestionComponent.new(
+                  title: suggestion[:title],
+                  body: suggestion[:body],
+                  suggestion_type: suggestion[:suggestion_type]&.to_sym || :general
+                ) %>
+              <% end %>
+            <% end %>
           </div>
         </section>
 
@@ -69,7 +97,7 @@
           <button id="generate-btn"
                   data-action="click->briefing#generate"
                   class="btn btn-primary">
-            Generate Briefing
+            <%= @briefing&.generated? ? 'Regenerate Briefing' : 'Generate Briefing' %>
           </button>
         </div>
 

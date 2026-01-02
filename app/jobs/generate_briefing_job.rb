@@ -66,28 +66,23 @@ class GenerateBriefingJob < ApplicationJob
         "performance_context:\n#{contexts[:performance_context]}"
       )
 
-      # Generate briefing via DSPy with token tracking
-      token_usage = { input_tokens: 0, output_tokens: 0, model: nil }
-      subscription_id = DSPy.events.subscribe('llm.generate') do |_, attrs|
-        token_usage[:input_tokens] += attrs[:input_tokens] || 0
-        token_usage[:output_tokens] += attrs[:output_tokens] || 0
-        token_usage[:model] ||= attrs[:model]
-        # Broadcast incremental token updates
-        BriefingChannel.broadcast_token_usage(user_id, token_usage)
-      end
+      # Generate briefing via DSPy
+      # Token tracking happens inside the module via around callback
+      generator = Briefing::DailyBriefingGenerator.new
+      result = generator.call(
+        user_name: fetch_user_name(user_id),
+        date: date,
+        health_context: contexts[:health_context],
+        activity_context: contexts[:activity_context],
+        performance_context: contexts[:performance_context]
+      )
 
-      begin
-        generator = Briefing::DailyBriefingGenerator.new
-        result = generator.call(
-          user_name: fetch_user_name(user_id),
-          date: date,
-          health_context: contexts[:health_context],
-          activity_context: contexts[:activity_context],
-          performance_context: contexts[:performance_context]
-        )
-      ensure
-        DSPy.events.unsubscribe(subscription_id) if subscription_id
-      end
+      # Get token usage from the module
+      token_usage = generator.token_usage
+      Rails.logger.info("[TokenTracking] Final usage: #{token_usage.inspect}")
+
+      # Broadcast token usage to client
+      BriefingChannel.broadcast_token_usage(user_id, token_usage)
 
       # Save to database
       save_briefing(
@@ -210,22 +205,22 @@ class GenerateBriefingJob < ApplicationJob
       # Health queries (3 parallel)
       if available[:daily_health]
         barrier.async { results[:daily_health] = health_query.for_date(parsed_date) }
-        barrier.async { results[:sleep_trend] = health_query.sleep_trend(days: 7) }
+        barrier.async { results[:sleep_trend] = health_query.sleep_trend(days: 7, as_of: parsed_date) }
         barrier.async { results[:recovery_status] = health_query.recovery_status(parsed_date) }
       end
 
       # Activity queries (2 parallel)
       if available[:activities]
-        barrier.async { results[:recent_activities] = activities_query.recent(limit: 5) }
+        barrier.async { results[:recent_activities] = activities_query.recent(limit: 5, as_of: parsed_date) }
         barrier.async { results[:week_stats] = activities_query.week_stats(parsed_date) }
       end
 
       # Performance queries (4 parallel)
       if available[:performance_metrics]
-        barrier.async { results[:performance_metrics] = performance_query.latest }
-        barrier.async { results[:training_load] = performance_query.training_status_summary }
-        barrier.async { results[:vo2max_trend] = performance_query.vo2max_trend }
-        barrier.async { results[:race_predictions] = performance_query.race_predictions }
+        barrier.async { results[:performance_metrics] = performance_query.latest(as_of: parsed_date) }
+        barrier.async { results[:training_load] = performance_query.training_status_summary(as_of: parsed_date) }
+        barrier.async { results[:vo2max_trend] = performance_query.vo2max_trend(as_of: parsed_date) }
+        barrier.async { results[:race_predictions] = performance_query.race_predictions(as_of: parsed_date) }
       end
 
       barrier.wait

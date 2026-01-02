@@ -58,13 +58,21 @@ module Briefing
   end
 
   # Module that generates weekly briefings from daily summaries
+  # Tracks token usage via lifecycle callbacks
   class WeeklyBriefingGenerator < DSPy::Module
     extend T::Sig
+
+    # Token usage accumulated during forward
+    sig { returns(T::Hash[Symbol, T.untyped]) }
+    attr_reader :token_usage
+
+    around :track_tokens
 
     sig { void }
     def initialize
       super
-      @predictor = DSPy::ChainOfThought.new(WeeklyBriefing)
+      @predictor = T.let(DSPy::ChainOfThought.new(WeeklyBriefing), DSPy::ChainOfThought)
+      @token_usage = T.let({ input_tokens: 0, output_tokens: 0, model: nil }, T::Hash[Symbol, T.untyped])
     end
 
     sig { params(input_values: T.untyped).returns(T.untyped) }
@@ -75,6 +83,25 @@ module Briefing
         week_end: input_values.fetch(:week_end),
         daily_summaries: input_values.fetch(:daily_summaries)
       )
+    end
+
+    private
+
+    sig { returns(T.untyped) }
+    def track_tokens
+      @token_usage = { input_tokens: 0, output_tokens: 0, model: nil }
+
+      subscription_id = DSPy.events.subscribe('lm.tokens') do |_event_name, attrs|
+        @token_usage[:input_tokens] += attrs[:input_tokens] || 0
+        @token_usage[:output_tokens] += attrs[:output_tokens] || 0
+        @token_usage[:model] ||= attrs['gen_ai.request.model']
+      end
+
+      begin
+        yield
+      ensure
+        DSPy.events.unsubscribe(subscription_id) if subscription_id
+      end
     end
 
     # Build daily summaries from BriefingRecord entries

@@ -25,12 +25,14 @@ module Garmin
         row_to_health(rows.first)
       end
 
-      sig { params(days: Integer).returns(T::Array[Garmin::DailyHealth]) }
-      def recent(days: 7)
+      sig { params(days: Integer, as_of: T.nilable(Date)).returns(T::Array[Garmin::DailyHealth]) }
+      def recent(days: 7, as_of: nil)
         days = days.to_i
         table = @connection.table_sql('daily_health')
+        date_filter = as_of ? "WHERE date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
+          #{date_filter}
           ORDER BY date DESC
           LIMIT #{days}
         SQL
@@ -38,16 +40,18 @@ module Garmin
         rows.map { |row| row_to_health(row) }
       end
 
-      sig { params(days: Integer).returns(SleepTrend) }
-      def sleep_trend(days: 7)
+      sig { params(days: Integer, as_of: T.nilable(Date)).returns(SleepTrend) }
+      def sleep_trend(days: 7, as_of: nil)
         days = days.to_i
         table = @connection.table_sql('daily_health')
+        date_filter = as_of ? "WHERE date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT
             AVG(sleep_score) as avg_score,
             AVG(sleep_seconds) as avg_seconds
           FROM (
             SELECT sleep_score, sleep_seconds FROM #{table}
+            #{date_filter}
             ORDER BY date DESC
             LIMIT #{days}
           )
@@ -58,10 +62,10 @@ module Garmin
         avg_hours = (row['avg_seconds']&.to_f || 0.0) / 3600.0
 
         # Calculate consecutive good nights (score >= 75)
-        consecutive = calculate_consecutive_good_nights(days)
+        consecutive = calculate_consecutive_good_nights(days, as_of: as_of)
 
         # Determine trend direction
-        direction = calculate_trend_direction(days)
+        direction = calculate_trend_direction(days, as_of: as_of)
 
         SleepTrend.new(
           avg_sleep_score: avg_score,
@@ -164,12 +168,14 @@ module Garmin
         )
       end
 
-      sig { params(days: Integer).returns(Integer) }
-      def calculate_consecutive_good_nights(days)
+      sig { params(days: Integer, as_of: T.nilable(Date)).returns(Integer) }
+      def calculate_consecutive_good_nights(days, as_of: nil)
         days = days.to_i
         table = @connection.table_sql('daily_health')
+        date_filter = as_of ? "WHERE date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT sleep_score FROM #{table}
+          #{date_filter}
           ORDER BY date DESC
           LIMIT #{days}
         SQL
@@ -186,12 +192,14 @@ module Garmin
         consecutive
       end
 
-      sig { params(days: Integer).returns(Symbol) }
-      def calculate_trend_direction(days)
+      sig { params(days: Integer, as_of: T.nilable(Date)).returns(Symbol) }
+      def calculate_trend_direction(days, as_of: nil)
         days = days.to_i
         table = @connection.table_sql('daily_health')
+        date_filter = as_of ? "WHERE date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT sleep_score, date FROM #{table}
+          #{date_filter}
           ORDER BY date DESC
           LIMIT #{days}
         SQL

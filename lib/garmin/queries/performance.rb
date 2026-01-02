@@ -11,11 +11,13 @@ module Garmin
         @connection = connection
       end
 
-      sig { returns(T.nilable(PerformanceMetrics)) }
-      def latest
+      sig { params(as_of: T.nilable(Date)).returns(T.nilable(PerformanceMetrics)) }
+      def latest(as_of: nil)
         table = @connection.table_sql('performance_metrics')
+        date_filter = as_of ? "WHERE date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT * FROM #{table}
+          #{date_filter}
           ORDER BY date DESC
           LIMIT 1
         SQL
@@ -39,9 +41,9 @@ module Garmin
         row_to_metrics(rows.first)
       end
 
-      sig { returns(T.nilable(TrainingStatusSummary)) }
-      def training_status_summary
-        metrics = latest
+      sig { params(as_of: T.nilable(Date)).returns(T.nilable(TrainingStatusSummary)) }
+      def training_status_summary(as_of: nil)
+        metrics = latest(as_of: as_of)
         return nil unless metrics
 
         TrainingStatusSummary.new(
@@ -52,13 +54,15 @@ module Garmin
         )
       end
 
-      sig { params(days: Integer).returns(VO2MaxTrend) }
-      def vo2max_trend(days: 30)
+      sig { params(days: Integer, as_of: T.nilable(Date)).returns(VO2MaxTrend) }
+      def vo2max_trend(days: 30, as_of: nil)
         days = days.to_i
         table = @connection.table_sql('performance_metrics')
+        date_filter = as_of ? "AND date <= '#{as_of}'" : ''
         rows = @connection.query(<<~SQL)
           SELECT vo2max, date FROM #{table}
           WHERE vo2max IS NOT NULL
+          #{date_filter}
           ORDER BY date DESC
           LIMIT #{days}
         SQL
@@ -84,9 +88,9 @@ module Garmin
         )
       end
 
-      sig { returns(T.nilable(RacePredictions)) }
-      def race_predictions
-        metrics = latest
+      sig { params(as_of: T.nilable(Date)).returns(T.nilable(RacePredictions)) }
+      def race_predictions(as_of: nil)
+        metrics = latest(as_of: as_of)
         return nil unless metrics
 
         RacePredictions.new(
