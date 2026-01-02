@@ -122,6 +122,7 @@ RSpec.describe GenerateBriefingJob, type: :job do
     # Stub DSPy generator
     allow(Briefing::DailyBriefingGenerator).to receive(:new).and_return(mock_generator)
     allow(mock_generator).to receive(:call).and_return(mock_briefing_output)
+    allow(mock_generator).to receive(:token_usage).and_return({ input_tokens: 0, output_tokens: 0, model: 'test-model' })
   end
 
   describe '#perform' do
