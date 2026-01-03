@@ -7,6 +7,7 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
   let(:user_id) { 'user_123' }
   let(:date) { '2024-12-31' }
   let(:parsed_date) { Date.parse(date) }
+  let(:surface_id) { "editorial-#{user_id}-#{date}" }
 
   let(:mock_connection) { double('Garmin::Connection', close: nil) }
   let(:mock_health_query) { double('Garmin::Queries::DailyHealth') }
@@ -50,36 +51,38 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
   let(:mock_training_status) { nil }
   let(:mock_vo2max_trend) { nil }
 
-  # Updated to use NarrativeInsight instead of EditorialInsight
-  let(:mock_insight) do
-    Briefing::NarrativeInsight.new(
-      what: 'Your sleep quality has been excellent this week.',
-      so_what: 'This provides a strong foundation for training adaptation.',
-      now_what: 'Consider a quality workout today.'
+  # A2UI components for the editorial UI
+  let(:mock_components) do
+    [
+      A2UI::ColumnComponent.new(
+        id: 'root',
+        children: A2UI::ExplicitChildren.new(ids: ['headline', 'content']),
+        gap: 16
+      ),
+      A2UI::TextComponent.new(
+        id: 'headline',
+        content: A2UI::LiteralValue.new(value: 'Sleep Excellence Unlocks Training Potential'),
+        usage_hint: A2UI::TextUsageHint::H1
+      ),
+      A2UI::TextComponent.new(
+        id: 'content',
+        content: A2UI::LiteralValue.new(value: 'Your recovery is looking strong.'),
+        usage_hint: A2UI::TextUsageHint::Body
+      )
+    ]
+  end
+
+  # A2UI generator result - struct with root_id and components
+  let(:mock_generator_result) do
+    # Using a simple struct to simulate the DSPy output
+    Struct.new(:root_id, :components, :initial_data, keyword_init: true).new(
+      root_id: 'root',
+      components: mock_components,
+      initial_data: []
     )
   end
 
-  # Updated to use NarrativeEditorialOutput - result is now the briefing directly
-  let(:mock_briefing_output) do
-    Briefing::NarrativeEditorialOutput.new(
-      headline: 'Sleep Excellence Unlocks Training Potential',
-      insight: mock_insight,
-      supporting_metrics: [
-        Briefing::SupportingMetric.new(
-          label: 'Sleep',
-          value: '85/100',
-          trend: Briefing::TrendDirection::Up,
-          context: 'up from 78 last week'
-        )
-      ],
-      tone: Briefing::Sentiment::Positive
-    )
-  end
-
-  # Result is now the briefing output directly, no wrapper
-  let(:mock_generator_result) { mock_briefing_output }
-
-  let(:mock_generator) { double('Briefing::NarrativeEditorialGenerator') }
+  let(:mock_generator) { double('A2UI::EditorialUIGenerator') }
 
   before do
     # Stub Garmin connection
@@ -112,8 +115,8 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
     allow(mock_performance_query).to receive(:training_status_summary).and_return(mock_training_status)
     allow(mock_performance_query).to receive(:vo2max_trend).and_return(mock_vo2max_trend)
 
-    # Stub DSPy generator - updated to use NarrativeEditorialGenerator
-    allow(Briefing::NarrativeEditorialGenerator).to receive(:new).and_return(mock_generator)
+    # Stub A2UI generator
+    allow(A2UI::EditorialUIGenerator).to receive(:new).and_return(mock_generator)
     allow(mock_generator).to receive(:call).and_return(mock_generator_result)
     allow(mock_generator).to receive(:token_usage).and_return({
       input_tokens: 500,
@@ -127,20 +130,20 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
       it 'does not broadcast an error' do
         allow(BriefingChannel).to receive(:broadcast_token_usage)
         allow(BriefingChannel).to receive(:broadcast_complete)
-        allow(BriefingChannel).to receive(:broadcast_editorial)
+        allow(BriefingChannel).to receive(:broadcast_a2ui_editorial)
 
         expect(BriefingChannel).not_to receive(:broadcast_error)
 
         described_class.new.perform(user_id: user_id, date: date)
       end
 
-      it 'broadcasts editorial briefing to the user channel' do
+      it 'broadcasts A2UI editorial to the user channel' do
         allow(BriefingChannel).to receive(:broadcast_token_usage)
         allow(BriefingChannel).to receive(:broadcast_complete)
         allow(BriefingChannel).to receive(:broadcast_error)
 
-        expect(BriefingChannel).to receive(:broadcast_editorial)
-          .with(user_id, mock_briefing_output)
+        expect(BriefingChannel).to receive(:broadcast_a2ui_editorial)
+          .with(user_id, an_instance_of(A2UI::Surface))
 
         described_class.new.perform(user_id: user_id, date: date)
       end
@@ -153,14 +156,14 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
             output_tokens: 150
           ))
 
-        allow(BriefingChannel).to receive(:broadcast_editorial)
+        allow(BriefingChannel).to receive(:broadcast_a2ui_editorial)
         allow(BriefingChannel).to receive(:broadcast_complete)
 
         described_class.new.perform(user_id: user_id, date: date)
       end
 
       it 'broadcasts completion when done' do
-        allow(BriefingChannel).to receive(:broadcast_editorial)
+        allow(BriefingChannel).to receive(:broadcast_a2ui_editorial)
         allow(BriefingChannel).to receive(:broadcast_token_usage)
 
         expect(BriefingChannel).to receive(:broadcast_complete)
@@ -169,14 +172,14 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
         described_class.new.perform(user_id: user_id, date: date)
       end
 
-      it 'calls the DSPy generator with narrative context' do
-        allow(BriefingChannel).to receive(:broadcast_editorial)
+      it 'calls the A2UI generator with narrative context' do
+        allow(BriefingChannel).to receive(:broadcast_a2ui_editorial)
         allow(BriefingChannel).to receive(:broadcast_token_usage)
         allow(BriefingChannel).to receive(:broadcast_complete)
 
-        # Updated to expect structured narrative inputs
         expect(mock_generator).to receive(:call).with(
           hash_including(
+            surface_id: surface_id,
             date: date,
             health: an_instance_of(Briefing::HealthNarrative),
             activity: an_instance_of(Briefing::ActivityNarrative),
@@ -188,8 +191,8 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
         described_class.new.perform(user_id: user_id, date: date)
       end
 
-      it 'saves the briefing record to the database' do
-        allow(BriefingChannel).to receive(:broadcast_editorial)
+      it 'saves the briefing record with A2UI surface output' do
+        allow(BriefingChannel).to receive(:broadcast_a2ui_editorial)
         allow(BriefingChannel).to receive(:broadcast_token_usage)
         allow(BriefingChannel).to receive(:broadcast_complete)
         allow(BriefingChannel).to receive(:broadcast_error)
@@ -205,6 +208,13 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
         expect(record.model).to eq('anthropic/claude-3-haiku')
         expect(record.input_tokens).to eq(500)
         expect(record.output_tokens).to eq(150)
+
+        # Verify A2UI surface format in output
+        output = record.output.deep_symbolize_keys
+        expect(output[:surface_id]).to eq(surface_id)
+        expect(output[:root_id]).to eq('root')
+        expect(output[:components]).to be_an(Array)
+        expect(output[:components].size).to eq(3)
       end
     end
 
@@ -222,7 +232,7 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
       end
     end
 
-    context 'when DSPy call fails' do
+    context 'when A2UI generator fails' do
       before do
         allow(mock_generator).to receive(:call).and_raise(StandardError, 'LLM error')
       end

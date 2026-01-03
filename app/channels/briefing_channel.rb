@@ -175,6 +175,46 @@ class BriefingChannel < ApplicationCable::Channel
       })
     end
 
+    def broadcast_a2ui_editorial(user_id, surface)
+      # Render the A2UI surface to HTML using the component renderer
+      root_component = A2UI::Components::Renderer.render_surface(surface)
+
+      if root_component
+        html = render_component(root_component)
+      else
+        # Debug: Log why rendering failed
+        Rails.logger.warn(
+          "[A2UI] Failed to render surface #{surface.id}. " \
+          "root_id=#{surface.root_id}, " \
+          "component_ids=#{surface.components.keys.first(5).join(', ')}..."
+        )
+
+        # Fallback: Try to find any root-like component
+        fallback_root = surface.components.values.find do |c|
+          c.is_a?(A2UI::ColumnComponent) || c.is_a?(A2UI::RowComponent)
+        end
+
+        if fallback_root
+          Rails.logger.info("[A2UI] Using fallback root component: #{fallback_root.id}")
+          html = render_component(
+            A2UI::Components::Renderer.for(
+              fallback_root,
+              surface_id: surface.id,
+              components_lookup: surface.components,
+              data: surface.data
+            )
+          )
+        else
+          html = '<div class="text-gray-500">No content generated</div>'
+        end
+      end
+
+      ActionCable.server.broadcast(stream_name(user_id), {
+        type: 'editorial',
+        html: html
+      })
+    end
+
     def broadcast_cached(user_id, briefing_record)
       output = briefing_record.output.deep_symbolize_keys
 
@@ -238,32 +278,126 @@ class BriefingChannel < ApplicationCable::Channel
         output_tokens: briefing_record.output_tokens || 0
       })
 
-      # Build metrics for component
-      metrics = (output[:supporting_metrics] || []).map do |m|
-        {
-          label: m[:label],
-          value: m[:value],
-          trend: m[:trend]&.to_sym,
-          context: m[:context]
-        }
+      # Check if this is an A2UI surface format or legacy format
+      if output[:surface_id] && output[:components]
+        # A2UI surface format - reconstruct and render
+        surface = reconstruct_surface(output)
+        broadcast_a2ui_editorial(user_id, surface)
+      else
+        # Legacy format - use old ViewComponent rendering
+        metrics = (output[:supporting_metrics] || []).map do |m|
+          {
+            label: m[:label],
+            value: m[:value],
+            trend: m[:trend]&.to_sym,
+            context: m[:context]
+          }
+        end
+
+        component = Briefing::EditorialComponent.new(
+          headline: output[:headline],
+          insight: output[:insight] || {},
+          metrics: metrics,
+          tone: (output[:tone] || 'neutral').to_sym
+        )
+        html = render_component(component)
+
+        ActionCable.server.broadcast(stream_name(user_id), {
+          type: 'editorial',
+          html: html,
+          cached: true
+        })
       end
-
-      component = Briefing::EditorialComponent.new(
-        headline: output[:headline],
-        insight: output[:insight] || {},
-        metrics: metrics,
-        tone: (output[:tone] || 'neutral').to_sym
-      )
-      html = render_component(component)
-
-      ActionCable.server.broadcast(stream_name(user_id), {
-        type: 'editorial',
-        html: html,
-        cached: true
-      })
 
       # Signal completion
       broadcast_complete(user_id)
+    end
+
+    def reconstruct_surface(output)
+      surface = A2UI::Surface.new(output[:surface_id])
+      components = output[:components].map { |c| deserialize_component(c) }
+      surface.set_components(output[:root_id], components)
+      surface
+    end
+
+    def deserialize_component(hash)
+      hash = hash.deep_symbolize_keys
+      type = hash[:type]
+
+      case type
+      when 'TextComponent'
+        A2UI::TextComponent.new(
+          id: hash[:id],
+          content: deserialize_value(hash[:content]),
+          usage_hint: A2UI::TextUsageHint.deserialize(hash[:usage_hint])
+        )
+      when 'ColumnComponent'
+        A2UI::ColumnComponent.new(
+          id: hash[:id],
+          children: deserialize_children(hash[:children]),
+          distribution: A2UI::Distribution.deserialize(hash[:distribution] || 'start'),
+          alignment: A2UI::Alignment.deserialize(hash[:alignment] || 'stretch'),
+          gap: hash[:gap] || 8
+        )
+      when 'RowComponent'
+        A2UI::RowComponent.new(
+          id: hash[:id],
+          children: deserialize_children(hash[:children]),
+          distribution: A2UI::Distribution.deserialize(hash[:distribution] || 'start'),
+          alignment: A2UI::Alignment.deserialize(hash[:alignment] || 'center'),
+          gap: hash[:gap] || 8
+        )
+      when 'CardComponent'
+        A2UI::CardComponent.new(
+          id: hash[:id],
+          child_id: hash[:child_id],
+          title: hash[:title] || '',
+          elevation: hash[:elevation] || 1
+        )
+      when 'DividerComponent'
+        A2UI::DividerComponent.new(
+          id: hash[:id],
+          orientation: A2UI::Orientation.deserialize(hash[:orientation] || 'horizontal')
+        )
+      else
+        # Unknown component type, create a text placeholder
+        A2UI::TextComponent.new(
+          id: hash[:id],
+          content: A2UI::LiteralValue.new(value: "[Unknown: #{type}]"),
+          usage_hint: A2UI::TextUsageHint::Body
+        )
+      end
+    end
+
+    def deserialize_value(hash)
+      return A2UI::LiteralValue.new(value: '') unless hash
+
+      hash = hash.deep_symbolize_keys
+      case hash[:type]
+      when 'literal'
+        A2UI::LiteralValue.new(value: hash[:value] || '')
+      when 'path'
+        A2UI::PathReference.new(path: hash[:path] || '/')
+      else
+        A2UI::LiteralValue.new(value: hash[:value].to_s)
+      end
+    end
+
+    def deserialize_children(hash)
+      return A2UI::ExplicitChildren.new(ids: []) unless hash
+
+      hash = hash.deep_symbolize_keys
+      case hash[:type]
+      when 'explicit'
+        A2UI::ExplicitChildren.new(ids: hash[:ids] || [])
+      when 'data_driven'
+        A2UI::DataDrivenChildren.new(
+          path: hash[:path] || '/',
+          template_id: hash[:template_id] || ''
+        )
+      else
+        A2UI::ExplicitChildren.new(ids: hash[:ids] || [])
+      end
     end
 
     def stream_name(user_id)

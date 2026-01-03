@@ -59,51 +59,64 @@
         <div id="editorial-content">
           <% if @briefing&.generated? %>
             <% output = @briefing.output.deep_symbolize_keys %>
-            <article class="editorial-page" data-tone="<%= output[:tone] || 'neutral' %>">
-              <h1 class="editorial-headline"><%= output[:headline] %></h1>
-
-              <div class="editorial-insight">
-                <% insight = output[:insight] || {} %>
-                <p>
-                  <%= insight[:what] %>
-                  <%= insight[:so_what] %>
-                </p>
-                <% if insight[:now_what].present? %>
-                  <p class="editorial-insight__action"><%= insight[:now_what] %></p>
+            <% if output[:surface_id] && output[:components] %>
+              <%# A2UI Surface format - render dynamically %>
+              <div class="editorial-page a2ui-surface" data-surface-id="<%= output[:surface_id] %>">
+                <% surface = BriefingChannel.reconstruct_surface(output) %>
+                <% if (root_component = A2UI::Components::Renderer.render_surface(surface)) %>
+                  <%= render root_component %>
+                <% else %>
+                  <p class="text-gray-500">No content available</p>
                 <% end %>
               </div>
+            <% else %>
+              <%# Legacy format - render static content %>
+              <article class="editorial-page" data-tone="<%= output[:tone] || 'neutral' %>">
+                <h1 class="editorial-headline"><%= output[:headline] %></h1>
 
-              <% metrics = output[:supporting_metrics] || [] %>
-              <% if metrics.any? %>
-                <hr class="editorial-divider">
-                <div class="editorial-metrics">
-                  <% metrics.each do |metric| %>
-                    <div class="editorial-metric">
-                      <span class="editorial-metric__label"><%= metric[:label] %></span>
-                      <span class="editorial-metric__value">
-                        <%= metric[:value] %>
-                        <% if metric[:trend] %>
-                          <% trend_class = case metric[:trend].to_sym
-                             when :up then 'editorial-metric__trend--up'
-                             when :down then 'editorial-metric__trend--down'
-                             else 'editorial-metric__trend--stable'
-                             end %>
-                          <% trend_icon = case metric[:trend].to_sym
-                             when :up then '↑'
-                             when :down then '↓'
-                             else '→'
-                             end %>
-                          <span class="editorial-metric__trend <%= trend_class %>"><%= trend_icon %></span>
-                        <% end %>
-                      </span>
-                      <% if metric[:context].present? %>
-                        <span class="editorial-metric__context"><%= metric[:context] %></span>
-                      <% end %>
-                    </div>
+                <div class="editorial-insight">
+                  <% insight = output[:insight] || {} %>
+                  <p>
+                    <%= insight[:what] %>
+                    <%= insight[:so_what] %>
+                  </p>
+                  <% if insight[:now_what].present? %>
+                    <p class="editorial-insight__action"><%= insight[:now_what] %></p>
                   <% end %>
                 </div>
-              <% end %>
-            </article>
+
+                <% metrics = output[:supporting_metrics] || [] %>
+                <% if metrics.any? %>
+                  <hr class="editorial-divider">
+                  <div class="editorial-metrics">
+                    <% metrics.each do |metric| %>
+                      <div class="editorial-metric">
+                        <span class="editorial-metric__label"><%= metric[:label] %></span>
+                        <span class="editorial-metric__value">
+                          <%= metric[:value] %>
+                          <% if metric[:trend] %>
+                            <% trend_class = case metric[:trend].to_sym
+                               when :up then 'editorial-metric__trend--up'
+                               when :down then 'editorial-metric__trend--down'
+                               else 'editorial-metric__trend--stable'
+                               end %>
+                            <% trend_icon = case metric[:trend].to_sym
+                               when :up then '↑'
+                               when :down then '↓'
+                               else '→'
+                               end %>
+                            <span class="editorial-metric__trend <%= trend_class %>"><%= trend_icon %></span>
+                          <% end %>
+                        </span>
+                        <% if metric[:context].present? %>
+                          <span class="editorial-metric__context"><%= metric[:context] %></span>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              </article>
+            <% end %>
           <% else %>
             <div class="editorial-page" data-tone="neutral">
               <h1 class="editorial-headline">Your Daily Briefing</h1>

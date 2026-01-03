@@ -11,6 +11,7 @@ require_relative 'modules/action_handler'
 require_relative 'modules/data_validator'
 require_relative 'modules/input_parser'
 require_relative 'modules/layout_adapter'
+require_relative 'modules/editorial_ui_generator'
 
 # State management
 require_relative 'modules/surface'

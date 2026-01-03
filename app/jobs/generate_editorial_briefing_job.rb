@@ -46,9 +46,11 @@ class GenerateEditorialBriefingJob < ApplicationJob
 
       log_narratives(user_id, date, narratives)
 
-      # Generate narrative editorial briefing via DSPy
-      generator = Briefing::NarrativeEditorialGenerator.new
+      # Generate A2UI components for the editorial briefing
+      surface_id = "editorial-#{user_id}-#{date}"
+      generator = A2UI::EditorialUIGenerator.new
       result = generator.call(
+        surface_id: surface_id,
         date: date,
         health: narratives[:health],
         activity: narratives[:activity],
@@ -57,7 +59,17 @@ class GenerateEditorialBriefingJob < ApplicationJob
       )
 
       token_usage = generator.token_usage
-      Rails.logger.info("[TokenTracking] Editorial briefing: #{token_usage.inspect}")
+      Rails.logger.info("[TokenTracking] Editorial A2UI: #{token_usage.inspect}")
+
+      # Create A2UI Surface from the generated components
+      surface = A2UI::Surface.new(surface_id)
+      surface.set_components(result.root_id, result.components)
+      surface.apply_data_updates(result.initial_data)
+
+      Rails.logger.info(
+        "[A2UI] Surface #{surface_id} created with #{result.components.size} components, " \
+        "root_id: #{result.root_id}"
+      )
 
       # Broadcast token usage to client
       BriefingChannel.broadcast_token_usage(user_id, token_usage)
@@ -67,13 +79,13 @@ class GenerateEditorialBriefingJob < ApplicationJob
         user_id: user_id,
         date: parsed_date,
         narratives: narratives,
-        result: result,
+        surface: surface,
         token_usage: token_usage,
         anomalies: anomalies
       )
 
-      # Broadcast the editorial briefing (result is now the briefing directly)
-      BriefingChannel.broadcast_editorial(user_id, result)
+      # Broadcast the A2UI surface as rendered HTML
+      BriefingChannel.broadcast_a2ui_editorial(user_id, surface)
 
       # Signal completion
       BriefingChannel.broadcast_complete(user_id)
@@ -214,7 +226,7 @@ class GenerateEditorialBriefingJob < ApplicationJob
     )
   end
 
-  def save_briefing(user_id:, date:, narratives:, result:, token_usage:, anomalies:)
+  def save_briefing(user_id:, date:, narratives:, surface:, token_usage:, anomalies:)
     record = BriefingRecord.find_or_initialize_for(
       user_id: user_id,
       date: date,
@@ -225,7 +237,7 @@ class GenerateEditorialBriefingJob < ApplicationJob
       health_context: serialize_narrative(narratives[:health]),
       activity_context: serialize_narrative(narratives[:activity]),
       performance_context: serialize_narrative(narratives[:performance]),
-      output: serialize_output(result, anomalies),
+      output: serialize_surface_output(surface, anomalies),
       model: token_usage[:model],
       input_tokens: token_usage[:input_tokens],
       output_tokens: token_usage[:output_tokens],
@@ -244,24 +256,13 @@ class GenerateEditorialBriefingJob < ApplicationJob
     narrative.serialize
   end
 
-  def serialize_output(result, anomalies)
-    # Result is now the briefing directly (NarrativeEditorialOutput)
+  def serialize_surface_output(surface, anomalies)
+    # Store A2UI surface as serialized components
     {
-      headline: result.headline,
-      insight: {
-        what: result.insight.what,
-        so_what: result.insight.so_what,
-        now_what: result.insight.now_what
-      },
-      supporting_metrics: result.supporting_metrics.map do |m|
-        {
-          label: m.label,
-          value: m.value,
-          trend: m.trend&.serialize,
-          context: m.context
-        }
-      end,
-      tone: result.tone.serialize,
+      surface_id: surface.id,
+      root_id: surface.root_id,
+      components: surface.components.values.map { |c| serialize_component(c) },
+      data: surface.data,
       anomalies: anomalies.map do |a|
         {
           type: a.anomaly_type.serialize,
@@ -272,5 +273,52 @@ class GenerateEditorialBriefingJob < ApplicationJob
         }
       end
     }
+  end
+
+  def serialize_component(component)
+    # Serialize A2UI component to hash for storage
+    hash = { id: component.id, type: component.class.name.demodulize }
+
+    case component
+    when A2UI::TextComponent
+      hash[:content] = serialize_value(component.content)
+      hash[:usage_hint] = component.usage_hint.serialize
+    when A2UI::ColumnComponent
+      hash[:children] = serialize_children(component.children)
+      hash[:distribution] = component.distribution.serialize
+      hash[:alignment] = component.alignment.serialize
+      hash[:gap] = component.gap
+    when A2UI::RowComponent
+      hash[:children] = serialize_children(component.children)
+      hash[:distribution] = component.distribution.serialize
+      hash[:alignment] = component.alignment.serialize
+      hash[:gap] = component.gap
+    when A2UI::CardComponent
+      hash[:child_id] = component.child_id
+      hash[:title] = component.title
+      hash[:elevation] = component.elevation
+    when A2UI::DividerComponent
+      hash[:orientation] = component.orientation.serialize
+    end
+
+    hash
+  end
+
+  def serialize_value(value)
+    case value
+    when A2UI::LiteralValue
+      { type: 'literal', value: value.value }
+    when A2UI::PathReference
+      { type: 'path', path: value.path }
+    end
+  end
+
+  def serialize_children(children)
+    case children
+    when A2UI::ExplicitChildren
+      { type: 'explicit', ids: children.ids }
+    when A2UI::DataDrivenChildren
+      { type: 'data_driven', path: children.path, template_id: children.template_id }
+    end
   end
 end
