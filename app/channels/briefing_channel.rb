@@ -17,11 +17,12 @@ class BriefingChannel < ApplicationCable::Channel
     stop_all_streams
   end
 
-  def request_briefing(data = {})
+  def request_briefing(data)
     user_id = params[:user_id]
-    data = data.with_indifferent_access
+    data = (data || {}).with_indifferent_access
     date_str = data[:date] || Time.zone.today.iso8601
-    force_regenerate = data[:force] == true
+    # Handle boolean from JSON - could be true, "true", or 1
+    force_regenerate = ActiveModel::Type::Boolean.new.cast(data[:force])
 
     # Check for cached briefing
     unless force_regenerate
@@ -46,13 +47,14 @@ class BriefingChannel < ApplicationCable::Channel
     GenerateBriefingJob.perform_later(user_id: user_id, date: date_str)
   end
 
-  def request_editorial_briefing(data = {})
+  def request_editorial_briefing(data)
     user_id = params[:user_id]
-    data = data.with_indifferent_access
+    data = (data || {}).with_indifferent_access
     date_str = data[:date] || Time.zone.today.iso8601
-    force_regenerate = data[:force] == true
+    # Handle boolean from JSON - could be true, "true", or 1
+    force_regenerate = ActiveModel::Type::Boolean.new.cast(data[:force])
 
-    Rails.logger.info("[EditorialBriefing] data=#{data.inspect}, date_str=#{date_str}, force=#{force_regenerate}")
+    Rails.logger.info("[EditorialBriefing] date_str=#{date_str}, force=#{force_regenerate}")
 
     # Check for cached editorial briefing
     unless force_regenerate

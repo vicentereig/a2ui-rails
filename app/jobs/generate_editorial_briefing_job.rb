@@ -31,7 +31,7 @@ class GenerateEditorialBriefingJob < ApplicationJob
       # Detect anomalies from the 7-day data
       anomalies = detect_anomalies_from_hashes(daily_health_hashes, data)
 
-      # Build editorial context
+      # Build narrative context (pre-interpreted prose, not raw numbers)
       context_builder = Briefing::EditorialContextBuilder.new(
         daily_health_7d: daily_health_hashes,
         sleep_trend: data[:sleep_trend],
@@ -42,18 +42,18 @@ class GenerateEditorialBriefingJob < ApplicationJob
         training_status: data[:training_status],
         anomalies: anomalies
       )
-      contexts = context_builder.build_all
+      narratives = context_builder.build_all
 
-      log_contexts(user_id, date, contexts)
+      log_narratives(user_id, date, narratives)
 
-      # Generate editorial briefing via DSPy
-      generator = Briefing::EditorialBriefingGenerator.new
+      # Generate narrative editorial briefing via DSPy
+      generator = Briefing::NarrativeEditorialGenerator.new
       result = generator.call(
         date: date,
-        health_summary: contexts[:health_summary],
-        activity_summary: contexts[:activity_summary],
-        performance_summary: contexts[:performance_summary],
-        detected_anomalies: contexts[:detected_anomalies]
+        health: narratives[:health],
+        activity: narratives[:activity],
+        performance: narratives[:performance],
+        detected_patterns: narratives[:detected_patterns]
       )
 
       token_usage = generator.token_usage
@@ -66,14 +66,14 @@ class GenerateEditorialBriefingJob < ApplicationJob
       save_briefing(
         user_id: user_id,
         date: parsed_date,
-        contexts: contexts,
+        narratives: narratives,
         result: result,
         token_usage: token_usage,
         anomalies: anomalies
       )
 
-      # Broadcast the editorial briefing
-      BriefingChannel.broadcast_editorial(user_id, result.briefing)
+      # Broadcast the editorial briefing (result is now the briefing directly)
+      BriefingChannel.broadcast_editorial(user_id, result)
 
       # Signal completion
       BriefingChannel.broadcast_complete(user_id)
@@ -191,17 +191,30 @@ class GenerateEditorialBriefingJob < ApplicationJob
     detector.detect
   end
 
-  def log_contexts(user_id, date, contexts)
+  def log_narratives(user_id, date, narratives)
+    health = narratives[:health]
+    activity = narratives[:activity]
+    performance = narratives[:performance]
+    patterns = narratives[:detected_patterns]
+
     Rails.logger.info(
-      "Editorial briefing contexts for #{user_id} on #{date}:\n" \
-      "health_summary:\n#{contexts[:health_summary]}\n" \
-      "activity_summary:\n#{contexts[:activity_summary]}\n" \
-      "performance_summary:\n#{contexts[:performance_summary]}\n" \
-      "detected_anomalies:\n#{contexts[:detected_anomalies]}"
+      "Editorial briefing narratives for #{user_id} on #{date}:\n" \
+      "Health pattern: #{health.pattern.serialize}\n" \
+      "  Sleep: #{health.sleep_quality}\n" \
+      "  Recovery: #{health.recovery_state}\n" \
+      "  Stress: #{health.stress_context}\n" \
+      "Activity pattern: #{activity.pattern.serialize}\n" \
+      "  Volume: #{activity.volume_description}\n" \
+      "  Intensity: #{activity.intensity_description}\n" \
+      "  Consistency: #{activity.consistency_description}\n" \
+      "Performance trajectory: #{performance.trajectory.serialize}\n" \
+      "  Aerobic: #{performance.aerobic_state}\n" \
+      "  Readiness: #{performance.training_readiness}\n" \
+      "Detected patterns: #{patterns.size}"
     )
   end
 
-  def save_briefing(user_id:, date:, contexts:, result:, token_usage:, anomalies:)
+  def save_briefing(user_id:, date:, narratives:, result:, token_usage:, anomalies:)
     record = BriefingRecord.find_or_initialize_for(
       user_id: user_id,
       date: date,
@@ -209,9 +222,9 @@ class GenerateEditorialBriefingJob < ApplicationJob
     )
 
     record.update!(
-      health_context: contexts[:health_summary],
-      activity_context: contexts[:activity_summary],
-      performance_context: contexts[:performance_summary],
+      health_context: serialize_narrative(narratives[:health]),
+      activity_context: serialize_narrative(narratives[:activity]),
+      performance_context: serialize_narrative(narratives[:performance]),
       output: serialize_output(result, anomalies),
       model: token_usage[:model],
       input_tokens: token_usage[:input_tokens],
@@ -226,17 +239,21 @@ class GenerateEditorialBriefingJob < ApplicationJob
     nil
   end
 
-  def serialize_output(result, anomalies)
-    briefing = result.briefing
+  def serialize_narrative(narrative)
+    # Convert T::Struct to hash for JSON storage
+    narrative.serialize
+  end
 
+  def serialize_output(result, anomalies)
+    # Result is now the briefing directly (NarrativeEditorialOutput)
     {
-      headline: briefing.headline,
+      headline: result.headline,
       insight: {
-        what: briefing.insight.what,
-        so_what: briefing.insight.so_what,
-        now_what: briefing.insight.now_what
+        what: result.insight.what,
+        so_what: result.insight.so_what,
+        now_what: result.insight.now_what
       },
-      supporting_metrics: briefing.supporting_metrics.map do |m|
+      supporting_metrics: result.supporting_metrics.map do |m|
         {
           label: m.label,
           value: m.value,
@@ -244,7 +261,7 @@ class GenerateEditorialBriefingJob < ApplicationJob
           context: m.context
         }
       end,
-      tone: briefing.tone.serialize,
+      tone: result.tone.serialize,
       anomalies: anomalies.map do |a|
         {
           type: a.anomaly_type.serialize,

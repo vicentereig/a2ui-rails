@@ -2,8 +2,8 @@
 # frozen_string_literal: true
 
 module Briefing
-  # Builds context strings from 7-day Garmin data for editorial briefings
-  # Focuses on patterns and trends rather than single-day snapshots
+  # Builds narrative context from 7-day Garmin data for editorial briefings
+  # Produces pre-interpreted prose, not raw numbers
   class EditorialContextBuilder
     extend T::Sig
 
@@ -39,215 +39,465 @@ module Briefing
       @anomalies = anomalies
     end
 
-    sig { returns(String) }
-    def build_health_summary
-      return 'No health data available.' if @daily_health_7d.empty?
-
-      lines = []
-
-      # Sleep pattern summary
-      if @sleep_trend
-        trend_str = @sleep_trend.trend_direction.to_s
-        good_nights = @sleep_trend.consecutive_good_nights || 0
-        avg_score = @sleep_trend.avg_sleep_score&.round || 'N/A'
-        avg_hours = @sleep_trend.avg_sleep_hours&.round(1) || 'N/A'
-
-        lines << "SLEEP (7-day): avg #{avg_score}/100, #{avg_hours}h/night, " \
-                 "trend #{trend_str}, #{good_nights} consecutive good nights"
-      end
-
-      # HRV summary
-      hrv_values = @daily_health_7d.filter_map { |d| d[:hrv_last_night] }
-      if hrv_values.any?
-        avg_hrv = (hrv_values.sum.to_f / hrv_values.size).round
-        min_hrv = hrv_values.min
-        max_hrv = hrv_values.max
-        lines << "HRV (7-day): avg #{avg_hrv}ms, range #{min_hrv}-#{max_hrv}ms"
-      end
-
-      # Recovery pattern
-      recovery_data = @daily_health_7d.filter_map do |d|
-        next unless d[:body_battery_start] && d[:body_battery_end]
-
-        { start: d[:body_battery_start], end: d[:body_battery_end] }
-      end
-
-      if recovery_data.any?
-        positive_days = recovery_data.count { |r| r[:end] >= r[:start] }
-        avg_end = (recovery_data.sum { |r| r[:end] }.to_f / recovery_data.size).round
-        lines << "BODY BATTERY: #{positive_days}/#{recovery_data.size} days positive, avg end-of-day #{avg_end}"
-      end
-
-      # Stress pattern
-      stress_values = @daily_health_7d.filter_map { |d| d[:avg_stress] }
-      if stress_values.any?
-        avg_stress = (stress_values.sum.to_f / stress_values.size).round
-        lines << "STRESS (7-day avg): #{avg_stress}"
-      end
-
-      # Daily breakdown (last 3 days for recent context)
-      lines << ''
-      lines << 'Recent days:'
-      @daily_health_7d.last(3).each do |day|
-        parts = []
-        parts << day[:date].to_s if day[:date]
-        parts << "sleep #{day[:sleep_score]}/100" if day[:sleep_score]
-        parts << "HRV #{day[:hrv_last_night]}ms" if day[:hrv_last_night]
-
-        if day[:body_battery_start] && day[:body_battery_end]
-          parts << "BB #{day[:body_battery_start]}→#{day[:body_battery_end]}"
-        end
-
-        parts << "stress #{day[:avg_stress]}" if day[:avg_stress]
-        lines << "  #{parts.join(' | ')}" if parts.size > 1
-      end
-
-      lines.join("\n")
+    sig { returns(HealthNarrative) }
+    def build_health_narrative
+      HealthNarrative.new(
+        pattern: determine_health_pattern,
+        sleep_quality: interpret_sleep,
+        recovery_state: interpret_recovery,
+        stress_context: interpret_stress,
+        notable_observation: find_notable_health_observation
+      )
     end
 
-    sig { returns(String) }
-    def build_activity_summary
-      return 'No activities recorded this week.' if @activities_7d.empty?
-
-      lines = []
-
-      # Week totals
-      if @week_stats
-        distance_km = (@week_stats.total_distance_m / 1000.0).round(1)
-        duration = format_duration(@week_stats.total_duration_sec)
-        count = @week_stats.activity_count
-
-        lines << "WEEK TOTAL: #{distance_km}km, #{count} activities, #{duration}"
-
-        if @week_stats.avg_pace_per_km
-          pace = format_pace(@week_stats.avg_pace_per_km)
-          lines << "Average pace: #{pace}/km"
-        end
-      end
-
-      # Activity breakdown by type
-      by_type = @activities_7d.group_by(&:activity_type)
-      if by_type.size > 1
-        lines << ''
-        lines << 'By type:'
-        by_type.each do |type, activities|
-          total_dist = activities.sum { |a| a.distance_m || 0 } / 1000.0
-          lines << "  #{type || 'Other'}: #{activities.size} sessions, #{total_dist.round(1)}km"
-        end
-      end
-
-      # Recent activities with detail
-      lines << ''
-      lines << 'Recent activities:'
-      @activities_7d.first(5).each do |activity|
-        name = activity.activity_name || activity.activity_type || 'Activity'
-        dist = activity.distance_m ? "#{(activity.distance_m / 1000.0).round(1)}km" : ''
-        duration = activity.duration_sec ? format_duration(activity.duration_sec) : ''
-        hr = activity.avg_hr ? "HR #{activity.avg_hr}" : ''
-
-        parts = [name, dist, duration, hr].reject(&:empty?)
-        lines << "  - #{parts.join(' | ')}"
-      end
-
-      lines.join("\n")
+    sig { returns(ActivityNarrative) }
+    def build_activity_narrative
+      ActivityNarrative.new(
+        pattern: determine_training_pattern,
+        volume_description: interpret_volume,
+        intensity_description: interpret_intensity,
+        consistency_description: interpret_consistency
+      )
     end
 
-    sig { returns(String) }
-    def build_performance_summary
-      return 'No performance data available.' unless @performance_metrics
-
-      lines = []
-
-      # VO2 Max with trend
-      if @vo2max_trend
-        current = @vo2max_trend.current
-        direction = @vo2max_trend.direction
-        change = @vo2max_trend.change_30d
-
-        trend_str = case direction
-                    when :improving then "↑#{change.abs.round(1)}"
-                    when :declining then "↓#{change.abs.round(1)}"
-                    else '→'
-                    end
-
-        lines << "VO2 MAX: #{current} ml/kg/min (#{trend_str} over 30 days)"
-      elsif @performance_metrics.vo2max
-        lines << "VO2 MAX: #{@performance_metrics.vo2max.round} ml/kg/min"
-      end
-
-      # Training status
-      if @training_status
-        lines << "TRAINING STATUS: #{@training_status.training_status}"
-
-        if @training_status.training_readiness
-          readiness_level = case @training_status.training_readiness
-                            when 0..33 then 'LOW'
-                            when 34..66 then 'MODERATE'
-                            else 'HIGH'
-                            end
-          lines << "TRAINING READINESS: #{@training_status.training_readiness}/100 (#{readiness_level})"
-        end
-      end
-
-      # Scores
-      scores = []
-      scores << "Endurance: #{@performance_metrics.endurance_score}" if @performance_metrics.endurance_score
-      scores << "Hill: #{@performance_metrics.hill_score}" if @performance_metrics.hill_score
-      lines << "SCORES: #{scores.join(', ')}" if scores.any?
-
-      lines.join("\n")
+    sig { returns(PerformanceNarrative) }
+    def build_performance_narrative
+      PerformanceNarrative.new(
+        trajectory: determine_fitness_trajectory,
+        aerobic_state: interpret_aerobic_fitness,
+        training_readiness: interpret_readiness,
+        outlook: interpret_outlook
+      )
     end
 
-    sig { returns(String) }
-    def build_anomalies_summary
-      return 'No anomalies detected—data patterns are consistent.' if @anomalies.empty?
-
-      lines = ['DETECTED PATTERNS:']
-
-      @anomalies.each do |anomaly|
-        severity_marker = case anomaly.severity
-                          when AnomalySeverity::High then '[!]'
-                          when AnomalySeverity::Medium then '[~]'
-                          else '[.]'
-                          end
-
-        lines << "#{severity_marker} #{anomaly.headline}"
-        lines << "    What: #{anomaly.detail}"
-        lines << "    Implication: #{anomaly.implication}"
+    sig { returns(T::Array[DetectedPattern]) }
+    def build_detected_patterns
+      @anomalies.map do |anomaly|
+        DetectedPattern.new(
+          pattern_type: anomaly.anomaly_type,
+          severity: anomaly.severity,
+          narrative: anomaly.headline,
+          implication: anomaly.implication
+        )
       end
-
-      lines.join("\n")
     end
 
-    sig { returns(T::Hash[Symbol, String]) }
+    # Returns all narratives for the signature input
+    sig { returns(T::Hash[Symbol, T.untyped]) }
     def build_all
       {
-        health_summary: build_health_summary,
-        activity_summary: build_activity_summary,
-        performance_summary: build_performance_summary,
-        detected_anomalies: build_anomalies_summary
+        health: build_health_narrative,
+        activity: build_activity_narrative,
+        performance: build_performance_narrative,
+        detected_patterns: build_detected_patterns
       }
     end
 
     private
 
-    sig { params(seconds: Integer).returns(String) }
-    def format_duration(seconds)
-      hours = seconds / 3600
-      mins = (seconds % 3600) / 60
+    # =============================================================================
+    # Health Pattern Interpretation
+    # =============================================================================
 
-      if hours > 0
-        "#{hours}h#{mins}m"
+    sig { returns(HealthPattern) }
+    def determine_health_pattern
+      return HealthPattern::Inconsistent if @daily_health_7d.empty?
+
+      avg_sleep = average_sleep_score
+      hrv_trend = hrv_trend_direction
+      recovery_ratio = positive_recovery_ratio
+
+      if avg_sleep >= 80 && recovery_ratio >= 0.7
+        HealthPattern::Excellent
+      elsif avg_sleep >= 70 && hrv_trend == :improving
+        HealthPattern::Recovering
+      elsif avg_sleep < 60 || recovery_ratio < 0.4
+        HealthPattern::Strained
+      elsif hrv_variance_high?
+        HealthPattern::Inconsistent
+      elsif hrv_trend == :declining || sleep_trend_declining?
+        HealthPattern::Declining
       else
-        "#{mins}m"
+        HealthPattern::Recovering
       end
     end
 
-    sig { params(seconds_per_km: Float).returns(String) }
-    def format_pace(seconds_per_km)
-      mins = (seconds_per_km / 60).to_i
-      secs = (seconds_per_km % 60).to_i
-      "#{mins}:#{secs.to_s.rjust(2, '0')}"
+    sig { returns(String) }
+    def interpret_sleep
+      return 'No sleep data available this week.' unless @sleep_trend
+
+      avg_score = @sleep_trend.avg_sleep_score || 0
+      trend = @sleep_trend.trend_direction
+      good_nights = @sleep_trend.consecutive_good_nights || 0
+
+      quality = case avg_score
+                when 85.. then 'consistently restorative'
+                when 70..84 then 'generally adequate'
+                when 50..69 then 'somewhat fragmented'
+                else 'challenging and insufficient'
+                end
+
+      trend_phrase = case trend.to_s
+                     when 'improving' then 'with nights getting progressively better'
+                     when 'declining' then 'though showing signs of deterioration'
+                     else 'holding steady'
+                     end
+
+      streak_phrase = if good_nights >= 5
+                        'You have built up a solid streak of quality rest.'
+                      elsif good_nights >= 3
+                        'A few good nights in a row is helping your recovery.'
+                      else
+                        ''
+                      end
+
+      "Sleep has been #{quality} this week, #{trend_phrase}. #{streak_phrase}".strip
+    end
+
+    sig { returns(String) }
+    def interpret_recovery
+      hrv_values = @daily_health_7d.filter_map { |d| d[:hrv_last_night] }
+      recovery_data = extract_recovery_data
+
+      return 'No recovery data available.' if hrv_values.empty? && recovery_data.empty?
+
+      parts = []
+
+      if hrv_values.any?
+        avg_hrv = hrv_values.sum.to_f / hrv_values.size
+        variance = hrv_variance_high?
+
+        # Handle variance first as it's important regardless of avg level
+        hrv_state = if variance
+                      if avg_hrv >= 50
+                        'Your HRV is elevated but fluctuating day to day'
+                      elsif avg_hrv >= 40
+                        'Heart rate variability has been inconsistent this week'
+                      else
+                        'Your HRV has been fluctuating and running low'
+                      end
+                    elsif avg_hrv >= 50
+                      'Your nervous system appears well-regulated'
+                    elsif avg_hrv >= 40
+                      'Heart rate variability is in a normal range'
+                    else
+                      'Recovery signals suggest your system is under strain'
+                    end
+        parts << hrv_state
+      end
+
+      if recovery_data.any?
+        positive_days = recovery_data.count { |r| r[:end] >= r[:start] }
+        ratio = positive_days.to_f / recovery_data.size
+
+        battery_state = if ratio >= 0.8
+                          'ending most days with energy reserves'
+                        elsif ratio >= 0.5
+                          'managing energy reasonably well'
+                        else
+                          'depleting energy faster than you are recovering it'
+                        end
+        parts << battery_state
+      end
+
+      parts.join(', ') + '.'
+    end
+
+    sig { returns(String) }
+    def interpret_stress
+      stress_values = @daily_health_7d.filter_map { |d| d[:avg_stress] }
+      return 'No stress data available.' if stress_values.empty?
+
+      avg_stress = stress_values.sum.to_f / stress_values.size
+
+      case avg_stress
+      when 0..25
+        'Stress levels have been remarkably low, indicating excellent balance.'
+      when 26..40
+        'Daily stress has been manageable and within healthy bounds.'
+      when 41..55
+        'Stress is elevated but not overwhelming—worth monitoring.'
+      when 56..70
+        'You are carrying a noticeable stress load that may be affecting recovery.'
+      else
+        'Stress levels are high and likely impacting your overall wellbeing.'
+      end
+    end
+
+    sig { returns(T.nilable(String)) }
+    def find_notable_health_observation
+      observations = []
+
+      # Check for HRV spikes or drops - need at least 5 days to compare non-overlapping periods
+      hrv_values = @daily_health_7d.filter_map { |d| d[:hrv_last_night] }
+      if hrv_values.size >= 5
+        # Split into first half and second half to avoid overlap
+        midpoint = hrv_values.size / 2
+        older = hrv_values.first(midpoint)
+        recent = hrv_values.last(midpoint)
+
+        older_avg = older.sum.to_f / older.size
+        recent_avg = recent.sum.to_f / recent.size
+
+        if recent_avg > older_avg * 1.2
+          observations << 'HRV has notably improved in recent days'
+        elsif recent_avg < older_avg * 0.8
+          observations << 'HRV has dropped compared to earlier in the week'
+        end
+      end
+
+      # Check for sleep pattern changes
+      if @sleep_trend&.consecutive_good_nights && @sleep_trend.consecutive_good_nights >= 4
+        observations << 'An extended streak of quality sleep is building momentum'
+      end
+
+      observations.first
+    end
+
+    # =============================================================================
+    # Activity Pattern Interpretation
+    # =============================================================================
+
+    sig { returns(TrainingPattern) }
+    def determine_training_pattern
+      return TrainingPattern::Undertraining if @activities_7d.empty?
+
+      activity_count = @activities_7d.size
+      total_duration = @activities_7d.sum { |a| a.duration_sec || 0 }
+      avg_hr_values = @activities_7d.filter_map(&:avg_hr)
+      avg_intensity = avg_hr_values.any? ? avg_hr_values.sum.to_f / avg_hr_values.size : 0
+
+      # Simple heuristics based on volume and intensity
+      if activity_count >= 5 && avg_intensity > 150
+        TrainingPattern::Building
+      elsif activity_count >= 4 && avg_intensity > 140
+        TrainingPattern::Maintaining
+      elsif activity_count <= 2 && total_duration < 3600
+        TrainingPattern::Undertraining
+      elsif activity_count >= 6 || total_duration > 10 * 3600
+        TrainingPattern::Overreaching
+      elsif activity_count <= 3 && avg_intensity < 130
+        TrainingPattern::Tapering
+      else
+        TrainingPattern::Maintaining
+      end
+    end
+
+    sig { returns(String) }
+    def interpret_volume
+      return 'No training activity recorded this week.' if @activities_7d.empty?
+
+      total_duration = @activities_7d.sum { |a| a.duration_sec || 0 }
+      activity_count = @activities_7d.size
+
+      volume_level = if total_duration > 8 * 3600
+                       'high'
+                     elsif total_duration > 4 * 3600
+                       'moderate'
+                     elsif total_duration > 2 * 3600
+                       'light'
+                     else
+                       'minimal'
+                     end
+
+      frequency = case activity_count
+                  when 0..1 then 'a single session'
+                  when 2..3 then 'a few sessions'
+                  when 4..5 then 'regular sessions'
+                  else 'frequent sessions'
+                  end
+
+      "Training volume was #{volume_level} with #{frequency} throughout the week."
+    end
+
+    sig { returns(String) }
+    def interpret_intensity
+      avg_hr_values = @activities_7d.filter_map(&:avg_hr)
+      return 'Intensity data not available.' if avg_hr_values.empty?
+
+      avg_hr = avg_hr_values.sum.to_f / avg_hr_values.size
+
+      intensity_desc = if avg_hr > 155
+                         'predominantly at higher intensities, pushing cardiovascular limits'
+                       elsif avg_hr > 140
+                         'at moderate to vigorous intensities, building fitness effectively'
+                       elsif avg_hr > 125
+                         'mostly in an easy to moderate zone, good for aerobic base'
+                       else
+                         'at easy intensities, prioritizing recovery or base building'
+                       end
+
+      "Workouts were #{intensity_desc}."
+    end
+
+    sig { returns(String) }
+    def interpret_consistency
+      return 'No activities to assess consistency.' if @activities_7d.empty?
+
+      # Check day distribution
+      activity_days = @activities_7d.map { |a| a.start_time&.to_date }.compact.uniq
+      days_with_activity = activity_days.size
+      activity_count = @activities_7d.size
+
+      if days_with_activity >= 5
+        'Training has been well-distributed across the week with good rhythm.'
+      elsif days_with_activity >= 3 && activity_count >= 4
+        'You maintained a reasonable training cadence with some rest days.'
+      elsif activity_count > days_with_activity * 1.5
+        'Activities were clustered on fewer days, which may affect recovery.'
+      elsif days_with_activity <= 2
+        'Training was sporadic, limited to just a couple of days.'
+      else
+        'Training frequency was moderate.'
+      end
+    end
+
+    # =============================================================================
+    # Performance Pattern Interpretation
+    # =============================================================================
+
+    sig { returns(FitnessTrajectory) }
+    def determine_fitness_trajectory
+      return FitnessTrajectory::Stable unless @vo2max_trend
+
+      case @vo2max_trend.direction
+      when :improving then FitnessTrajectory::Improving
+      when :declining then FitnessTrajectory::Declining
+      when :stable then FitnessTrajectory::Stable
+      else FitnessTrajectory::Plateauing
+      end
+    end
+
+    sig { returns(String) }
+    def interpret_aerobic_fitness
+      if @vo2max_trend
+        direction = @vo2max_trend.direction
+
+        case direction
+        when :improving
+          'Aerobic fitness is on an upward trajectory, showing the benefits of recent training.'
+        when :declining
+          'Aerobic capacity has dipped recently, possibly due to reduced training or fatigue.'
+        else
+          'Aerobic fitness is holding steady at its current level.'
+        end
+      elsif @performance_metrics&.vo2max
+        'Aerobic fitness data is available but trend information is limited.'
+      else
+        'No aerobic fitness data available.'
+      end
+    end
+
+    sig { returns(String) }
+    def interpret_readiness
+      return 'Training readiness data not available.' unless @training_status&.training_readiness
+
+      readiness = @training_status.training_readiness
+
+      case readiness
+      when 0..30
+        'Your body is signaling a strong need for recovery before intense training.'
+      when 31..50
+        'Training readiness is below optimal—consider easier sessions.'
+      when 51..70
+        'You are reasonably prepared for moderate training loads.'
+      when 71..85
+        'Training readiness is good—your body can handle quality work.'
+      else
+        'You are primed for high-intensity or demanding training sessions.'
+      end
+    end
+
+    sig { returns(String) }
+    def interpret_outlook
+      trajectory = determine_fitness_trajectory
+      pattern = determine_training_pattern
+
+      # Handle plateauing first (any training pattern)
+      if trajectory == FitnessTrajectory::Plateauing
+        return 'A plateau suggests your body has adapted—time to introduce new stimuli.'
+      end
+
+      case [trajectory, pattern]
+      when [FitnessTrajectory::Improving, TrainingPattern::Building]
+        'The current approach is working well—fitness is responding positively to training.'
+      when [FitnessTrajectory::Improving, TrainingPattern::Maintaining]
+        'Fitness continues to improve even at maintenance levels.'
+      when [FitnessTrajectory::Declining, TrainingPattern::Overreaching]
+        'Signs suggest backing off may help fitness recover and resume progress.'
+      when [FitnessTrajectory::Declining, TrainingPattern::Undertraining]
+        'More consistent training may help reverse the fitness decline.'
+      when [FitnessTrajectory::Stable, TrainingPattern::Maintaining]
+        'Fitness is stable—consider adding variety or progressive overload to advance.'
+      else
+        'Continue monitoring trends to inform training decisions.'
+      end
+    end
+
+    # =============================================================================
+    # Helper Methods
+    # =============================================================================
+
+    sig { returns(Float) }
+    def average_sleep_score
+      scores = @daily_health_7d.filter_map { |d| d[:sleep_score] }
+      return 0.0 if scores.empty?
+
+      scores.sum.to_f / scores.size
+    end
+
+    sig { returns(Symbol) }
+    def hrv_trend_direction
+      hrv_values = @daily_health_7d.filter_map { |d| d[:hrv_last_night] }
+      return :stable if hrv_values.size < 4
+
+      first_half = hrv_values.first(hrv_values.size / 2)
+      second_half = hrv_values.last(hrv_values.size / 2)
+
+      first_avg = first_half.sum.to_f / first_half.size
+      second_avg = second_half.sum.to_f / second_half.size
+
+      if second_avg > first_avg * 1.1
+        :improving
+      elsif second_avg < first_avg * 0.9
+        :declining
+      else
+        :stable
+      end
+    end
+
+    sig { returns(Float) }
+    def positive_recovery_ratio
+      recovery_data = extract_recovery_data
+      return 0.5 if recovery_data.empty?
+
+      positive = recovery_data.count { |r| r[:end] >= r[:start] }
+      positive.to_f / recovery_data.size
+    end
+
+    sig { returns(T::Boolean) }
+    def hrv_variance_high?
+      hrv_values = @daily_health_7d.filter_map { |d| d[:hrv_last_night] }
+      return false if hrv_values.size < 3
+
+      avg = hrv_values.sum.to_f / hrv_values.size
+      variance = hrv_values.map { |v| (v - avg).abs }.sum / hrv_values.size
+
+      variance > 10 # More than 10ms average deviation
+    end
+
+    sig { returns(T::Boolean) }
+    def sleep_trend_declining?
+      @sleep_trend&.trend_direction.to_s == 'declining'
+    end
+
+    sig { returns(T::Array[T::Hash[Symbol, Integer]]) }
+    def extract_recovery_data
+      @daily_health_7d.filter_map do |d|
+        next unless d[:body_battery_start] && d[:body_battery_end]
+
+        { start: d[:body_battery_start], end: d[:body_battery_end] }
+      end
     end
   end
 end

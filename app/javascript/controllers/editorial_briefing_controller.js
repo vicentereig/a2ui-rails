@@ -46,7 +46,10 @@ export default class extends Controller {
     document.getElementById('editorial-content').innerHTML = ''
 
     // Request editorial briefing via ActionCable
-    this.subscription.perform('request_editorial_briefing', { date: this.dateValue, force: true })
+    this.subscription.perform('request_editorial_briefing', {
+      date: this.dateValue,
+      force: true
+    })
   }
 
   handleMessage(data) {

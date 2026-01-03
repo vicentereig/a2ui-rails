@@ -2,8 +2,9 @@
 # frozen_string_literal: true
 
 module Briefing
-  # Generator module with token tracking via lifecycle callbacks
-  class EditorialBriefingGenerator < DSPy::Module
+  # Generator for narrative editorial briefings
+  # Uses structured narrative input types instead of raw string summaries
+  class NarrativeEditorialGenerator < DSPy::Module
     extend T::Sig
 
     sig { returns(T::Hash[Symbol, T.untyped]) }
@@ -15,7 +16,7 @@ module Briefing
     def initialize
       super
       @predictor = T.let(
-        DSPy::ChainOfThought.new(EditorialDailyBriefing),
+        DSPy::ChainOfThought.new(NarrativeEditorialBriefing),
         DSPy::ChainOfThought
       )
       @token_usage = T.let(
@@ -28,10 +29,10 @@ module Briefing
     def forward_untyped(**input_values)
       @predictor.call(
         date: input_values.fetch(:date),
-        health_summary: input_values.fetch(:health_summary),
-        activity_summary: input_values.fetch(:activity_summary),
-        performance_summary: input_values.fetch(:performance_summary),
-        detected_anomalies: input_values.fetch(:detected_anomalies)
+        health: input_values.fetch(:health),
+        activity: input_values.fetch(:activity),
+        performance: input_values.fetch(:performance),
+        detected_patterns: input_values.fetch(:detected_patterns, [])
       )
     end
 

@@ -152,4 +152,109 @@ module Briefing
     const :tone, Sentiment,
       description: 'Overall tone of the briefing'
   end
+
+  # =============================================================================
+  # Narrative Context Types (pre-interpreted data for LLM input)
+  # =============================================================================
+
+  # Overall health pattern for the week
+  class HealthPattern < T::Enum
+    enums do
+      Excellent = new('excellent')       # All metrics strong
+      Recovering = new('recovering')     # Coming back from strain
+      Strained = new('strained')         # Under stress, not recovering
+      Inconsistent = new('inconsistent') # Day-to-day variation
+      Declining = new('declining')       # Trend moving wrong direction
+    end
+  end
+
+  # Pre-interpreted health narrative (output of context builder, input to LLM)
+  class HealthNarrative < T::Struct
+    const :pattern, HealthPattern,
+      description: 'Overall 7-day health pattern'
+    const :sleep_quality, String,
+      description: 'Narrative interpretation of sleep (NO NUMBERS)'
+    const :recovery_state, String,
+      description: 'Narrative interpretation of HRV/body battery (NO NUMBERS)'
+    const :stress_context, String,
+      description: 'Narrative interpretation of stress levels (NO NUMBERS)'
+    const :notable_observation, T.nilable(String), default: nil,
+      description: 'One surprising or noteworthy pattern, if any'
+  end
+
+  # Training load pattern for the week
+  class TrainingPattern < T::Enum
+    enums do
+      Building = new('building')           # Progressive overload
+      Maintaining = new('maintaining')     # Steady state
+      Tapering = new('tapering')           # Reducing load
+      Overreaching = new('overreaching')   # Possibly too much
+      Undertraining = new('undertraining') # Not enough stimulus
+    end
+  end
+
+  # Pre-interpreted activity narrative
+  class ActivityNarrative < T::Struct
+    const :pattern, TrainingPattern,
+      description: 'Overall 7-day training pattern'
+    const :volume_description, String,
+      description: 'Narrative interpretation of training volume (NO NUMBERS)'
+    const :intensity_description, String,
+      description: 'Narrative interpretation of intensity (NO NUMBERS)'
+    const :consistency_description, String,
+      description: 'How regular/consistent training has been (NO NUMBERS)'
+  end
+
+  # Fitness trajectory over time
+  class FitnessTrajectory < T::Enum
+    enums do
+      Improving = new('improving')
+      Stable = new('stable')
+      Plateauing = new('plateauing')
+      Declining = new('declining')
+    end
+  end
+
+  # Pre-interpreted performance narrative
+  class PerformanceNarrative < T::Struct
+    const :trajectory, FitnessTrajectory,
+      description: 'Overall fitness trend direction'
+    const :aerobic_state, String,
+      description: 'Narrative interpretation of VO2 Max / aerobic fitness'
+    const :training_readiness, String,
+      description: 'How ready the body is for training'
+    const :outlook, String,
+      description: 'Short-term fitness outlook'
+  end
+
+  # Detected pattern (narrative version of anomaly for LLM input)
+  class DetectedPattern < T::Struct
+    const :pattern_type, AnomalyType
+    const :severity, AnomalySeverity
+    const :narrative, String,
+      description: 'Plain-English description of the pattern (NO NUMBERS)'
+    const :implication, String,
+      description: 'What this means for the user'
+  end
+
+  # Updated insight struct with explicit no-numbers constraint
+  class NarrativeInsight < T::Struct
+    const :what, String,
+      description: 'Observable pattern (1-2 sentences, NO NUMBERS - describe qualitatively)'
+    const :so_what, String,
+      description: 'Why this matters (1-2 sentences, interpret meaning, NO NUMBERS)'
+    const :now_what, String,
+      description: 'One actionable recommendation (NO NUMBERS)'
+  end
+
+  # Output for narrative editorial briefing
+  class NarrativeEditorialOutput < T::Struct
+    const :headline, String,
+      description: 'Compelling headline revealing the insight (8-12 words, NO NUMBERS)'
+    const :insight, NarrativeInsight,
+      description: 'The What/So What/Now What analysis (all prose, NO NUMBERS)'
+    const :supporting_metrics, T::Array[SupportingMetric],
+      description: 'The 2-3 key numbers that support your narrative (numbers go HERE)'
+    const :tone, Sentiment
+  end
 end

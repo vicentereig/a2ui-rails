@@ -50,16 +50,18 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
   let(:mock_training_status) { nil }
   let(:mock_vo2max_trend) { nil }
 
+  # Updated to use NarrativeInsight instead of EditorialInsight
   let(:mock_insight) do
-    Briefing::EditorialInsight.new(
+    Briefing::NarrativeInsight.new(
       what: 'Your sleep quality has been excellent this week.',
       so_what: 'This provides a strong foundation for training adaptation.',
       now_what: 'Consider a quality workout today.'
     )
   end
 
+  # Updated to use NarrativeEditorialOutput - result is now the briefing directly
   let(:mock_briefing_output) do
-    Briefing::EditorialBriefingOutput.new(
+    Briefing::NarrativeEditorialOutput.new(
       headline: 'Sleep Excellence Unlocks Training Potential',
       insight: mock_insight,
       supporting_metrics: [
@@ -74,11 +76,10 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
     )
   end
 
-  let(:mock_generator_result) do
-    double('GeneratorResult', briefing: mock_briefing_output)
-  end
+  # Result is now the briefing output directly, no wrapper
+  let(:mock_generator_result) { mock_briefing_output }
 
-  let(:mock_generator) { double('Briefing::EditorialBriefingGenerator') }
+  let(:mock_generator) { double('Briefing::NarrativeEditorialGenerator') }
 
   before do
     # Stub Garmin connection
@@ -111,8 +112,8 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
     allow(mock_performance_query).to receive(:training_status_summary).and_return(mock_training_status)
     allow(mock_performance_query).to receive(:vo2max_trend).and_return(mock_vo2max_trend)
 
-    # Stub DSPy generator
-    allow(Briefing::EditorialBriefingGenerator).to receive(:new).and_return(mock_generator)
+    # Stub DSPy generator - updated to use NarrativeEditorialGenerator
+    allow(Briefing::NarrativeEditorialGenerator).to receive(:new).and_return(mock_generator)
     allow(mock_generator).to receive(:call).and_return(mock_generator_result)
     allow(mock_generator).to receive(:token_usage).and_return({
       input_tokens: 500,
@@ -168,18 +169,19 @@ RSpec.describe GenerateEditorialBriefingJob, type: :job do
         described_class.new.perform(user_id: user_id, date: date)
       end
 
-      it 'calls the DSPy generator with context including anomalies' do
+      it 'calls the DSPy generator with narrative context' do
         allow(BriefingChannel).to receive(:broadcast_editorial)
         allow(BriefingChannel).to receive(:broadcast_token_usage)
         allow(BriefingChannel).to receive(:broadcast_complete)
 
+        # Updated to expect structured narrative inputs
         expect(mock_generator).to receive(:call).with(
           hash_including(
             date: date,
-            health_summary: a_string_including('SLEEP'),
-            activity_summary: String,
-            performance_summary: String,
-            detected_anomalies: String
+            health: an_instance_of(Briefing::HealthNarrative),
+            activity: an_instance_of(Briefing::ActivityNarrative),
+            performance: an_instance_of(Briefing::PerformanceNarrative),
+            detected_patterns: an_instance_of(Array)
           )
         ).and_return(mock_generator_result)
 
