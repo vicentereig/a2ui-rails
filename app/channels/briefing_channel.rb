@@ -19,8 +19,9 @@ class BriefingChannel < ApplicationCable::Channel
 
   def request_briefing(data = {})
     user_id = params[:user_id]
-    date_str = data['date'] || Time.zone.today.iso8601
-    force_regenerate = data['force'] == true
+    data = data.with_indifferent_access
+    date_str = data[:date] || Time.zone.today.iso8601
+    force_regenerate = data[:force] == true
 
     # Check for cached briefing
     unless force_regenerate
@@ -47,8 +48,9 @@ class BriefingChannel < ApplicationCable::Channel
 
   def request_editorial_briefing(data = {})
     user_id = params[:user_id]
-    date_str = data['date'] || Time.zone.today.iso8601
-    force_regenerate = data['force'] == true
+    data = data.with_indifferent_access
+    date_str = data[:date] || Time.zone.today.iso8601
+    force_regenerate = data[:force] == true
 
     Rails.logger.info("[EditorialBriefing] data=#{data.inspect}, date_str=#{date_str}, force=#{force_regenerate}")
 
