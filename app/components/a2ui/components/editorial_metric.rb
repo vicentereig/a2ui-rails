@@ -29,15 +29,15 @@ module A2UI
 
       sig { returns(T.nilable(String)) }
       def trend
-        @component.trend&.serialize
+        @component.trend
       end
 
       sig { returns(String) }
       def trend_icon
         case @component.trend
-        when Briefing::TrendDirection::Up then '↑'
-        when Briefing::TrendDirection::Down then '↓'
-        when Briefing::TrendDirection::Stable then '→'
+        when 'up' then '↑'
+        when 'down' then '↓'
+        when 'stable' then '→'
         else ''
         end
       end
@@ -45,9 +45,9 @@ module A2UI
       sig { returns(String) }
       def trend_class
         case @component.trend
-        when Briefing::TrendDirection::Up then 'editorial-metric__trend--up'
-        when Briefing::TrendDirection::Down then 'editorial-metric__trend--down'
-        when Briefing::TrendDirection::Stable then 'editorial-metric__trend--stable'
+        when 'up' then 'editorial-metric__trend--up'
+        when 'down' then 'editorial-metric__trend--down'
+        when 'stable' then 'editorial-metric__trend--stable'
         else ''
         end
       end

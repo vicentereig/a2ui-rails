@@ -385,7 +385,7 @@ class BriefingChannel < ApplicationCable::Channel
           id: hash[:id],
           label: hash[:label] || '',
           value: hash[:value] || '',
-          trend: hash[:trend] ? Briefing::TrendDirection.deserialize(hash[:trend]) : nil,
+          trend: hash[:trend],
           context: hash[:context]
         )
       when 'EditorialMetricsRowComponent'
