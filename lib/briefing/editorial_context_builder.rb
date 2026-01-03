@@ -335,7 +335,7 @@ module Briefing
       return 'No activities to assess consistency.' if @activities_7d.empty?
 
       # Check day distribution
-      activity_days = @activities_7d.map { |a| a.start_time&.to_date }.compact.uniq
+      activity_days = @activities_7d.map { |a| a.start_time_local&.to_date }.compact.uniq
       days_with_activity = activity_days.size
       activity_count = @activities_7d.size
 
