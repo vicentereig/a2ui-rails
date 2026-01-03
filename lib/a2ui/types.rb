@@ -71,6 +71,15 @@ require_relative 'types/tab_item'
 require_relative 'types/tabs_component'
 require_relative 'types/modal_component'
 
+# Editorial components (depend on Briefing types)
+require_relative '../briefing'
+require_relative 'types/editorial_headline_component'
+require_relative 'types/editorial_insight_component'
+require_relative 'types/editorial_metric_component'
+require_relative 'types/editorial_metrics_row_component'
+require_relative 'types/editorial_divider_component'
+require_relative 'types/editorial_page_component'
+
 module A2UI
   # Component union type - all possible component types
   Component = T.type_alias do
@@ -89,7 +98,14 @@ module A2UI
       ListComponent,
       DividerComponent,
       TabsComponent,
-      ModalComponent
+      ModalComponent,
+      # Editorial components
+      EditorialHeadlineComponent,
+      EditorialInsightComponent,
+      EditorialMetricComponent,
+      EditorialMetricsRowComponent,
+      EditorialDividerComponent,
+      EditorialPageComponent
     )
   end
 end

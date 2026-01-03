@@ -191,7 +191,9 @@ class BriefingChannel < ApplicationCable::Channel
 
         # Fallback: Try to find any root-like component
         fallback_root = surface.components.values.find do |c|
-          c.is_a?(A2UI::ColumnComponent) || c.is_a?(A2UI::RowComponent)
+          c.is_a?(A2UI::EditorialPageComponent) ||
+          c.is_a?(A2UI::ColumnComponent) ||
+          c.is_a?(A2UI::RowComponent)
         end
 
         if fallback_root
@@ -358,6 +360,42 @@ class BriefingChannel < ApplicationCable::Channel
         A2UI::DividerComponent.new(
           id: hash[:id],
           orientation: A2UI::Orientation.deserialize(hash[:orientation] || 'horizontal')
+        )
+      # Editorial components
+      when 'EditorialPageComponent'
+        A2UI::EditorialPageComponent.new(
+          id: hash[:id],
+          tone: Briefing::Sentiment.deserialize(hash[:tone] || 'neutral'),
+          children: deserialize_children(hash[:children])
+        )
+      when 'EditorialHeadlineComponent'
+        A2UI::EditorialHeadlineComponent.new(
+          id: hash[:id],
+          content: deserialize_value(hash[:content])
+        )
+      when 'EditorialInsightComponent'
+        A2UI::EditorialInsightComponent.new(
+          id: hash[:id],
+          what: hash[:what] || '',
+          so_what: hash[:so_what] || '',
+          now_what: hash[:now_what] || ''
+        )
+      when 'EditorialMetricComponent'
+        A2UI::EditorialMetricComponent.new(
+          id: hash[:id],
+          label: hash[:label] || '',
+          value: hash[:value] || '',
+          trend: hash[:trend] ? Briefing::TrendDirection.deserialize(hash[:trend]) : nil,
+          context: hash[:context]
+        )
+      when 'EditorialMetricsRowComponent'
+        A2UI::EditorialMetricsRowComponent.new(
+          id: hash[:id],
+          children: deserialize_children(hash[:children])
+        )
+      when 'EditorialDividerComponent'
+        A2UI::EditorialDividerComponent.new(
+          id: hash[:id]
         )
       else
         # Unknown component type, create a text placeholder

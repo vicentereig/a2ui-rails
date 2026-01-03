@@ -44,6 +44,19 @@ module A2UI
         when A2UI::ListComponent
           renderer = new(surface_id: surface_id, components_lookup: components_lookup, data: data)
           List.new(component: component, surface_id: surface_id, data: data, renderer: renderer)
+        # Editorial components
+        when A2UI::EditorialHeadlineComponent
+          EditorialHeadline.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::EditorialInsightComponent
+          EditorialInsight.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::EditorialMetricComponent
+          EditorialMetric.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::EditorialMetricsRowComponent
+          EditorialMetricsRow.new(component: component, surface_id: surface_id, components_lookup: components_lookup, data: data)
+        when A2UI::EditorialDividerComponent
+          EditorialDivider.new(component: component, surface_id: surface_id, data: data)
+        when A2UI::EditorialPageComponent
+          EditorialPage.new(component: component, surface_id: surface_id, components_lookup: components_lookup, data: data)
         else
           Unsupported.new(component: component, surface_id: surface_id, data: data)
         end

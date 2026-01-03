@@ -12,32 +12,42 @@ module A2UI
   # a component hierarchy suitable for the editorial briefing format.
   class EditorialUI < DSPy::Signature
     description <<~DESC
-      Transform editorial narrative content into A2UI visual components.
+      Create an editorial briefing layout using specialized editorial components.
 
-      You are designing the layout for a daily editorial briefing about personal health and fitness.
-      The input contains pre-interpreted narratives (prose, not raw numbers) about:
-      - Health patterns: sleep quality, recovery state, stress context
-      - Activity patterns: training volume, intensity, consistency
-      - Performance trends: fitness trajectory, aerobic state, training readiness
-      - Detected anomalies: hidden patterns worth highlighting
+      AVAILABLE COMPONENTS:
+      - EditorialPageComponent: Root container with tone (positive/neutral/warning)
+      - EditorialHeadlineComponent: Main headline (serif font, large, 8-12 words)
+      - EditorialInsightComponent: The What/So What/Now What prose body
+      - EditorialMetricsRowComponent: Container for 2-3 metrics
+      - EditorialMetricComponent: Single metric with label, value, trend, context
+      - EditorialDividerComponent: Horizontal rule between sections
+      - ColumnComponent: For vertical stacking (use gap: 0 for editorial spacing)
 
-      Create a visually engaging layout using these component types:
-      - TextComponent: For headlines (h1), section headers (h2/h3), and body text
-      - CardComponent: To group related content with visual elevation
-      - ColumnComponent: For vertical stacking with configurable gaps
-      - RowComponent: For horizontal layouts
-      - DividerComponent: To separate sections
+      REQUIRED STRUCTURE:
+      1. EditorialPageComponent (root, id: "editorial-root", set tone based on content)
+         2. ColumnComponent (id: "content-column", gap: 0)
+            3. EditorialHeadlineComponent (id: "headline")
+            4. EditorialInsightComponent (id: "insight")
+            5. EditorialDividerComponent (id: "divider")
+            6. EditorialMetricsRowComponent (id: "metrics-row")
+               - EditorialMetricComponent (id: "metric-1")
+               - EditorialMetricComponent (id: "metric-2")
+               - EditorialMetricComponent (id: "metric-3") [optional]
 
-      LAYOUT GUIDELINES:
-      1. Start with a striking headline (h1) that captures the day's key insight
-      2. Use the "What / So What / Now What" structure as three distinct sections
-      3. Each section should be in a Card with a subtle header
-      4. Include 2-3 supporting metrics as compact info blocks
-      5. Keep the overall layout clean and scannable
+      CONTENT GUIDELINES:
+      - HEADLINE: 8-12 words capturing the day's key insight. NO NUMBERS in headline.
+      - INSIGHT: what = observable pattern, so_what = why it matters, now_what = action.
+        All prose narratives. NO NUMBERS in the insight text.
+      - METRICS: 2-3 metrics that support the headline. Numbers go HERE only.
+        Use trend (up/down/stable) and context for additional detail.
 
-      Component IDs should be descriptive (e.g., "headline", "what-card", "metric-sleep").
-      Use ExplicitChildren with ids array for ColumnComponent/RowComponent children.
-      Use LiteralValue with value string for TextComponent content.
+      TONE: Set EditorialPageComponent.tone based on overall assessment:
+      - positive: strong recovery, good sleep, productive training
+      - warning: concerning patterns, recovery debt, overreaching
+      - neutral: mixed signals, maintenance phase
+
+      Use ExplicitChildren with ids array for container children.
+      Use LiteralValue with value string for EditorialHeadlineComponent content.
     DESC
 
     input do

@@ -1481,4 +1481,239 @@ http_interactions:
         variant for appropriate emphasis. This structure is extensible if more content
         needs to be added to the card later."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":4990,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":818,"service_tier":"standard"}}'
   recorded_at: Thu, 01 Jan 2026 22:34:15 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"request\": \"Create a card with a title and
+        a button\",\n  \"surface_id\": \"card-demo\",\n  \"available_data\": \"{}\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"root_id":{"type":"string"},"components":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"TextComponent"},"id":{"type":"string"},"content":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Text content"},"usage_hint":{"type":"string","enum":["h1","h2","h3","h4","h5","body","caption"]}},"required":["_type","id","content","usage_hint"],"description":"A2UI::TextComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ImageComponent"},"id":{"type":"string"},"src":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Image URL"},"alt":{"type":"string"},"fit":{"type":"string","enum":["contain","cover","fill","scale_down","none"]}},"required":["_type","id","src","alt","fit"],"description":"A2UI::ImageComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"IconComponent"},"id":{"type":"string"},"name":{"type":"string","description":"Material
+        icon name (e.g., check, close, menu)"},"size":{"type":"integer"}},"required":["_type","id","name","size"],"description":"A2UI::IconComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ButtonComponent"},"id":{"type":"string"},"label":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Button label text"},"action":{"type":"object","properties":{"_type":{"type":"string","const":"Action"},"name":{"type":"string","description":"Action
+        identifier sent to server"},"context":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ContextBinding"},"key":{"type":"string","description":"Key
+        name in the action context"},"path":{"type":"string","description":"JSON Pointer
+        to extract value from"}},"required":["_type","key","path"],"description":"A2UI::ContextBinding
+        struct"}}},"required":["_type","name","context"],"description":"A2UI::Action
+        struct"},"disabled":{"type":"boolean"},"variant":{"type":"string","description":"primary,
+        secondary, or danger"}},"required":["_type","id","label","action","disabled","variant"],"description":"A2UI::ButtonComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"TextFieldComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to bound value in data model"},"input_type":{"type":"string","enum":["text","number","date","longtext","email","tel","url"]},"label":{"type":"string"},"placeholder":{"type":"string"},"is_required":{"type":"boolean","description":"Whether
+        the field is required"}},"required":["_type","id","value","input_type","label","placeholder","is_required"],"description":"A2UI::TextFieldComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CheckBoxComponent"},"id":{"type":"string"},"checked":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to boolean in data model"},"label":{"type":"string"}},"required":["_type","id","checked","label"],"description":"A2UI::CheckBoxComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SliderComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to numeric value"},"min":{"type":"number"},"max":{"type":"number"},"step":{"type":"number"},"label":{"type":"string"}},"required":["_type","id","value","min","max","step","label"],"description":"A2UI::SliderComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SelectComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to selected value"},"options_path":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to array of {value, label} options"},"label":{"type":"string"},"placeholder":{"type":"string"}},"required":["_type","id","value","options_path","label","placeholder"],"description":"A2UI::SelectComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"RowComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::RowComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ColumnComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::ColumnComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CardComponent"},"id":{"type":"string"},"child_id":{"type":"string","description":"ID
+        of the child component"},"title":{"type":"string"},"elevation":{"type":"integer"}},"required":["_type","id","child_id","title","elevation"],"description":"A2UI::CardComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ListComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","children","orientation"],"description":"A2UI::ListComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DividerComponent"},"id":{"type":"string"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","orientation"],"description":"A2UI::DividerComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"TabsComponent"},"id":{"type":"string"},"tabs":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"TabItem"},"label":{"type":"string","description":"Tab
+        label text"},"child_id":{"type":"string","description":"ID of the content
+        component for this tab"}},"required":["_type","label","child_id"],"description":"A2UI::TabItem
+        struct"},"description":"List of tab definitions with labels and content IDs"},"active_index":{"type":"integer","description":"Currently
+        active tab index (0-based)"}},"required":["_type","id","tabs","active_index"],"description":"A2UI::TabsComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ModalComponent"},"id":{"type":"string"},"child_id":{"type":"string","description":"ID
+        of the content component inside the modal"},"title":{"type":"string","description":"Optional
+        modal title"},"is_open":{"type":"boolean","description":"Whether the modal
+        is currently visible"},"size":{"type":"string","enum":["small","medium","large","fullscreen"],"description":"Modal
+        size variant"},"dismissible":{"type":"boolean","description":"Whether the
+        modal can be dismissed by clicking outside"}},"required":["_type","id","child_id","title","is_open","size","dismissible"],"description":"A2UI::ModalComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialHeadlineComponent"},"id":{"type":"string"},"content":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Headline text (8-12 words, no numbers)"}},"required":["_type","id","content"],"description":"A2UI::EditorialHeadlineComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialInsightComponent"},"id":{"type":"string"},"what":{"type":"string","description":"Observable
+        pattern from data (1-2 sentences, no numbers)"},"so_what":{"type":"string","description":"Why
+        this matters - the interpretation (1-2 sentences, no numbers)"},"now_what":{"type":"string","description":"Actionable
+        recommendation (1 sentence)"}},"required":["_type","id","what","so_what","now_what"],"description":"A2UI::EditorialInsightComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialMetricComponent"},"id":{"type":"string"},"label":{"type":"string","description":"Metric
+        label (e.g., \"HRV\", \"Sleep Score\")"},"value":{"type":"string","description":"Formatted
+        value with unit (e.g., \"52ms\", \"85/100\")"},"trend":{"type":["string","null"],"enum":["up","down","stable"],"description":"Trend
+        direction (up, down, stable)"},"context":{"type":["string","null"],"description":"Optional
+        context (e.g., \"up from 48ms last week\")"}},"required":["_type","id","label","value"],"description":"A2UI::EditorialMetricComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialMetricsRowComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"ExplicitChildren with EditorialMetricComponent IDs"}},"required":["_type","id","children"],"description":"A2UI::EditorialMetricsRowComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialDividerComponent"},"id":{"type":"string"}},"required":["_type","id"],"description":"A2UI::EditorialDividerComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialPageComponent"},"id":{"type":"string"},"tone":{"type":"string","enum":["positive","neutral","warning"],"description":"Overall
+        tone (positive, neutral, warning)"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"ExplicitChildren with content component IDs"}},"required":["_type","id","tone","children"],"description":"A2UI::EditorialPageComponent
+        struct"}],"description":"Union of multiple types"}},"initial_data":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"DataUpdate"},"path":{"type":"string","description":"JSON
+        Pointer path (e.g., /reservation/guests)"},"entries":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"StringValue"},"key":{"type":"string"},"string":{"type":"string"}},"required":["_type","key","string"],"description":"A2UI::StringValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"NumberValue"},"key":{"type":"string"},"number":{"type":"number"}},"required":["_type","key","number"],"description":"A2UI::NumberValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"BooleanValue"},"key":{"type":"string"},"boolean":{"type":"boolean"}},"required":["_type","key","boolean"],"description":"A2UI::BooleanValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ObjectValue"},"key":{"type":"string"},"entries":{"type":"object","additionalProperties":{"type":"string"},"description":"Nested
+        key-value pairs as JSON-like hash"}},"required":["_type","key","entries"],"description":"A2UI::ObjectValue
+        struct"}],"description":"Union of multiple types"},"description":"Values to
+        set at this path"}},"required":["_type","path","entries"],"description":"A2UI::DataUpdate
+        struct"}},"decisions":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"UIDecisionEvidence"},"decision_type":{"type":"string","enum":["component_choice","layout_structure","data_binding","styling","interaction"],"description":"Category
+        of decision"},"component_id":{"type":["string","null"],"description":"ID of
+        component this decision affects"},"choice":{"type":"string","description":"What
+        was chosen (e.g., \"Card\", \"Column layout\", \"path binding\")"},"rationale":{"type":"string","description":"Why
+        this choice was made (1-2 sentences)"},"alternatives_considered":{"type":"array","items":{"type":"string"},"description":"Other
+        options that were considered"}},"required":["_type","decision_type","choice","rationale","alternatives_considered"],"description":"A2UI::UIDecisionEvidence
+        struct"}},"reasoning":{"type":"string"}},"required":["root_id","components","initial_data","decisions","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"request\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What UI to create\"\n    },\n    \"surface_id\": {\n      \"type\": \"string\"\n    },\n    \"available_data\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Available data model
+        as JSON\"\n    }\n  },\n  \"required\": [\n    \"request\",\n    \"surface_id\"\n  ]\n}\n```\n\nYour
+        objective is: Generate UI components from natural language. Think step by
+        step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '18429'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Sat, 03 Jan 2026 20:42:17 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '447000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-01-03T20:42:07Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-01-03T20:42:18Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-01-03T20:42:05Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '536000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-01-03T20:42:07Z'
+      Request-Id:
+      - req_011CWm6PZLw2DM7zKLDpUtYm
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '12619'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b855216bcb00345-MAD
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01UNCv4e6bCbk9aKpBnRfC4v","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_01TVs1fbRnURMpHLk5pppLU4","name":"json_output","input":{"root_id":"card-demo","components":[{"_type":"CardComponent","id":"card-demo","child_id":"card-content","title":"Card
+        Title","elevation":2},{"_type":"ColumnComponent","id":"card-content","children":{"_type":"ExplicitChildren","ids":["demo-button"]},"distribution":"start","alignment":"stretch","gap":16},{"_type":"ButtonComponent","id":"demo-button","label":{"_type":"LiteralValue","value":"Click
+        Me"},"action":{"_type":"Action","name":"button_clicked","context":[]},"disabled":false,"variant":"primary"}],"initial_data":[],"decisions":[{"_type":"UIDecisionEvidence","decision_type":"component_choice","choice":"CardComponent","rationale":"Card
+        provides the requested container with built-in title and elevation styling","alternatives_considered":["ColumnComponent
+        with TextComponent header","Custom container"],"component_id":"card-demo"},{"_type":"UIDecisionEvidence","decision_type":"layout_structure","choice":"ColumnComponent
+        as card content","rationale":"Provides clean vertical layout for organizing
+        content within the card","alternatives_considered":["Direct button placement","RowComponent"],"component_id":"card-content"},{"_type":"UIDecisionEvidence","decision_type":"component_choice","choice":"ButtonComponent
+        with primary variant","rationale":"Primary variant provides appropriate visual
+        emphasis for the main action","alternatives_considered":["secondary variant","danger
+        variant"],"component_id":"demo-button"},{"_type":"UIDecisionEvidence","decision_type":"styling","choice":"Medium
+        elevation (2) for card","rationale":"Provides subtle depth without being too
+        prominent for a demo card","alternatives_considered":["elevation 1","elevation
+        3"],"component_id":"card-demo"}],"reasoning":"Created a simple card demo with
+        a title and button as requested. The CardComponent provides the container
+        with built-in title support, while a ColumnComponent organizes the content
+        inside. The ButtonComponent uses a primary variant for visual emphasis and
+        includes a basic action handler. No data binding was needed since no dynamic
+        data was specified."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":6302,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":770,"service_tier":"standard"}}'
+  recorded_at: Sat, 03 Jan 2026 20:42:17 GMT
 recorded_with: VCR 6.4.0

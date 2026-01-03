@@ -1,0 +1,7 @@
+<div id="<%= component_id %>" class="editorial-metrics">
+  <% child_ids.each do |child_id| %>
+    <% if (child = components_lookup[child_id]) %>
+      <%= render A2UI::Components::Renderer.for(child, surface_id: surface_id, components_lookup: components_lookup, data: data) %>
+    <% end %>
+  <% end %>
+</div>

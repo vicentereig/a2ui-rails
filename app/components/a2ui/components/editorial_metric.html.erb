@@ -1,0 +1,12 @@
+<div id="<%= component_id %>" class="editorial-metric">
+  <span class="editorial-metric__label"><%= label %></span>
+  <span class="editorial-metric__value">
+    <%= value %>
+    <% if trend.present? %>
+      <span class="editorial-metric__trend <%= trend_class %>"><%= trend_icon %></span>
+    <% end %>
+  </span>
+  <% if context.present? %>
+    <span class="editorial-metric__context"><%= context %></span>
+  <% end %>
+</div>
