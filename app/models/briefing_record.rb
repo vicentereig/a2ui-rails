@@ -11,12 +11,13 @@ class BriefingRecord < ApplicationRecord
   # Validations
   validates :user_id, presence: true
   validates :date, presence: true
-  validates :briefing_type, presence: true, inclusion: { in: %w[daily weekly] }
+  validates :briefing_type, presence: true, inclusion: { in: %w[daily weekly editorial] }
   validates :user_id, uniqueness: { scope: [:date, :briefing_type] }
 
   # Scopes
   scope :daily, -> { where(briefing_type: 'daily') }
   scope :weekly, -> { where(briefing_type: 'weekly') }
+  scope :editorial, -> { where(briefing_type: 'editorial') }
   scope :for_user, ->(user_id) { where(user_id: user_id) }
   scope :for_date, ->(date) { where(date: date) }
   scope :recent, -> { order(date: :desc) }

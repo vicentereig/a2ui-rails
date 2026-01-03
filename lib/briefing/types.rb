@@ -85,4 +85,71 @@ module Briefing
     const :status, StatusSummary, description: 'Consolidated status summary'
     const :suggestions, T::Array[Suggestion], default: [], description: 'Array of suggestions'
   end
+
+  # =============================================================================
+  # Editorial Briefing Types (What / So What / Now What framework)
+  # =============================================================================
+
+  # Anomaly types - contradictions and hidden patterns in the data
+  class AnomalyType < T::Enum
+    enums do
+      SleepFitnessParadox = new('sleep_fitness_paradox')
+      HRVPerformanceDivergence = new('hrv_performance_divergence')
+      RecoveryDebt = new('recovery_debt')
+      UnproductiveTraining = new('unproductive_training')
+      TrendBreak = new('trend_break')
+      ConsistencyGap = new('consistency_gap')
+    end
+  end
+
+  # Severity of detected anomaly
+  class AnomalySeverity < T::Enum
+    enums do
+      Low = new('low')
+      Medium = new('medium')
+      High = new('high')
+    end
+  end
+
+  # An anomaly is a signal that contradicts expectations
+  class Anomaly < T::Struct
+    const :anomaly_type, AnomalyType
+    const :severity, AnomalySeverity
+    const :headline, String, description: 'Short description (5-10 words)'
+    const :detail, String, description: 'What the data shows'
+    const :implication, String, description: 'Why this matters'
+    const :evidence, T::Array[EvidenceSpan], default: []
+  end
+
+  # The What/So What/Now What insight structure
+  class EditorialInsight < T::Struct
+    const :what, String,
+      description: 'Observable fact from the data (1-2 sentences)'
+    const :so_what, String,
+      description: 'Why this matters—the interpretation (1-2 sentences)'
+    const :now_what, String,
+      description: 'Recommended action (1 sentence)'
+  end
+
+  # A metric that supports the insight
+  class SupportingMetric < T::Struct
+    const :label, String, description: 'Short label (e.g., "VO2 Max", "Sleep")'
+    const :value, String, description: 'Formatted value (e.g., "51 ml/kg/min", "92/100")'
+    const :trend, T.nilable(TrendDirection), default: nil
+    const :context, T.nilable(String), default: nil,
+      description: 'Optional context (e.g., "down from 53 last month")'
+  end
+
+  # The complete editorial briefing output
+  class EditorialBriefingOutput < T::Struct
+    const :headline, String,
+      description: 'Compelling headline that reveals the hidden insight (8-12 words)'
+    const :insight, EditorialInsight,
+      description: 'The What/So What/Now What analysis'
+    const :supporting_metrics, T::Array[SupportingMetric],
+      default: [],
+      description: 'Top 2-3 metrics that support the insight'
+    const :tone, Sentiment,
+      description: 'Overall tone of the briefing'
+  end
 end

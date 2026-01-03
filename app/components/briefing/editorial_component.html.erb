@@ -1,0 +1,33 @@
+<article class="editorial-page" data-tone="<%= tone %>">
+  <h1 class="editorial-headline"><%= headline %></h1>
+
+  <div class="editorial-insight">
+    <p><%= insight_body %></p>
+    <% if action_text.present? %>
+      <p class="editorial-insight__action"><%= action_text %></p>
+    <% end %>
+  </div>
+
+  <% if metrics? %>
+    <hr class="editorial-divider">
+
+    <div class="editorial-metrics">
+      <% metrics.each do |metric| %>
+        <div class="editorial-metric">
+          <span class="editorial-metric__label"><%= metric[:label] %></span>
+          <span class="editorial-metric__value">
+            <%= metric[:value] %>
+            <% if metric[:trend] %>
+              <span class="editorial-metric__trend <%= trend_class(metric[:trend]) %>">
+                <%= trend_icon(metric[:trend]) %>
+              </span>
+            <% end %>
+          </span>
+          <% if metric[:context].present? %>
+            <span class="editorial-metric__context"><%= metric[:context] %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</article>

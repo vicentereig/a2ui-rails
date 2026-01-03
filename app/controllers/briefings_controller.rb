@@ -24,11 +24,39 @@ class BriefingsController < ApplicationController
     @can_go_next = @date < Date.today
   end
 
+  # Editorial-style briefing view
+  def editorial
+    @user_id = 'demo_user'
+    @user_name = 'Vicente'
+    @date = parse_date_from_params
+
+    # Check if editorial briefing exists for this date
+    @briefing = BriefingRecord.find_by(
+      user_id: @user_id,
+      date: @date,
+      briefing_type: 'editorial'
+    )
+
+    # Navigation dates
+    @prev_date = @date - 1.day
+    @next_date = @date + 1.day
+    @can_go_next = @date < Date.today
+  end
+
   def generate
     user_id = 'demo_user'
     date = parse_date_from_params.iso8601
 
     GenerateBriefingJob.perform_later(user_id: user_id, date: date)
+
+    head :accepted
+  end
+
+  def generate_editorial
+    user_id = 'demo_user'
+    date = parse_date_from_params.iso8601
+
+    GenerateEditorialBriefingJob.perform_later(user_id: user_id, date: date)
 
     head :accepted
   end

@@ -1,0 +1,469 @@
+/*
+ * Editorial Briefing Design System
+ * Catppuccin Latte palette with editorial/journalistic aesthetic
+ */
+
+/* ============================================
+   Catppuccin Latte Design Tokens
+   ============================================ */
+:root {
+  /* Base colors - the "white page" */
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+
+  /* Text hierarchy */
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+
+  /* Surface colors */
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+
+  /* Accent colors for signals/metrics */
+  --ctp-green: #40a02b;
+  --ctp-red: #d20f39;
+  --ctp-peach: #fe640b;
+  --ctp-blue: #1e66f5;
+  --ctp-mauve: #8839ef;
+  --ctp-teal: #179299;
+  --ctp-yellow: #df8e1d;
+
+  /* Typography */
+  --font-headline: 'Newsreader', 'Georgia', serif;
+  --font-body: 'Source Serif 4', 'Georgia', serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+}
+
+/* ============================================
+   Base Container - Light Background
+   ============================================ */
+.editorial-container {
+  background: var(--ctp-mantle);
+  min-height: 100vh;
+  padding: var(--space-3xl) var(--space-xl);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Page wrapper with meta floating outside */
+.editorial-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* ============================================
+   Metadata Bar (between nav and content)
+   ============================================ */
+.editorial-meta-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  margin-bottom: var(--space-xs);
+}
+
+.editorial-meta-bar__date {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ctp-overlay1);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.editorial-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ctp-overlay2);
+  letter-spacing: 0.01em;
+}
+
+.editorial-meta__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ctp-green);
+  flex-shrink: 0;
+}
+
+.editorial-meta__dot--generating {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+.editorial-meta__model {
+  color: var(--ctp-overlay1);
+}
+
+.editorial-meta__separator {
+  color: var(--ctp-surface2);
+}
+
+.editorial-meta__tokens {
+  color: var(--ctp-overlay2);
+}
+
+.editorial-meta__tokens span {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   The Page - White Card
+   ============================================ */
+.editorial-page {
+  background: var(--ctp-base);
+  border: 1px solid var(--ctp-crust);
+  border-radius: var(--radius-md);
+  padding: var(--space-2xl) var(--space-xl);
+  box-shadow:
+    0 1px 2px rgba(76, 79, 105, 0.04),
+    0 2px 4px rgba(76, 79, 105, 0.04),
+    0 4px 8px rgba(76, 79, 105, 0.04);
+}
+
+/* ============================================
+   Date Header
+   ============================================ */
+.editorial-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ctp-subtext0);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-lg);
+}
+
+/* ============================================
+   Headline - Editorial Style
+   ============================================ */
+.editorial-headline {
+  font-family: var(--font-headline);
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ctp-text);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-xl) 0;
+}
+
+/* ============================================
+   Insight Body - What / So What / Now What
+   ============================================ */
+.editorial-insight {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ctp-text);
+}
+
+.editorial-insight p {
+  margin: 0 0 var(--space-md) 0;
+}
+
+.editorial-insight p:last-child {
+  margin-bottom: 0;
+}
+
+/* The "Now What" action stands out */
+.editorial-insight__action {
+  color: var(--ctp-text);
+  font-weight: 500;
+}
+
+/* ============================================
+   Divider
+   ============================================ */
+.editorial-divider {
+  border: none;
+  border-top: 1px solid var(--ctp-crust);
+  margin: var(--space-xl) 0;
+}
+
+/* ============================================
+   Supporting Metrics
+   ============================================ */
+.editorial-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg) var(--space-xl);
+}
+
+.editorial-metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.editorial-metric__label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ctp-subtext0);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.editorial-metric__value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ctp-text);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.editorial-metric__trend {
+  font-size: 0.875rem;
+}
+
+.editorial-metric__trend--up {
+  color: var(--ctp-green);
+}
+
+.editorial-metric__trend--down {
+  color: var(--ctp-red);
+}
+
+.editorial-metric__trend--stable {
+  color: var(--ctp-overlay1);
+}
+
+.editorial-metric__context {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--ctp-subtext0);
+}
+
+/* ============================================
+   Tone Indicators (subtle)
+   ============================================ */
+.editorial-page[data-tone="warning"] {
+  border-left: 3px solid var(--ctp-peach);
+}
+
+.editorial-page[data-tone="positive"] {
+  border-left: 3px solid var(--ctp-green);
+}
+
+.editorial-page[data-tone="neutral"] {
+  border-left: 3px solid var(--ctp-surface2);
+}
+
+/* ============================================
+   Navigation (Date picker)
+   ============================================ */
+.editorial-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.editorial-nav__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--ctp-crust);
+  border-radius: var(--radius-sm);
+  color: var(--ctp-subtext0);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editorial-nav__btn:hover:not(:disabled) {
+  background: var(--ctp-crust);
+  color: var(--ctp-text);
+}
+
+.editorial-nav__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.editorial-nav__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+.editorial-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.editorial-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ctp-surface0) 0%,
+    var(--ctp-crust) 50%,
+    var(--ctp-surface0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.editorial-skeleton--headline {
+  height: 2.5rem;
+  width: 85%;
+}
+
+.editorial-skeleton--text {
+  height: 1rem;
+  width: 100%;
+}
+
+.editorial-skeleton--text-short {
+  height: 1rem;
+  width: 60%;
+}
+
+/* ============================================
+   Generate Button
+   ============================================ */
+.editorial-generate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 0.625rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ctp-base);
+  background: var(--ctp-text);
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.editorial-generate:hover {
+  background: var(--ctp-subtext1);
+}
+
+.editorial-generate:active {
+  transform: scale(0.98);
+}
+
+.editorial-generate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   Warning/Error Messages
+   ============================================ */
+.editorial-message {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  margin-top: var(--space-md);
+}
+
+.editorial-message--warning {
+  background: rgba(254, 100, 11, 0.1);
+  color: var(--ctp-peach);
+  border: 1px solid rgba(254, 100, 11, 0.2);
+}
+
+.editorial-message--error {
+  background: rgba(210, 15, 57, 0.1);
+  color: var(--ctp-red);
+  border: 1px solid rgba(210, 15, 57, 0.2);
+}
+
+/* ============================================
+   Action Bar
+   ============================================ */
+.editorial-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--ctp-crust);
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 640px) {
+  .editorial-container {
+    padding: var(--space-2xl) var(--space-md);
+  }
+
+  .editorial-wrapper {
+    max-width: 100%;
+  }
+
+  .editorial-page {
+    padding: var(--space-xl) var(--space-lg);
+    border-radius: var(--radius-sm);
+  }
+
+  .editorial-headline {
+    font-size: 1.5rem;
+  }
+
+  .editorial-metrics {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .editorial-meta-bar {
+    padding: var(--space-xs) 0;
+  }
+
+  .editorial-meta-bar__date,
+  .editorial-meta {
+    font-size: 0.625rem;
+  }
+}
+
+/* ============================================
+   Hidden utility
+   ============================================ */
+.hidden {
+  display: none !important;
+}
