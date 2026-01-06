@@ -1,7 +1,0 @@
-<article class="status-summary" data-component="status-summary" data-sentiment="<%= sentiment %>">
-  <h2 class="status-headline"><%= headline %></h2>
-  <% if metrics? %>
-    <%= render Briefing::MetricInlineComponent.new(metrics: metrics) %>
-  <% end %>
-  <p class="status-summary-text"><%= summary %></p>
-</article>

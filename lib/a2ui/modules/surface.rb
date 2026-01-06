@@ -2,6 +2,9 @@
 # frozen_string_literal: true
 
 module A2UI
+  # Type alias for action context types: action_name => context struct class
+  ActionSchemas = T.type_alias { T::Hash[Symbol, T.class_of(T::Struct)] }
+
   class Surface
     extend T::Sig
 
@@ -17,12 +20,34 @@ module A2UI
     sig { returns(T::Hash[String, T.untyped]) }
     attr_reader :data
 
-    sig { params(id: String).void }
-    def initialize(id)
+    # Maps action names to their expected context struct types
+    sig { returns(ActionSchemas) }
+    attr_reader :action_schemas
+
+    sig { params(id: String, action_schemas: ActionSchemas).void }
+    def initialize(id, action_schemas: {})
       @id = id
       @root_id = T.let(nil, T.nilable(String))
       @components = T.let({}, T::Hash[String, Component])
       @data = T.let({}, T::Hash[String, T.untyped])
+      @action_schemas = T.let(action_schemas, ActionSchemas)
+    end
+
+    # Returns JSON schemas for all registered actions (for client-side validation)
+    sig { returns(T::Hash[Symbol, T::Hash[Symbol, T.untyped]]) }
+    def action_json_schemas
+      @action_schemas.transform_values do |struct_class|
+        DSPy::TypeSystem::SorbetJsonSchema.generate_struct_schema(struct_class)
+      end
+    end
+
+    # Coerces raw context hash to the registered struct type for an action
+    sig { params(action_name: String, raw_context: T::Hash[String, T.untyped]).returns(T::Struct) }
+    def coerce_context(action_name, raw_context)
+      struct_class = @action_schemas[action_name.to_sym]
+      raise ArgumentError, "Unknown action: #{action_name}" unless struct_class
+
+      A2UI::TypeCoercion.coerce(raw_context, struct_class)
     end
 
     sig { params(root_id: String, components: T::Array[Component]).void }

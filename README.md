@@ -145,13 +145,27 @@ end
 ### Generate UI from Natural Language
 
 ```ruby
+# Define typed data models
+class BookingData < T::Struct
+  const :guests, Integer, default: 2
+  const :date, T.nilable(String)
+  const :email, T.nilable(String)
+end
+
 manager = A2UI::SurfaceManager.new
 
-# Create a surface from a natural language request
+# Create a surface with typed data
 surface = manager.create(
   surface_id: 'booking-form',
   request: 'Create a booking form with guest count, date picker, and submit button',
-  data: '{"booking": {"guests": 2}}'
+  data: BookingData.new(guests: 2)
+)
+
+# For surfaces without initial data
+surface = manager.create(
+  surface_id: 'welcome',
+  request: 'Create a welcome message',
+  data: A2UI::EmptyData.new
 )
 
 # Render in your view
@@ -161,11 +175,17 @@ render partial: 'a2ui/surface', locals: { surface: surface }
 ### Handle User Actions
 
 ```ruby
+# Define typed context for the action
+class SubmitBookingContext < T::Struct
+  const :guests, Integer
+  const :date, String
+end
+
 action = A2UI::UserAction.new(
   name: 'submit_booking',
   surface_id: 'booking-form',
   source_id: 'submit-btn',
-  context: { 'guests' => '3', 'date' => '2025-01-15' }
+  context: SubmitBookingContext.new(guests: 3, date: '2025-01-15')
 )
 
 result = manager.handle_action(
@@ -263,6 +283,91 @@ A2UI::Component = T.any(
 ```
 
 DSPy automatically handles `_type` discrimination in LLM responses.
+
+### Type-Safe Data
+
+A2UI uses the same type coercion pattern as DSPy.rb for LLM responses:
+
+1. **Define typed structs** for data and action context
+2. **Register schemas** when creating surfaces (schemas stay server-side)
+3. **Client sends raw JSON** (like LLM responses)
+4. **Server coerces automatically** using DSPy's TypeCoercion
+
+This provides compile-time safety and IDE autocomplete without requiring schemas to travel over the wire.
+
+#### Data Models
+
+Surface data must be a `T::Struct`:
+
+```ruby
+class BookingData < T::Struct
+  const :guests, Integer, default: 2
+  const :date, T.nilable(String)
+end
+
+manager.create(
+  surface_id: 'booking',
+  request: 'Create a booking form',
+  data: BookingData.new(guests: 4)
+)
+
+# For surfaces without data
+manager.create(
+  surface_id: 'welcome',
+  request: 'Create a welcome message',
+  data: A2UI::EmptyData.new
+)
+```
+
+#### Action Context Types
+
+Register context types when creating a surface. The server stores schemas internally and coerces incoming JSON automatically:
+
+```ruby
+# Define context types
+class SubmitContext < T::Struct
+  const :guests, Integer
+  const :date, String
+end
+
+class CancelContext < T::Struct
+  const :reason, T.nilable(String)
+end
+
+# Register when creating surface
+manager.create(
+  surface_id: 'booking',
+  request: 'Create a booking form',
+  data: BookingData.new,
+  actions: {
+    submit: SubmitContext,
+    cancel: CancelContext
+  }
+)
+
+# Client sends raw JSON, server coerces automatically
+action = A2UI::UserAction.new(
+  name: 'submit',
+  surface_id: 'booking',
+  source_id: 'btn',
+  context: { 'guests' => '3', 'date' => '2025-01-15' }
+)
+
+result = manager.handle_action(action: action)
+# Context coerced to SubmitContext.new(guests: 3, date: "2025-01-15")
+```
+
+#### Manual Coercion
+
+For direct coercion (uses DSPy's TypeCoercion):
+
+```ruby
+context = A2UI::TypeCoercion.coerce(
+  { 'guests' => '3', 'date' => '2025-01-15' },
+  SubmitContext
+)
+# => SubmitContext.new(guests: 3, date: "2025-01-15")
+```
 
 ### Components
 
@@ -399,6 +504,7 @@ See [packages/a2ui-js/README.md](packages/a2ui-js/README.md) for full documentat
 ## Completed Features
 
 - ✅ **15 Component Types** — Text, Button, TextField, CheckBox, Select, Slider, Row, Column, Card, List, Divider, Tabs, Modal, Image, Icon
+- ✅ **Type-Safe Data** — Typed `T::Struct` for data and action context with DSPy TypeCoercion
 - ✅ **Data-driven Children** — Repeat templates from arrays with `DataDrivenChildren`
 - ✅ **Evidence Spans** — Track LLM reasoning for health predictions and UI decisions
 - ✅ **Signal Modeling** — Detect significant changes in Garmin data and user activity

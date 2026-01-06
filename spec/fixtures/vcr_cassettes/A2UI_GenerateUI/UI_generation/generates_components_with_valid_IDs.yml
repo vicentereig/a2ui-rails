@@ -1716,4 +1716,836 @@ http_interactions:
         includes a basic action handler. No data binding was needed since no dynamic
         data was specified."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":6302,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":770,"service_tier":"standard"}}'
   recorded_at: Sat, 03 Jan 2026 20:42:17 GMT
+- request:
+    method: post
+    uri: https://api.openai.com/v1/chat/completions
+    body:
+      encoding: UTF-8
+      string: '{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"request\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What UI to create\"\n    },\n    \"surface_id\": {\n      \"type\": \"string\"\n    },\n    \"available_data\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Available data model
+        as JSON\"\n    }\n  },\n  \"required\": [\n    \"request\",\n    \"surface_id\"\n  ]\n}\n```\nYour
+        output schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"root_id\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Root component ID\"\n    },\n    \"components\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"oneOf\": [\n          {\n            \"type\": \"object\",\n            \"properties\":
+        {\n              \"_type\": {\n                \"type\": \"string\",\n                \"const\":
+        \"TextComponent\"\n              },\n              \"id\": {\n                \"type\":
+        \"string\"\n              },\n              \"content\": {\n                \"oneOf\":
+        [\n                  {\n                    \"type\": \"object\",\n                    \"properties\":
+        {\n                      \"_type\": {\n                        \"type\": \"string\",\n                        \"const\":
+        \"LiteralValue\"\n                      },\n                      \"value\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"The literal string value\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"value\"\n                    ],\n                    \"description\":
+        \"A2UI::LiteralValue struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"PathReference\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to data model (e.g., /user/name)\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\"\n                    ],\n                    \"description\":
+        \"A2UI::PathReference struct\"\n                  }\n                ],\n                \"description\":
+        \"Text content\"\n              },\n              \"usage_hint\": {\n                \"type\":
+        \"string\",\n                \"enum\": [\n                  \"h1\",\n                  \"h2\",\n                  \"h3\",\n                  \"h4\",\n                  \"h5\",\n                  \"body\",\n                  \"caption\"\n                ]\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"content\",\n              \"usage_hint\"\n            ],\n            \"description\":
+        \"A2UI::TextComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"ImageComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"src\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"LiteralValue\"\n                      },\n                      \"value\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"The literal string value\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"value\"\n                    ],\n                    \"description\":
+        \"A2UI::LiteralValue struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"PathReference\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to data model (e.g., /user/name)\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\"\n                    ],\n                    \"description\":
+        \"A2UI::PathReference struct\"\n                  }\n                ],\n                \"description\":
+        \"Image URL\"\n              },\n              \"alt\": {\n                \"type\":
+        \"string\"\n              },\n              \"fit\": {\n                \"type\":
+        \"string\",\n                \"enum\": [\n                  \"contain\",\n                  \"cover\",\n                  \"fill\",\n                  \"scale_down\",\n                  \"none\"\n                ]\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"src\",\n              \"alt\",\n              \"fit\"\n            ],\n            \"description\":
+        \"A2UI::ImageComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"IconComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"name\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Material icon name (e.g., check, close, menu)\"\n              },\n              \"size\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"name\",\n              \"size\"\n            ],\n            \"description\":
+        \"A2UI::IconComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"ButtonComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"label\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"LiteralValue\"\n                      },\n                      \"value\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"The literal string value\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"value\"\n                    ],\n                    \"description\":
+        \"A2UI::LiteralValue struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"PathReference\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to data model (e.g., /user/name)\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\"\n                    ],\n                    \"description\":
+        \"A2UI::PathReference struct\"\n                  }\n                ],\n                \"description\":
+        \"Button label text\"\n              },\n              \"action\": {\n                \"type\":
+        \"object\",\n                \"properties\": {\n                  \"_type\":
+        {\n                    \"type\": \"string\",\n                    \"const\":
+        \"Action\"\n                  },\n                  \"name\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"Action identifier sent
+        to server\"\n                  },\n                  \"context\": {\n                    \"type\":
+        \"array\",\n                    \"items\": {\n                      \"type\":
+        \"object\",\n                      \"properties\": {\n                        \"_type\":
+        {\n                          \"type\": \"string\",\n                          \"const\":
+        \"ContextBinding\"\n                        },\n                        \"key\":
+        {\n                          \"type\": \"string\",\n                          \"description\":
+        \"Key name in the action context\"\n                        },\n                        \"path\":
+        {\n                          \"type\": \"string\",\n                          \"description\":
+        \"JSON Pointer to extract value from\"\n                        }\n                      },\n                      \"required\":
+        [\n                        \"_type\",\n                        \"key\",\n                        \"path\"\n                      ],\n                      \"description\":
+        \"A2UI::ContextBinding struct\"\n                    }\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"name\",\n                  \"context\"\n                ],\n                \"description\":
+        \"A2UI::Action struct\"\n              },\n              \"disabled\": {\n                \"type\":
+        \"boolean\"\n              },\n              \"variant\": {\n                \"type\":
+        \"string\",\n                \"description\": \"primary, secondary, or danger\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"label\",\n              \"action\",\n              \"disabled\",\n              \"variant\"\n            ],\n            \"description\":
+        \"A2UI::ButtonComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"TextFieldComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"value\":
+        {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"PathReference\"\n                  },\n                  \"path\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"JSON Pointer to data model
+        (e.g., /user/name)\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"path\"\n                ],\n                \"description\":
+        \"Path to bound value in data model\"\n              },\n              \"input_type\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"text\",\n                  \"number\",\n                  \"date\",\n                  \"longtext\",\n                  \"email\",\n                  \"tel\",\n                  \"url\"\n                ]\n              },\n              \"label\":
+        {\n                \"type\": \"string\"\n              },\n              \"placeholder\":
+        {\n                \"type\": \"string\"\n              },\n              \"is_required\":
+        {\n                \"type\": \"boolean\",\n                \"description\":
+        \"Whether the field is required\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"value\",\n              \"input_type\",\n              \"label\",\n              \"placeholder\",\n              \"is_required\"\n            ],\n            \"description\":
+        \"A2UI::TextFieldComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"CheckBoxComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"checked\":
+        {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"PathReference\"\n                  },\n                  \"path\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"JSON Pointer to data model
+        (e.g., /user/name)\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"path\"\n                ],\n                \"description\":
+        \"Path to boolean in data model\"\n              },\n              \"label\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"checked\",\n              \"label\"\n            ],\n            \"description\":
+        \"A2UI::CheckBoxComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"SliderComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"value\":
+        {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"PathReference\"\n                  },\n                  \"path\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"JSON Pointer to data model
+        (e.g., /user/name)\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"path\"\n                ],\n                \"description\":
+        \"Path to numeric value\"\n              },\n              \"min\": {\n                \"type\":
+        \"number\"\n              },\n              \"max\": {\n                \"type\":
+        \"number\"\n              },\n              \"step\": {\n                \"type\":
+        \"number\"\n              },\n              \"label\": {\n                \"type\":
+        \"string\"\n              }\n            },\n            \"required\": [\n              \"_type\",\n              \"id\",\n              \"value\",\n              \"min\",\n              \"max\",\n              \"step\",\n              \"label\"\n            ],\n            \"description\":
+        \"A2UI::SliderComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"SelectComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"value\":
+        {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"PathReference\"\n                  },\n                  \"path\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"JSON Pointer to data model
+        (e.g., /user/name)\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"path\"\n                ],\n                \"description\":
+        \"Path to selected value\"\n              },\n              \"options_path\":
+        {\n                \"type\": \"object\",\n                \"properties\":
+        {\n                  \"_type\": {\n                    \"type\": \"string\",\n                    \"const\":
+        \"PathReference\"\n                  },\n                  \"path\": {\n                    \"type\":
+        \"string\",\n                    \"description\": \"JSON Pointer to data model
+        (e.g., /user/name)\"\n                  }\n                },\n                \"required\":
+        [\n                  \"_type\",\n                  \"path\"\n                ],\n                \"description\":
+        \"Path to array of {value, label} options\"\n              },\n              \"label\":
+        {\n                \"type\": \"string\"\n              },\n              \"placeholder\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"value\",\n              \"options_path\",\n              \"label\",\n              \"placeholder\"\n            ],\n            \"description\":
+        \"A2UI::SelectComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"RowComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"children\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"ExplicitChildren\"\n                      },\n                      \"ids\":
+        {\n                        \"type\": \"array\",\n                        \"items\":
+        {\n                          \"type\": \"string\"\n                        },\n                        \"description\":
+        \"List of child component IDs\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"ids\"\n                    ],\n                    \"description\":
+        \"A2UI::ExplicitChildren struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"DataDrivenChildren\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to array in data model\"\n                      },\n                      \"template_id\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"Component ID to use as template for each item\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\",\n                      \"template_id\"\n                    ],\n                    \"description\":
+        \"A2UI::DataDrivenChildren struct\"\n                  }\n                ],\n                \"description\":
+        \"Union of multiple types\"\n              },\n              \"distribution\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"start\",\n                  \"center\",\n                  \"end\",\n                  \"space_between\",\n                  \"space_around\",\n                  \"space_evenly\"\n                ]\n              },\n              \"alignment\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"start\",\n                  \"center\",\n                  \"end\",\n                  \"stretch\"\n                ]\n              },\n              \"gap\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"children\",\n              \"distribution\",\n              \"alignment\",\n              \"gap\"\n            ],\n            \"description\":
+        \"A2UI::RowComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"ColumnComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"children\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"ExplicitChildren\"\n                      },\n                      \"ids\":
+        {\n                        \"type\": \"array\",\n                        \"items\":
+        {\n                          \"type\": \"string\"\n                        },\n                        \"description\":
+        \"List of child component IDs\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"ids\"\n                    ],\n                    \"description\":
+        \"A2UI::ExplicitChildren struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"DataDrivenChildren\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to array in data model\"\n                      },\n                      \"template_id\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"Component ID to use as template for each item\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\",\n                      \"template_id\"\n                    ],\n                    \"description\":
+        \"A2UI::DataDrivenChildren struct\"\n                  }\n                ],\n                \"description\":
+        \"Union of multiple types\"\n              },\n              \"distribution\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"start\",\n                  \"center\",\n                  \"end\",\n                  \"space_between\",\n                  \"space_around\",\n                  \"space_evenly\"\n                ]\n              },\n              \"alignment\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"start\",\n                  \"center\",\n                  \"end\",\n                  \"stretch\"\n                ]\n              },\n              \"gap\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"children\",\n              \"distribution\",\n              \"alignment\",\n              \"gap\"\n            ],\n            \"description\":
+        \"A2UI::ColumnComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"CardComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"child_id\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"ID of the child component\"\n              },\n              \"title\":
+        {\n                \"type\": \"string\"\n              },\n              \"elevation\":
+        {\n                \"type\": \"integer\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"child_id\",\n              \"title\",\n              \"elevation\"\n            ],\n            \"description\":
+        \"A2UI::CardComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"ListComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"children\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"ExplicitChildren\"\n                      },\n                      \"ids\":
+        {\n                        \"type\": \"array\",\n                        \"items\":
+        {\n                          \"type\": \"string\"\n                        },\n                        \"description\":
+        \"List of child component IDs\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"ids\"\n                    ],\n                    \"description\":
+        \"A2UI::ExplicitChildren struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"DataDrivenChildren\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to array in data model\"\n                      },\n                      \"template_id\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"Component ID to use as template for each item\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\",\n                      \"template_id\"\n                    ],\n                    \"description\":
+        \"A2UI::DataDrivenChildren struct\"\n                  }\n                ],\n                \"description\":
+        \"Union of multiple types\"\n              },\n              \"orientation\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"horizontal\",\n                  \"vertical\"\n                ]\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"children\",\n              \"orientation\"\n            ],\n            \"description\":
+        \"A2UI::ListComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"DividerComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"orientation\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"horizontal\",\n                  \"vertical\"\n                ]\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"orientation\"\n            ],\n            \"description\":
+        \"A2UI::DividerComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"TabsComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"tabs\":
+        {\n                \"type\": \"array\",\n                \"items\": {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"TabItem\"\n                    },\n                    \"label\": {\n                      \"type\":
+        \"string\",\n                      \"description\": \"Tab label text\"\n                    },\n                    \"child_id\":
+        {\n                      \"type\": \"string\",\n                      \"description\":
+        \"ID of the content component for this tab\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"label\",\n                    \"child_id\"\n                  ],\n                  \"description\":
+        \"A2UI::TabItem struct\"\n                },\n                \"description\":
+        \"List of tab definitions with labels and content IDs\"\n              },\n              \"active_index\":
+        {\n                \"type\": \"integer\",\n                \"description\":
+        \"Currently active tab index (0-based)\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"tabs\",\n              \"active_index\"\n            ],\n            \"description\":
+        \"A2UI::TabsComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"ModalComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"child_id\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"ID of the content component inside the modal\"\n              },\n              \"title\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Optional modal title\"\n              },\n              \"is_open\": {\n                \"type\":
+        \"boolean\",\n                \"description\": \"Whether the modal is currently
+        visible\"\n              },\n              \"size\": {\n                \"type\":
+        \"string\",\n                \"enum\": [\n                  \"small\",\n                  \"medium\",\n                  \"large\",\n                  \"fullscreen\"\n                ],\n                \"description\":
+        \"Modal size variant\"\n              },\n              \"dismissible\": {\n                \"type\":
+        \"boolean\",\n                \"description\": \"Whether the modal can be
+        dismissed by clicking outside\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"child_id\",\n              \"title\",\n              \"is_open\",\n              \"size\",\n              \"dismissible\"\n            ],\n            \"description\":
+        \"A2UI::ModalComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialHeadlineComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"content\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"LiteralValue\"\n                      },\n                      \"value\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"The literal string value\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"value\"\n                    ],\n                    \"description\":
+        \"A2UI::LiteralValue struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"PathReference\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to data model (e.g., /user/name)\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\"\n                    ],\n                    \"description\":
+        \"A2UI::PathReference struct\"\n                  }\n                ],\n                \"description\":
+        \"Headline text (8-12 words, no numbers)\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"content\"\n            ],\n            \"description\":
+        \"A2UI::EditorialHeadlineComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialInsightComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"what\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Observable pattern from data (1-2 sentences, no numbers)\"\n              },\n              \"so_what\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Why this matters - the interpretation (1-2 sentences, no numbers)\"\n              },\n              \"now_what\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Actionable recommendation (1 sentence)\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"what\",\n              \"so_what\",\n              \"now_what\"\n            ],\n            \"description\":
+        \"A2UI::EditorialInsightComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialMetricComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"label\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Metric label (e.g., \\\"HRV\\\", \\\"Sleep Score\\\")\"\n              },\n              \"value\":
+        {\n                \"type\": \"string\",\n                \"description\":
+        \"Formatted value with unit (e.g., \\\"52ms\\\", \\\"85/100\\\")\"\n              },\n              \"trend\":
+        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ],\n                \"description\":
+        \"Trend direction: \\\"up\\\", \\\"down\\\", or \\\"stable\\\"\"\n              },\n              \"context\":
+        {\n                \"type\": [\n                  \"string\",\n                  \"null\"\n                ],\n                \"description\":
+        \"Optional context (e.g., \\\"up from 48ms last week\\\")\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"label\",\n              \"value\"\n            ],\n            \"description\":
+        \"A2UI::EditorialMetricComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialMetricsRowComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"children\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"ExplicitChildren\"\n                      },\n                      \"ids\":
+        {\n                        \"type\": \"array\",\n                        \"items\":
+        {\n                          \"type\": \"string\"\n                        },\n                        \"description\":
+        \"List of child component IDs\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"ids\"\n                    ],\n                    \"description\":
+        \"A2UI::ExplicitChildren struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"DataDrivenChildren\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to array in data model\"\n                      },\n                      \"template_id\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"Component ID to use as template for each item\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\",\n                      \"template_id\"\n                    ],\n                    \"description\":
+        \"A2UI::DataDrivenChildren struct\"\n                  }\n                ],\n                \"description\":
+        \"ExplicitChildren with EditorialMetricComponent IDs\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"children\"\n            ],\n            \"description\":
+        \"A2UI::EditorialMetricsRowComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialDividerComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\"\n            ],\n            \"description\":
+        \"A2UI::EditorialDividerComponent struct\"\n          },\n          {\n            \"type\":
+        \"object\",\n            \"properties\": {\n              \"_type\": {\n                \"type\":
+        \"string\",\n                \"const\": \"EditorialPageComponent\"\n              },\n              \"id\":
+        {\n                \"type\": \"string\"\n              },\n              \"tone\":
+        {\n                \"type\": \"string\",\n                \"enum\": [\n                  \"positive\",\n                  \"neutral\",\n                  \"warning\"\n                ],\n                \"description\":
+        \"Overall tone (positive, neutral, warning)\"\n              },\n              \"children\":
+        {\n                \"oneOf\": [\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"ExplicitChildren\"\n                      },\n                      \"ids\":
+        {\n                        \"type\": \"array\",\n                        \"items\":
+        {\n                          \"type\": \"string\"\n                        },\n                        \"description\":
+        \"List of child component IDs\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"ids\"\n                    ],\n                    \"description\":
+        \"A2UI::ExplicitChildren struct\"\n                  },\n                  {\n                    \"type\":
+        \"object\",\n                    \"properties\": {\n                      \"_type\":
+        {\n                        \"type\": \"string\",\n                        \"const\":
+        \"DataDrivenChildren\"\n                      },\n                      \"path\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"JSON Pointer to array in data model\"\n                      },\n                      \"template_id\":
+        {\n                        \"type\": \"string\",\n                        \"description\":
+        \"Component ID to use as template for each item\"\n                      }\n                    },\n                    \"required\":
+        [\n                      \"_type\",\n                      \"path\",\n                      \"template_id\"\n                    ],\n                    \"description\":
+        \"A2UI::DataDrivenChildren struct\"\n                  }\n                ],\n                \"description\":
+        \"ExplicitChildren with content component IDs\"\n              }\n            },\n            \"required\":
+        [\n              \"_type\",\n              \"id\",\n              \"tone\",\n              \"children\"\n            ],\n            \"description\":
+        \"A2UI::EditorialPageComponent struct\"\n          }\n        ],\n        \"description\":
+        \"Union of multiple types\"\n      },\n      \"description\": \"Component
+        adjacency list\"\n    },\n    \"initial_data\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"DataUpdate\"\n          },\n          \"path\":
+        {\n            \"type\": \"string\",\n            \"description\": \"JSON
+        Pointer path (e.g., /reservation/guests)\"\n          },\n          \"entries\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"oneOf\":
+        [\n                {\n                  \"type\": \"object\",\n                  \"properties\":
+        {\n                    \"_type\": {\n                      \"type\": \"string\",\n                      \"const\":
+        \"StringValue\"\n                    },\n                    \"key\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"string\": {\n                      \"type\":
+        \"string\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"key\",\n                    \"string\"\n                  ],\n                  \"description\":
+        \"A2UI::StringValue struct\"\n                },\n                {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"NumberValue\"\n                    },\n                    \"key\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"number\": {\n                      \"type\":
+        \"number\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"key\",\n                    \"number\"\n                  ],\n                  \"description\":
+        \"A2UI::NumberValue struct\"\n                },\n                {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"BooleanValue\"\n                    },\n                    \"key\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"boolean\": {\n                      \"type\":
+        \"boolean\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"key\",\n                    \"boolean\"\n                  ],\n                  \"description\":
+        \"A2UI::BooleanValue struct\"\n                },\n                {\n                  \"type\":
+        \"object\",\n                  \"properties\": {\n                    \"_type\":
+        {\n                      \"type\": \"string\",\n                      \"const\":
+        \"ObjectValue\"\n                    },\n                    \"key\": {\n                      \"type\":
+        \"string\"\n                    },\n                    \"entries\": {\n                      \"type\":
+        \"object\",\n                      \"additionalProperties\": {\n                        \"type\":
+        \"string\"\n                      },\n                      \"description\":
+        \"Nested key-value pairs as JSON-like hash\"\n                    }\n                  },\n                  \"required\":
+        [\n                    \"_type\",\n                    \"key\",\n                    \"entries\"\n                  ],\n                  \"description\":
+        \"A2UI::ObjectValue struct\"\n                }\n              ],\n              \"description\":
+        \"Union of multiple types\"\n            },\n            \"description\":
+        \"Values to set at this path\"\n          }\n        },\n        \"required\":
+        [\n          \"_type\",\n          \"path\",\n          \"entries\"\n        ],\n        \"description\":
+        \"A2UI::DataUpdate struct\"\n      },\n      \"description\": \"Initial data
+        values\"\n    },\n    \"decisions\": {\n      \"type\": \"array\",\n      \"items\":
+        {\n        \"type\": \"object\",\n        \"properties\": {\n          \"_type\":
+        {\n            \"type\": \"string\",\n            \"const\": \"UIDecisionEvidence\"\n          },\n          \"decision_type\":
+        {\n            \"type\": \"string\",\n            \"enum\": [\n              \"component_choice\",\n              \"layout_structure\",\n              \"data_binding\",\n              \"styling\",\n              \"interaction\"\n            ],\n            \"description\":
+        \"Category of decision\"\n          },\n          \"component_id\": {\n            \"type\":
+        [\n              \"string\",\n              \"null\"\n            ],\n            \"description\":
+        \"ID of component this decision affects\"\n          },\n          \"choice\":
+        {\n            \"type\": \"string\",\n            \"description\": \"What
+        was chosen (e.g., \\\"Card\\\", \\\"Column layout\\\", \\\"path binding\\\")\"\n          },\n          \"rationale\":
+        {\n            \"type\": \"string\",\n            \"description\": \"Why this
+        choice was made (1-2 sentences)\"\n          },\n          \"alternatives_considered\":
+        {\n            \"type\": \"array\",\n            \"items\": {\n              \"type\":
+        \"string\"\n            },\n            \"description\": \"Other options that
+        were considered\"\n          }\n        },\n        \"required\": [\n          \"_type\",\n          \"decision_type\",\n          \"choice\",\n          \"rationale\",\n          \"alternatives_considered\"\n        ],\n        \"description\":
+        \"A2UI::UIDecisionEvidence struct\"\n      },\n      \"description\": \"Reasoning
+        behind UI choices\"\n    },\n    \"reasoning\": {\n      \"type\": \"string\",\n      \"description\":
+        \"Step by step reasoning process\"\n    }\n  },\n  \"required\": [\n    \"root_id\",\n    \"components\",\n    \"reasoning\"\n  ]\n}\n```\n\nAll
+        interactions will be structured in the following way, with the appropriate
+        values filled in.\n## Input values\n```json\n{input_values}\n```\n## Output
+        values\nRespond exclusively with the output schema fields in the json block
+        below.\n```json\n{output_values}\n```\n\nIn adhering to this structure, your
+        objective is: Generate UI components from natural language. Think step by
+        step."},{"role":"user","content":"## Input Values\n```json\n{\n  \"request\":
+        \"Create a card with a title and a button\",\n  \"surface_id\": \"card-demo\",\n  \"available_data\":
+        \"{}\"\n}\n```\n\nRespond with the corresponding output schema fields wrapped
+        in a ```json ``` block,\nstarting with the heading `## Output values`."}],"temperature":1.0}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - OpenAI::Client/Ruby 0.42.0
+      Host:
+      - api.openai.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 0.42.0
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Authorization:
+      - Bearer <OPENAI_API_KEY>
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '48662'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 05 Jan 2026 13:21:45 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Access-Control-Expose-Headers:
+      - X-Request-ID
+      Openai-Organization:
+      - user-ftp1nrq85er9xnlu0la8snte
+      Openai-Processing-Ms:
+      - '6185'
+      Openai-Project:
+      - proj_n52OL5vlzVaXGnYDaGWmVX5F
+      Openai-Version:
+      - '2020-10-01'
+      X-Envoy-Upstream-Service-Time:
+      - '6201'
+      X-Ratelimit-Limit-Requests:
+      - '10000'
+      X-Ratelimit-Limit-Tokens:
+      - '200000'
+      X-Ratelimit-Remaining-Requests:
+      - '9997'
+      X-Ratelimit-Remaining-Tokens:
+      - '188951'
+      X-Ratelimit-Reset-Requests:
+      - 19.216s
+      X-Ratelimit-Reset-Tokens:
+      - 3.314s
+      X-Request-Id:
+      - req_3277616e77d145a6a4151661ee73bfe2
+      X-Openai-Proxy-Wasm:
+      - v0.1
+      Cf-Cache-Status:
+      - DYNAMIC
+      Set-Cookie:
+      - __cf_bm=OzOFXh.EjZ0_ruxkKM6F1qjb_KQm5zHfH..sxsZ0Rmo-1767619305-1.0.1.1-WX99kO6xDjkdTTTYnV7boO7dYj2r63UBp9sm2RP.TJevzSkI89Y.CBkWMXAfEv.I4XvBbH2mnNVjr2paWNMMwN2V1ghtlqxI9bT9U.Xmslk;
+        path=/; expires=Mon, 05-Jan-26 13:51:45 GMT; domain=.api.openai.com; HttpOnly;
+        Secure; SameSite=None
+      - _cfuvid=CYIpNMyArqGdxYf5eBBJyWB5BpbxYox44QQz_SNiifc-1767619305741-0.0.1.1-604800000;
+        path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 9b9347ad48ed8df2-MAD
+      Alt-Svc:
+      - h3=":443"; ma=86400
+    body:
+      encoding: ASCII-8BIT
+      string: |
+        {
+          "id": "chatcmpl-CueodWuoUGwCw4b7sGcaW8imRMEAJ",
+          "object": "chat.completion",
+          "created": 1767619299,
+          "model": "gpt-4o-mini-2024-07-18",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Output values\n```json\n{\n  \"root_id\": \"root-card-1\",\n  \"components\": [\n    {\n      \"_type\": \"CardComponent\",\n      \"id\": \"card-1\",\n      \"child_id\": \"text-1\",\n      \"title\": \"My Card Title\",\n      \"elevation\": 2\n    },\n    {\n      \"_type\": \"TextComponent\",\n      \"id\": \"text-1\",\n      \"content\": {\n        \"_type\": \"LiteralValue\",\n        \"value\": \"This is a card description.\"\n      },\n      \"usage_hint\": \"body\"\n    },\n    {\n      \"_type\": \"ButtonComponent\",\n      \"id\": \"button-1\",\n      \"label\": {\n        \"_type\": \"LiteralValue\",\n        \"value\": \"Click Me\"\n      },\n      \"action\": {\n        \"_type\": \"Action\",\n        \"name\": \"button_click\",\n        \"context\": []\n      },\n      \"disabled\": false,\n      \"variant\": \"primary\"\n    }\n  ],\n  \"initial_data\": [],\n  \"decisions\": [],\n  \"reasoning\": \"The UI consists of a card with a title, a text description, and a button for user interaction. The text in the card provides a description of the card's content.\"\n}\n```",
+                "refusal": null,
+                "annotations": []
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 7653,
+            "completion_tokens": 268,
+            "total_tokens": 7921,
+            "prompt_tokens_details": {
+              "cached_tokens": 7552,
+              "audio_tokens": 0
+            },
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "audio_tokens": 0,
+              "accepted_prediction_tokens": 0,
+              "rejected_prediction_tokens": 0
+            }
+          },
+          "service_tier": "default",
+          "system_fingerprint": "fp_29330a9688"
+        }
+  recorded_at: Mon, 05 Jan 2026 13:21:45 GMT
+- request:
+    method: post
+    uri: https://api.anthropic.com/v1/messages
+    body:
+      encoding: UTF-8
+      string: '{"model":"claude-sonnet-4-20250514","messages":[{"role":"user","content":"##
+        Input Values\n```json\n{\n  \"request\": \"Create a card with a title and
+        a button\",\n  \"surface_id\": \"card-demo\",\n  \"available_data\": \"{}\"\n}\n```"}],"max_tokens":4096,"temperature":0.0,"tools":[{"name":"json_output","description":"Output
+        the result in the required JSON format","input_schema":{"type":"object","properties":{"root_id":{"type":"string"},"components":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"TextComponent"},"id":{"type":"string"},"content":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Text content"},"usage_hint":{"type":"string","enum":["h1","h2","h3","h4","h5","body","caption"]}},"required":["_type","id","content","usage_hint"],"description":"A2UI::TextComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ImageComponent"},"id":{"type":"string"},"src":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Image URL"},"alt":{"type":"string"},"fit":{"type":"string","enum":["contain","cover","fill","scale_down","none"]}},"required":["_type","id","src","alt","fit"],"description":"A2UI::ImageComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"IconComponent"},"id":{"type":"string"},"name":{"type":"string","description":"Material
+        icon name (e.g., check, close, menu)"},"size":{"type":"integer"}},"required":["_type","id","name","size"],"description":"A2UI::IconComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ButtonComponent"},"id":{"type":"string"},"label":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Button label text"},"action":{"type":"object","properties":{"_type":{"type":"string","const":"Action"},"name":{"type":"string","description":"Action
+        identifier sent to server"},"context":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"ContextBinding"},"key":{"type":"string","description":"Key
+        name in the action context"},"path":{"type":"string","description":"JSON Pointer
+        to extract value from"}},"required":["_type","key","path"],"description":"A2UI::ContextBinding
+        struct"}}},"required":["_type","name","context"],"description":"A2UI::Action
+        struct"},"disabled":{"type":"boolean"},"variant":{"type":"string","description":"primary,
+        secondary, or danger"}},"required":["_type","id","label","action","disabled","variant"],"description":"A2UI::ButtonComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"TextFieldComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to bound value in data model"},"input_type":{"type":"string","enum":["text","number","date","longtext","email","tel","url"]},"label":{"type":"string"},"placeholder":{"type":"string"},"is_required":{"type":"boolean","description":"Whether
+        the field is required"}},"required":["_type","id","value","input_type","label","placeholder","is_required"],"description":"A2UI::TextFieldComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CheckBoxComponent"},"id":{"type":"string"},"checked":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to boolean in data model"},"label":{"type":"string"}},"required":["_type","id","checked","label"],"description":"A2UI::CheckBoxComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SliderComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to numeric value"},"min":{"type":"number"},"max":{"type":"number"},"step":{"type":"number"},"label":{"type":"string"}},"required":["_type","id","value","min","max","step","label"],"description":"A2UI::SliderComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"SelectComponent"},"id":{"type":"string"},"value":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to selected value"},"options_path":{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"Path
+        to array of {value, label} options"},"label":{"type":"string"},"placeholder":{"type":"string"}},"required":["_type","id","value","options_path","label","placeholder"],"description":"A2UI::SelectComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"RowComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::RowComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ColumnComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"distribution":{"type":"string","enum":["start","center","end","space_between","space_around","space_evenly"]},"alignment":{"type":"string","enum":["start","center","end","stretch"]},"gap":{"type":"integer"}},"required":["_type","id","children","distribution","alignment","gap"],"description":"A2UI::ColumnComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"CardComponent"},"id":{"type":"string"},"child_id":{"type":"string","description":"ID
+        of the child component"},"title":{"type":"string"},"elevation":{"type":"integer"}},"required":["_type","id","child_id","title","elevation"],"description":"A2UI::CardComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ListComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"Union of multiple types"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","children","orientation"],"description":"A2UI::ListComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DividerComponent"},"id":{"type":"string"},"orientation":{"type":"string","enum":["horizontal","vertical"]}},"required":["_type","id","orientation"],"description":"A2UI::DividerComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"TabsComponent"},"id":{"type":"string"},"tabs":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"TabItem"},"label":{"type":"string","description":"Tab
+        label text"},"child_id":{"type":"string","description":"ID of the content
+        component for this tab"}},"required":["_type","label","child_id"],"description":"A2UI::TabItem
+        struct"},"description":"List of tab definitions with labels and content IDs"},"active_index":{"type":"integer","description":"Currently
+        active tab index (0-based)"}},"required":["_type","id","tabs","active_index"],"description":"A2UI::TabsComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ModalComponent"},"id":{"type":"string"},"child_id":{"type":"string","description":"ID
+        of the content component inside the modal"},"title":{"type":"string","description":"Optional
+        modal title"},"is_open":{"type":"boolean","description":"Whether the modal
+        is currently visible"},"size":{"type":"string","enum":["small","medium","large","fullscreen"],"description":"Modal
+        size variant"},"dismissible":{"type":"boolean","description":"Whether the
+        modal can be dismissed by clicking outside"}},"required":["_type","id","child_id","title","is_open","size","dismissible"],"description":"A2UI::ModalComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialHeadlineComponent"},"id":{"type":"string"},"content":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"LiteralValue"},"value":{"type":"string","description":"The
+        literal string value"}},"required":["_type","value"],"description":"A2UI::LiteralValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"PathReference"},"path":{"type":"string","description":"JSON
+        Pointer to data model (e.g., /user/name)"}},"required":["_type","path"],"description":"A2UI::PathReference
+        struct"}],"description":"Headline text (8-12 words, no numbers)"}},"required":["_type","id","content"],"description":"A2UI::EditorialHeadlineComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialInsightComponent"},"id":{"type":"string"},"what":{"type":"string","description":"Observable
+        pattern from data (1-2 sentences, no numbers)"},"so_what":{"type":"string","description":"Why
+        this matters - the interpretation (1-2 sentences, no numbers)"},"now_what":{"type":"string","description":"Actionable
+        recommendation (1 sentence)"}},"required":["_type","id","what","so_what","now_what"],"description":"A2UI::EditorialInsightComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialMetricComponent"},"id":{"type":"string"},"label":{"type":"string","description":"Metric
+        label (e.g., \"HRV\", \"Sleep Score\")"},"value":{"type":"string","description":"Formatted
+        value with unit (e.g., \"52ms\", \"85/100\")"},"trend":{"type":["string","null"],"description":"Trend
+        direction: \"up\", \"down\", or \"stable\""},"context":{"type":["string","null"],"description":"Optional
+        context (e.g., \"up from 48ms last week\")"}},"required":["_type","id","label","value"],"description":"A2UI::EditorialMetricComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialMetricsRowComponent"},"id":{"type":"string"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"ExplicitChildren with EditorialMetricComponent IDs"}},"required":["_type","id","children"],"description":"A2UI::EditorialMetricsRowComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialDividerComponent"},"id":{"type":"string"}},"required":["_type","id"],"description":"A2UI::EditorialDividerComponent
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"EditorialPageComponent"},"id":{"type":"string"},"tone":{"type":"string","enum":["positive","neutral","warning"],"description":"Overall
+        tone (positive, neutral, warning)"},"children":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"ExplicitChildren"},"ids":{"type":"array","items":{"type":"string"},"description":"List
+        of child component IDs"}},"required":["_type","ids"],"description":"A2UI::ExplicitChildren
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"DataDrivenChildren"},"path":{"type":"string","description":"JSON
+        Pointer to array in data model"},"template_id":{"type":"string","description":"Component
+        ID to use as template for each item"}},"required":["_type","path","template_id"],"description":"A2UI::DataDrivenChildren
+        struct"}],"description":"ExplicitChildren with content component IDs"}},"required":["_type","id","tone","children"],"description":"A2UI::EditorialPageComponent
+        struct"}],"description":"Union of multiple types"}},"initial_data":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"DataUpdate"},"path":{"type":"string","description":"JSON
+        Pointer path (e.g., /reservation/guests)"},"entries":{"type":"array","items":{"oneOf":[{"type":"object","properties":{"_type":{"type":"string","const":"StringValue"},"key":{"type":"string"},"string":{"type":"string"}},"required":["_type","key","string"],"description":"A2UI::StringValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"NumberValue"},"key":{"type":"string"},"number":{"type":"number"}},"required":["_type","key","number"],"description":"A2UI::NumberValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"BooleanValue"},"key":{"type":"string"},"boolean":{"type":"boolean"}},"required":["_type","key","boolean"],"description":"A2UI::BooleanValue
+        struct"},{"type":"object","properties":{"_type":{"type":"string","const":"ObjectValue"},"key":{"type":"string"},"entries":{"type":"object","additionalProperties":{"type":"string"},"description":"Nested
+        key-value pairs as JSON-like hash"}},"required":["_type","key","entries"],"description":"A2UI::ObjectValue
+        struct"}],"description":"Union of multiple types"},"description":"Values to
+        set at this path"}},"required":["_type","path","entries"],"description":"A2UI::DataUpdate
+        struct"}},"decisions":{"type":"array","items":{"type":"object","properties":{"_type":{"type":"string","const":"UIDecisionEvidence"},"decision_type":{"type":"string","enum":["component_choice","layout_structure","data_binding","styling","interaction"],"description":"Category
+        of decision"},"component_id":{"type":["string","null"],"description":"ID of
+        component this decision affects"},"choice":{"type":"string","description":"What
+        was chosen (e.g., \"Card\", \"Column layout\", \"path binding\")"},"rationale":{"type":"string","description":"Why
+        this choice was made (1-2 sentences)"},"alternatives_considered":{"type":"array","items":{"type":"string"},"description":"Other
+        options that were considered"}},"required":["_type","decision_type","choice","rationale","alternatives_considered"],"description":"A2UI::UIDecisionEvidence
+        struct"}},"reasoning":{"type":"string"}},"required":["root_id","components","initial_data","decisions","reasoning"]}}],"tool_choice":{"type":"tool","name":"json_output"},"system":"Your
+        input schema fields are:\n```json\n{\n  \"$schema\": \"http://json-schema.org/draft-06/schema#\",\n  \"type\":
+        \"object\",\n  \"properties\": {\n    \"request\": {\n      \"type\": \"string\",\n      \"description\":
+        \"What UI to create\"\n    },\n    \"surface_id\": {\n      \"type\": \"string\"\n    },\n    \"available_data\":
+        {\n      \"type\": \"string\",\n      \"description\": \"Available data model
+        as JSON\"\n    }\n  },\n  \"required\": [\n    \"request\",\n    \"surface_id\"\n  ]\n}\n```\n\nYour
+        objective is: Generate UI components from natural language. Think step by
+        step."}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Anthropic::Client/Ruby 1.16.2
+      Host:
+      - api.anthropic.com
+      X-Stainless-Arch:
+      - arm64
+      X-Stainless-Lang:
+      - ruby
+      X-Stainless-Os:
+      - MacOS
+      X-Stainless-Package-Version:
+      - 1.16.2
+      X-Stainless-Runtime:
+      - ruby
+      X-Stainless-Runtime-Version:
+      - 3.3.6
+      Content-Type:
+      - application/json
+      Anthropic-Version:
+      - '2023-06-01'
+      X-Api-Key:
+      - "<ANTHROPIC_API_KEY>"
+      X-Stainless-Retry-Count:
+      - '0'
+      X-Stainless-Timeout:
+      - '600.0'
+      Content-Length:
+      - '18413'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Mon, 05 Jan 2026 15:43:03 GMT
+      Content-Type:
+      - application/json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Anthropic-Ratelimit-Input-Tokens-Limit:
+      - '450000'
+      Anthropic-Ratelimit-Input-Tokens-Remaining:
+      - '447000'
+      Anthropic-Ratelimit-Input-Tokens-Reset:
+      - '2026-01-05T15:42:53Z'
+      Anthropic-Ratelimit-Output-Tokens-Limit:
+      - '90000'
+      Anthropic-Ratelimit-Output-Tokens-Remaining:
+      - '89000'
+      Anthropic-Ratelimit-Output-Tokens-Reset:
+      - '2026-01-05T15:43:04Z'
+      Anthropic-Ratelimit-Requests-Limit:
+      - '1000'
+      Anthropic-Ratelimit-Requests-Remaining:
+      - '999'
+      Anthropic-Ratelimit-Requests-Reset:
+      - '2026-01-05T15:42:51Z'
+      Anthropic-Ratelimit-Tokens-Limit:
+      - '540000'
+      Anthropic-Ratelimit-Tokens-Remaining:
+      - '536000'
+      Anthropic-Ratelimit-Tokens-Reset:
+      - '2026-01-05T15:42:53Z'
+      Request-Id:
+      - req_011CWpVBtaBDkGh4AvzSvrui
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Anthropic-Organization-Id:
+      - '008b8384-4ae5-436d-a319-c5a07111a158'
+      Server:
+      - cloudflare
+      X-Envoy-Upstream-Service-Time:
+      - '12722'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Robots-Tag:
+      - none
+      Cf-Ray:
+      - 9b94167f5a3703a8-MAD
+    body:
+      encoding: ASCII-8BIT
+      string: '{"model":"claude-sonnet-4-20250514","id":"msg_01SXjqSDGYXsx4XaziF2BgRn","type":"message","role":"assistant","content":[{"type":"tool_use","id":"toolu_018Tit35CUMV7wQJuH9oZMr5","name":"json_output","input":{"root_id":"card-demo","components":[{"_type":"CardComponent","id":"card-demo","child_id":"card-content","title":"Card
+        Title","elevation":2},{"_type":"ColumnComponent","id":"card-content","children":{"_type":"ExplicitChildren","ids":["demo-button"]},"distribution":"start","alignment":"stretch","gap":16},{"_type":"ButtonComponent","id":"demo-button","label":{"_type":"LiteralValue","value":"Click
+        Me"},"action":{"_type":"Action","name":"button_clicked","context":[]},"disabled":false,"variant":"primary"}],"initial_data":[],"decisions":[{"_type":"UIDecisionEvidence","decision_type":"component_choice","choice":"CardComponent","rationale":"Card
+        provides the requested container with built-in title support and visual elevation","alternatives_considered":["ColumnComponent
+        with TextComponent header","Custom container"],"component_id":"card-demo"},{"_type":"UIDecisionEvidence","decision_type":"layout_structure","choice":"ColumnComponent
+        as card content","rationale":"Column layout provides clean vertical organization
+        for the button within the card","alternatives_considered":["Direct button
+        placement","RowComponent"],"component_id":"card-content"},{"_type":"UIDecisionEvidence","decision_type":"component_choice","choice":"ButtonComponent
+        with primary variant","rationale":"Primary button provides clear call-to-action
+        styling as the main interactive element","alternatives_considered":["Secondary
+        button","Text button"],"component_id":"demo-button"},{"_type":"UIDecisionEvidence","decision_type":"styling","choice":"Medium
+        elevation (2) for card","rationale":"Provides subtle visual separation without
+        being too prominent for a demo card","alternatives_considered":["Low elevation
+        (1)","High elevation (4)"],"component_id":"card-demo"}],"reasoning":"Created
+        a simple card component with a title and button as requested. The card uses
+        a ColumnComponent as its content container to properly organize the button.
+        The button is configured as a primary variant with a generic \"Click Me\"
+        label and a basic action handler. Since no specific data was provided, used
+        literal values for the button label and a simple action name."}}],"stop_reason":"tool_use","stop_sequence":null,"usage":{"input_tokens":6297,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"cache_creation":{"ephemeral_5m_input_tokens":0,"ephemeral_1h_input_tokens":0},"output_tokens":787,"service_tier":"standard"}}'
+  recorded_at: Mon, 05 Jan 2026 15:43:03 GMT
 recorded_with: VCR 6.4.0

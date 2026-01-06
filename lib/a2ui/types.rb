@@ -30,6 +30,8 @@ require_relative 'types/string_value'
 require_relative 'types/number_value'
 require_relative 'types/boolean_value'
 require_relative 'types/object_value'
+require_relative 'types/empty_data'
+require_relative 'types/json_data'
 
 # Action types
 require_relative 'types/context_binding'

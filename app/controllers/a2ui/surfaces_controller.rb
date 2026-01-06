@@ -12,7 +12,7 @@ module A2UI
       surface = surface_manager.create(
         surface_id: params.require(:surface_id),
         request: params.require(:request),
-        data: params[:data] || '{}'
+        data: JsonData.new(json: params[:data] || '{}')
       )
 
       respond_to do |format|

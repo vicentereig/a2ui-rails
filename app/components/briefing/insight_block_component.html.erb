@@ -1,7 +1,0 @@
-<article class="insight-block" data-component="insight-block" data-sentiment="<%= sentiment %>">
-  <h3 class="insight-headline"><%= headline %></h3>
-  <% if metrics? %>
-    <%= render Briefing::MetricInlineComponent.new(metrics: metrics) %>
-  <% end %>
-  <p class="insight-narrative"><%= narrative %></p>
-</article>

@@ -6,6 +6,6 @@ module A2UI
     const :name, String, description: 'Action name from component'
     const :surface_id, String
     const :source_id, String, description: 'Component ID that triggered action'
-    const :context, T::Hash[String, String], default: {}, description: 'Resolved context values'
+    const :context, T::Hash[String, T.untyped], default: {}, description: 'Raw context from client, coerced by Surface'
   end
 end

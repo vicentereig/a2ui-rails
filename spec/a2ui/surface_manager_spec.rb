@@ -94,7 +94,8 @@ RSpec.describe A2UI::SurfaceManager do
     it 'creates and retrieves a surface' do
       surface = manager.create(
         surface_id: 'demo',
-        request: 'Create a hello world message'
+        request: 'Create a hello world message',
+        data: A2UI::EmptyData.new
       )
 
       expect(surface).to be_a(A2UI::Surface)
@@ -109,7 +110,8 @@ RSpec.describe A2UI::SurfaceManager do
     it 'updates an existing surface' do
       manager.create(
         surface_id: 'updatable',
-        request: 'Create a simple text element'
+        request: 'Create a simple text element',
+        data: A2UI::EmptyData.new
       )
 
       result = manager.update(
@@ -120,13 +122,25 @@ RSpec.describe A2UI::SurfaceManager do
       expect(result.streams).to be_an(Array)
     end
 
+    # Test data struct for counter example
+    class CounterData < T::Struct
+      const :count, Integer, default: 0
+    end
+
+    # Test context struct for increment action
+    class IncrementContext < T::Struct
+      const :current, Integer
+    end
+
     it 'handles user actions' do
       manager.create(
         surface_id: 'actionable',
         request: 'Create a counter with increment button',
-        data: '{"count": 0}'
+        data: CounterData.new(count: 0),
+        actions: { increment: IncrementContext }
       )
 
+      # Client sends raw hash, server coerces to IncrementContext
       action = A2UI::UserAction.new(
         name: 'increment',
         surface_id: 'actionable',
@@ -142,7 +156,8 @@ RSpec.describe A2UI::SurfaceManager do
     it 'deletes a surface' do
       manager.create(
         surface_id: 'temporary',
-        request: 'Create a temp element'
+        request: 'Create a temp element',
+        data: A2UI::EmptyData.new
       )
 
       expect(manager.get('temporary')).not_to be_nil
